@@ -13,6 +13,10 @@
     </properties>
     <packaging>pom</packaging>
     <modules>
+        <module>coupon</module>
+        <module>member</module>
+        <module>order</module>
+        <module>product</module>
         <module>storage</module>
     </modules>
 
