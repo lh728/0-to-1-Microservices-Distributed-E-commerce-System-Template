@@ -5,11 +5,11 @@ This is a microservices-based distributed e-commerce system template designed to
 
 
 
-## Project Setup Process
+## Project Setup Guide
 
 ### Virtual Machine
 
-Download a Linux virtual machine based on Windows using VirtualBox (Make sure to enable CPU virtualization mode).
+Download a Linux virtual machine based on Windows using **VirtualBox** (Make sure to enable CPU virtualization mode).
 
 Download the official image via Vagrant, create a Linux virtual machine, and modify the Vagrantfile network settings (change the private network to your computer's IP address for domain name mapping; you can find your IP address using the '`ipconfig`' command).
 
