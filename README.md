@@ -120,13 +120,29 @@ Spring Cloud Routing - openFeign (microservices communication)
 
 The following databases will be established: 
 
-- oms (Order Management System), 
-- pms (Product Management System), 
-- mms (Member Management System), 
-- sms (Storage Management System), 
-- ums (Coupon Management System). 
-
 The character set will be set to utf8mb4 to ensure compatibility with utf8 and address potential issues related to character encoding.
+
+- OMS(Order Management System)：
+
+You can find the details of the CREATE TABLE statement here. <a href = "https://github.com/lh728/BlogCode/tree/72fb88c591dde967f19cc58fe0756ec0838a2e37/Project%20Records%20-%20Enterprise%20Requirement/Table%20Cell%20Merging%20and%20Dynamic%20Columns" >Github</a>
+
+- PMS(Product Management System):
+
+You can find the details of the CREATE TABLE statement here. <a href = "https://github.com/lh728/BlogCode/tree/72fb88c591dde967f19cc58fe0756ec0838a2e37/Project%20Records%20-%20Enterprise%20Requirement/Table%20Cell%20Merging%20and%20Dynamic%20Columns" >Github</a>
+
+- MMS(Member Management System):
+
+You can find the details of the CREATE TABLE statement here. <a href = "https://github.com/lh728/BlogCode/tree/72fb88c591dde967f19cc58fe0756ec0838a2e37/Project%20Records%20-%20Enterprise%20Requirement/Table%20Cell%20Merging%20and%20Dynamic%20Columns" >Github</a>
+
+- SMS(Storage Management System):
+
+You can find the details of the CREATE TABLE statement here. <a href = "https://github.com/lh728/BlogCode/tree/72fb88c591dde967f19cc58fe0756ec0838a2e37/Project%20Records%20-%20Enterprise%20Requirement/Table%20Cell%20Merging%20and%20Dynamic%20Columns" >Github</a>
+
+- UMS(Coupon Management System): 
+
+You can find the details of the CREATE TABLE statement here. <a href = "https://github.com/lh728/BlogCode/tree/72fb88c591dde967f19cc58fe0756ec0838a2e37/Project%20Records%20-%20Enterprise%20Requirement/Table%20Cell%20Merging%20and%20Dynamic%20Columns" >Github</a>
+
+
 
 #### Table Structure
 
