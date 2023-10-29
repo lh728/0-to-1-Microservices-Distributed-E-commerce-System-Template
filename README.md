@@ -11,7 +11,7 @@ This is a microservices-based distributed e-commerce system template designed to
 
 Download a Linux virtual machine based on Windows using **VirtualBox** (Make sure to enable CPU virtualization mode).
 
-Download the official image via Vagrant, create a Linux virtual machine, and modify the Vagrantfile network settings (change the private network to your computer's IP address for domain name mapping; you can find your IP address using the '`ipconfig`' command).
+Download the official image via Vagrant, create a Linux virtual machine by `vagrant init centos/7`, and modify the Vagrantfile network settings (change the private network to your computer's IP address for domain name mapping; you can find your IP address using the '`ipconfig`' command).
 
 
 
