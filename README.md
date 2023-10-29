@@ -155,20 +155,6 @@ You can find the details of the CREATE TABLE statement here. <a href = "https://
 
 <br>
 
-#### Table Structure
-
-These table structure will be defined as follows:
-
-<br>
-
-
-
-
-
-
-
-
-
 
 
 ## Microservices Design
@@ -199,9 +185,13 @@ These table structure will be defined as follows:
 
 ## Administraion System
 
-For the backend management, we will directly use the existing "vue-element-admin" to save time.
+For the backend management, we will directly use the existing "renren-fast" to save time.
 
-The project's GitHub repository can be found at the following address: [https://github.com/PanJiaChen/vue-element-admin.git](https://github.com/PanJiaChen/vue-element-admin.git)
+The project's GitHub repository can be found at the following address: [https://github.com/renrenio/renren-fast.git](https://github.com/renrenio/renren-fast.git)
+
+For the front-end pages, we use "renren-fast-vue" to achieve rapid development: https://github.com/renrenio/renren-fast-vue.git
+
+To start the administration service, a database named "ADMIN" needs to be created. The table creation statements for this database can also be found in the following location: <a href = "https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/tree/e72007596d45fa6a3885afc0e1dd9b42357ee3d0/Static" >Github</a>
 
 
 

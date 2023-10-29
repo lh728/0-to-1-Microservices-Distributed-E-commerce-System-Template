@@ -18,6 +18,7 @@
         <module>order</module>
         <module>product</module>
         <module>storage</module>
+        <module>renren-fast</module>
     </modules>
 
 </project>
