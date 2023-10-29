@@ -3,7 +3,7 @@ This is a microservices-based distributed e-commerce system template designed to
 
 **I would like to use the latest technologies as much as possible to complete this e-commerce template.**
 
-
+<br>
 
 ## Project Setup Guide
 
@@ -13,7 +13,7 @@ Download a Linux virtual machine based on Windows using **VirtualBox** (Make sur
 
 Download the official image via Vagrant, create a Linux virtual machine by `vagrant init centos/7`, and modify the Vagrantfile network settings (change the private network to your computer's IP address for domain name mapping; you can find your IP address using the '`ipconfig`' command).
 
-
+<br>
 
 ### Install Docker
 
@@ -42,7 +42,7 @@ sudo docker run hello-world
 
 ```
 
-
+<br>
 
 ### Install mysql 8.0.17
 
@@ -69,7 +69,7 @@ default-character-set=utf8
 
 ```
 
-
+<br>
 
 ### Install redis
 
@@ -102,7 +102,7 @@ MAVEN 3.9.2
 
 Git
 
-
+<br>
 
 ### Dependency
 
@@ -112,7 +112,7 @@ Spring Web
 
 Spring Cloud Routing - openFeign (microservices communication)
 
-
+<br>
 
 ### Database Design
 
@@ -124,33 +124,42 @@ The character set will be set to utf8mb4 to ensure compatibility with utf8 and a
 
 You can find the details of the CREATE TABLE statement here. <a href = "https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/tree/e72007596d45fa6a3885afc0e1dd9b42357ee3d0/Static" >Github</a>
 
-- OMS(Order Management System)：
+- **OMS(Order Management System)：**
+  - oms_order  - order information 
+  - oms_order_item - order detail
+  - oms_order_operate_history - Order operation history
+  - oms_order_return_apply - Order return request
+  - oms_order_return_reason - reasons for return
+  - oms_order_setting - Order configuration information
+  - oms_payment_info - Payment information form
+  - oms_refund_info - Refund information
 
 
+<br>
 
 - PMS(Product Management System):
 
-
+<br>
 
 - MMS(Member Management System):
 
-
+<br>
 
 - SMS(Storage Management System):
 
-
+<br>
 
 - UMS(Coupon Management System): 
 
+<br>
 
-
-
+<br>
 
 #### Table Structure
 
 These table structure will be defined as follows:
 
-
+<br>
 
 
 
@@ -166,23 +175,23 @@ These table structure will be defined as follows:
 
 ### Order
 
-
+<br>
 
 ### Member
 
-
+<br>
 
 ### Product
 
-
+<br>
 
 ### Storage
 
-
+<br>
 
 ### Coupon
 
-
+<br>
 
 
 
@@ -193,3 +202,13 @@ These table structure will be defined as follows:
 For the backend management, we will directly use the existing "vue-element-admin" to save time.
 
 The project's GitHub repository can be found at the following address: [https://github.com/PanJiaChen/vue-element-admin.git](https://github.com/PanJiaChen/vue-element-admin.git)
+
+
+
+
+
+
+
+## Acknowledgments.
+
+This project is based on "<a href = "https://www.bilibili.com/video/BV1np4y1C7Yf?p=1&vd_source=06f42aa8b3e4f798e9414658938e7773" >Guli Mall</a>"  and adapted from it. Thanks to the individuals who set up this project.

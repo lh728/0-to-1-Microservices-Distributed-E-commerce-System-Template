@@ -21,50 +21,50 @@ create table oms_order
 (
    id                   bigint not null auto_increment comment 'id',
    member_id            bigint comment 'member_id',
-   order_sn             char(32) comment '订单号',
-   coupon_id            bigint comment '使用的优惠券',
+   order_sn             char(32) comment 'order_sn',
+   coupon_id            bigint comment 'coupon_id',
    create_time          datetime comment 'create_time',
-   member_username      varchar(200) comment '用户名',
-   total_amount         decimal(18,4) comment '订单总额',
-   pay_amount           decimal(18,4) comment '应付总额',
-   freight_amount       decimal(18,4) comment '运费金额',
-   promotion_amount     decimal(18,4) comment '促销优化金额（促销价、满减、阶梯价）',
-   integration_amount   decimal(18,4) comment '积分抵扣金额',
-   coupon_amount        decimal(18,4) comment '优惠券抵扣金额',
-   discount_amount      decimal(18,4) comment '后台调整订单使用的折扣金额',
-   pay_type             tinyint comment '支付方式【1->支付宝；2->微信；3->银联； 4->货到付款；】',
-   source_type          tinyint comment '订单来源[0->PC订单；1->app订单]',
-   status               tinyint comment '订单状态【0->待付款；1->待发货；2->已发货；3->已完成；4->已关闭；5->无效订单】',
-   delivery_company     varchar(64) comment '物流公司(配送方式)',
-   delivery_sn          varchar(64) comment '物流单号',
-   auto_confirm_day     int comment '自动确认时间（天）',
-   integration          int comment '可以获得的积分',
-   growth               int comment '可以获得的成长值',
-   bill_type            tinyint comment '发票类型[0->不开发票；1->电子发票；2->纸质发票]',
-   bill_header          varchar(255) comment '发票抬头',
-   bill_content         varchar(255) comment '发票内容',
-   bill_receiver_phone  varchar(32) comment '收票人电话',
-   bill_receiver_email  varchar(64) comment '收票人邮箱',
-   receiver_name        varchar(100) comment '收货人姓名',
-   receiver_phone       varchar(32) comment '收货人电话',
-   receiver_post_code   varchar(32) comment '收货人邮编',
-   receiver_province    varchar(32) comment '省份/直辖市',
-   receiver_city        varchar(32) comment '城市',
-   receiver_region      varchar(32) comment '区',
-   receiver_detail_address varchar(200) comment '详细地址',
-   note                 varchar(500) comment '订单备注',
-   confirm_status       tinyint comment '确认收货状态[0->未确认；1->已确认]',
-   delete_status        tinyint comment '删除状态【0->未删除；1->已删除】',
-   use_integration      int comment '下单时使用的积分',
-   payment_time         datetime comment '支付时间',
-   delivery_time        datetime comment '发货时间',
-   receive_time         datetime comment '确认收货时间',
-   comment_time         datetime comment '评价时间',
-   modify_time          datetime comment '修改时间',
+   member_username      varchar(200) comment 'username',
+   total_amount         decimal(18,4) comment 'Total order amount',
+   pay_amount           decimal(18,4) comment 'Total amount due',
+   freight_amount       decimal(18,4) comment 'freight_amount',
+   promotion_amount     decimal(18,4) comment 'Promotion optimization amount (discounted price, Full reduction, tiered pricing)',
+   integration_amount   decimal(18,4) comment 'Deducted amount from points',
+   coupon_amount        decimal(18,4) comment 'Coupon deduction amount',
+   discount_amount      decimal(18,4) comment 'Adjust the discount amount used for orders in the background',
+   pay_type             tinyint comment 'Payment method [1->Alipay; 2->WeChat; 3->UnionPay; 4->Cash on delivery;]',
+   source_type          tinyint comment 'Order source [0->PC; 1->app]',
+   status               tinyint comment 'Order status [0->pending payment; 1->pending shipment; 2->shipped; 3->completed; 4->closed; 5->invalid order]',
+   delivery_company     varchar(64) comment 'delivery_company (delivery method)',
+   delivery_sn          varchar(64) comment 'delivery_sn',
+   auto_confirm_day     int comment 'auto_confirm_day',
+   integration          int comment 'points earned',
+   growth               int comment 'Achievable growth value',
+   bill_type            tinyint comment 'Invoice type [0->No invoice; 1->Electronic invoice; 2->Paper invoice]',
+   bill_header          varchar(255) comment 'bill_header',
+   bill_content         varchar(255) comment 'bill_content',
+   bill_receiver_phone  varchar(32) comment 'bill_receiver_phone',
+   bill_receiver_email  varchar(64) comment 'bill_receiver_email',
+   receiver_name        varchar(100) comment 'receiver_name',
+   receiver_phone       varchar(32) comment 'receiver_phone',
+   receiver_post_code   varchar(32) comment 'receiver_post_code',
+   receiver_province    varchar(32) comment 'receiver_province',
+   receiver_city        varchar(32) comment 'receiver_city',
+   receiver_region      varchar(32) comment 'receiver_region',
+   receiver_detail_address varchar(200) comment 'receiver_detail_address',
+   note                 varchar(500) comment 'note',
+   confirm_status       tinyint comment 'Confirm receipt status [0->Unconfirmed; 1->Confirmed]',
+   delete_status        tinyint comment 'Deletion status [0->not deleted; 1->deleted]',
+   use_integration      int comment 'Points used when placing an order',
+   payment_time         datetime comment 'payment_time',
+   delivery_time        datetime comment 'Shipping time',
+   receive_time         datetime comment 'receive_time',
+   comment_time         datetime comment 'comment_time',
+   modify_time          datetime comment 'modify_time',
    primary key (id)
 );
 
-alter table oms_order comment '订单';
+alter table oms_order comment 'order';
 
 /*==============================================================*/
 /* Table: oms_order_item                                        */
@@ -77,24 +77,24 @@ create table oms_order_item
    spu_id               bigint comment 'spu_id',
    spu_name             varchar(255) comment 'spu_name',
    spu_pic              varchar(500) comment 'spu_pic',
-   spu_brand            varchar(200) comment '品牌',
-   category_id          bigint comment '商品分类id',
-   sku_id               bigint comment '商品sku编号',
-   sku_name             varchar(255) comment '商品sku名字',
-   sku_pic              varchar(500) comment '商品sku图片',
-   sku_price            decimal(18,4) comment '商品sku价格',
-   sku_quantity         int comment '商品购买的数量',
-   sku_attrs_vals       varchar(500) comment '商品销售属性组合（JSON）',
-   promotion_amount     decimal(18,4) comment '商品促销分解金额',
-   coupon_amount        decimal(18,4) comment '优惠券优惠分解金额',
-   integration_amount   decimal(18,4) comment '积分优惠分解金额',
-   real_amount          decimal(18,4) comment '该商品经过优惠后的分解金额',
-   gift_integration     int comment '赠送积分',
-   gift_growth          int comment '赠送成长值',
+   spu_brand            varchar(200) comment 'brand',
+   category_id          bigint comment 'category_id',
+   sku_id               bigint comment 'sku_id',
+   sku_name             varchar(255) comment 'sku_name',
+   sku_pic              varchar(500) comment 'sku_pic',
+   sku_price            decimal(18,4) comment 'sku_price',
+   sku_quantity         int comment 'sku_quantity',
+   sku_attrs_vals       varchar(500) comment 'Product sales attribute combination (JSON)',
+   promotion_amount     decimal(18,4) comment 'promotion_amount',
+   coupon_amount        decimal(18,4) comment 'coupon_amount',
+   integration_amount   decimal(18,4) comment 'integration_amount',
+   real_amount          decimal(18,4) comment 'real_amount',
+   gift_integration     int comment 'gift_integration',
+   gift_growth          int comment 'gift_growth',
    primary key (id)
 );
 
-alter table oms_order_item comment '订单项信息';
+alter table oms_order_item comment 'order detail';
 
 /*==============================================================*/
 /* Table: oms_order_operate_history                             */
@@ -102,15 +102,15 @@ alter table oms_order_item comment '订单项信息';
 create table oms_order_operate_history
 (
    id                   bigint not null auto_increment comment 'id',
-   order_id             bigint comment '订单id',
-   operate_man          varchar(100) comment '操作人[用户；系统；后台管理员]',
-   create_time          datetime comment '操作时间',
-   order_status         tinyint comment '订单状态【0->待付款；1->待发货；2->已发货；3->已完成；4->已关闭；5->无效订单】',
-   note                 varchar(500) comment '备注',
+   order_id             bigint comment 'order_id',
+   operate_man          varchar(100) comment 'Operator [user; system; background administrator]',
+   create_time          datetime comment 'Operating time',
+   order_status         tinyint comment 'Order status [0->pending payment; 1->pending shipment; 2->shipped; 3->completed; 4->closed; 5->invalid order]',
+   note                 varchar(500) comment 'note',
    primary key (id)
 );
 
-alter table oms_order_operate_history comment '订单操作历史记录';
+alter table oms_order_operate_history comment 'Order operation history';
 
 /*==============================================================*/
 /* Table: oms_order_return_apply                                */
@@ -119,36 +119,36 @@ create table oms_order_return_apply
 (
    id                   bigint not null auto_increment comment 'id',
    order_id             bigint comment 'order_id',
-   sku_id               bigint comment '退货商品id',
-   order_sn             char(32) comment '订单编号',
-   create_time          datetime comment '申请时间',
-   member_username      varchar(64) comment '会员用户名',
-   return_amount        decimal(18,4) comment '退款金额',
-   return_name          varchar(100) comment '退货人姓名',
-   return_phone         varchar(20) comment '退货人电话',
-   status               tinyint(1) comment '申请状态[0->待处理；1->退货中；2->已完成；3->已拒绝]',
-   handle_time          datetime comment '处理时间',
-   sku_img              varchar(500) comment '商品图片',
-   sku_name             varchar(200) comment '商品名称',
-   sku_brand            varchar(200) comment '商品品牌',
-   sku_attrs_vals       varchar(500) comment '商品销售属性(JSON)',
-   sku_count            int comment '退货数量',
-   sku_price            decimal(18,4) comment '商品单价',
-   sku_real_price       decimal(18,4) comment '商品实际支付单价',
-   reason               varchar(200) comment '原因',
-   description述         varchar(500) comment '描述',
-   desc_pics            varchar(2000) comment '凭证图片，以逗号隔开',
-   handle_note          varchar(500) comment '处理备注',
-   handle_man           varchar(200) comment '处理人员',
-   receive_man          varchar(100) comment '收货人',
-   receive_time         datetime comment '收货时间',
-   receive_note         varchar(500) comment '收货备注',
-   receive_phone        varchar(20) comment '收货电话',
-   company_address      varchar(500) comment '公司收货地址',
+   sku_id               bigint comment 'Returned product id',
+   order_sn             char(32) comment 'order_sn',
+   create_time          datetime comment 'create_time',
+   member_username      varchar(64) comment 'member_username',
+   return_amount        decimal(18,4) comment 'return_amount',
+   return_name          varchar(100) comment 'return_name',
+   return_phone         varchar(20) comment 'return_phone',
+   status               tinyint(1) comment 'Application status [0->pending; 1->returning; 2->completed; 3->rejected]',
+   handle_time          datetime comment 'processing time',
+   sku_img              varchar(500) comment 'sku_img',
+   sku_name             varchar(200) comment 'sku_name',
+   sku_brand            varchar(200) comment 'sku_brand',
+   sku_attrs_vals       varchar(500) comment 'Product sales attributes (JSON)',
+   sku_count            int comment 'sku_count',
+   sku_price            decimal(18,4) comment 'sku_price',
+   sku_real_price       decimal(18,4) comment 'sku_real_price',
+   reason               varchar(200) comment 'reason',
+   description          varchar(500) comment 'description',
+   desc_pics            varchar(2000) comment 'Voucher images, separated by commas',
+   handle_note          varchar(500) comment 'handle_note',
+   handle_man           varchar(200) comment 'handle_man',
+   receive_man          varchar(100) comment 'receive_man',
+   receive_time         datetime comment 'receive_time',
+   receive_note         varchar(500) comment 'receive_note',
+   receive_phone        varchar(20) comment 'receive_phone',
+   company_address      varchar(500) comment 'company_address',
    primary key (id)
 );
 
-alter table oms_order_return_apply comment '订单退货申请';
+alter table oms_order_return_apply comment 'Order return request';
 
 /*==============================================================*/
 /* Table: oms_order_return_reason                               */
@@ -156,14 +156,14 @@ alter table oms_order_return_apply comment '订单退货申请';
 create table oms_order_return_reason
 (
    id                   bigint not null auto_increment comment 'id',
-   name                 varchar(200) comment '退货原因名',
-   sort                 int comment '排序',
-   status               tinyint(1) comment '启用状态',
+   name                 varchar(200) comment 'Return reason name',
+   sort                 int comment 'sort',
+   status               tinyint(1) comment 'status',
    create_time          datetime comment 'create_time',
    primary key (id)
 );
 
-alter table oms_order_return_reason comment '退货原因';
+alter table oms_order_return_reason comment 'reasons for return';
 
 /*==============================================================*/
 /* Table: oms_order_setting                                     */
@@ -171,16 +171,16 @@ alter table oms_order_return_reason comment '退货原因';
 create table oms_order_setting
 (
    id                   bigint not null auto_increment comment 'id',
-   flash_order_overtime int comment '秒杀订单超时关闭时间(分)',
-   normal_order_overtime int comment '正常订单超时时间(分)',
-   confirm_overtime     int comment '发货后自动确认收货时间（天）',
-   finish_overtime      int comment '自动完成交易时间，不能申请退货（天）',
-   comment_overtime     int comment '订单完成后自动好评时间（天）',
-   member_level         tinyint(2) comment '会员等级【0-不限会员等级，全部通用；其他-对应的其他会员等级】',
+   flash_order_overtime int comment 'Flash sale order timeout closing time (minutes)',
+   normal_order_overtime int comment 'Normal order timeout (minutes)',
+   confirm_overtime     int comment 'Automatically confirm receipt time after shipment (days)',
+   finish_overtime      int comment 'The transaction time is automatically completed and returns cannot be applied for (days)',
+   comment_overtime     int comment 'Automatic good review time after order completion (days)',
+   member_level         tinyint(2) comment 'Membership level [0-no limit to membership level, common to all; other-corresponding other membership levels]',
    primary key (id)
 );
 
-alter table oms_order_setting comment '订单配置信息';
+alter table oms_order_setting comment 'Order configuration information';
 
 /*==============================================================*/
 /* Table: oms_payment_info                                      */
@@ -188,20 +188,20 @@ alter table oms_order_setting comment '订单配置信息';
 create table oms_payment_info
 (
    id                   bigint not null auto_increment comment 'id',
-   order_sn             char(32) comment '订单号（对外业务号）',
-   order_id             bigint comment '订单id',
-   alipay_trade_no      varchar(50) comment '支付宝交易流水号',
-   total_amount         decimal(18,4) comment '支付总金额',
-   subject              varchar(200) comment '交易内容',
-   payment_status       varchar(20) comment '支付状态',
-   create_time          datetime comment '创建时间',
-   confirm_time         datetime comment '确认时间',
-   callback_content     varchar(4000) comment '回调内容',
-   callback_time        datetime comment '回调时间',
+   order_sn             char(32) comment 'Order number (external business number)',
+   order_id             bigint comment 'order_id',
+   alipay_trade_no      varchar(50) comment 'alipay_trade_no',
+   total_amount         decimal(18,4) comment 'total_amount',
+   subject              varchar(200) comment 'subject',
+   payment_status       varchar(20) comment 'payment_status',
+   create_time          datetime comment 'create_time',
+   confirm_time         datetime comment 'confirm_time',
+   callback_content     varchar(4000) comment 'callback_content',
+   callback_time        datetime comment 'callback_time',
    primary key (id)
 );
 
-alter table oms_payment_info comment '支付信息表';
+alter table oms_payment_info comment 'Payment information form';
 
 /*==============================================================*/
 /* Table: oms_refund_info                                       */
@@ -209,13 +209,13 @@ alter table oms_payment_info comment '支付信息表';
 create table oms_refund_info
 (
    id                   bigint not null auto_increment comment 'id',
-   order_return_id      bigint comment '退款的订单',
-   refund               decimal(18,4) comment '退款金额',
-   refund_sn            varchar(64) comment '退款交易流水号',
-   refund_status        tinyint(1) comment '退款状态',
-   refund_channel       tinyint comment '退款渠道[1-支付宝，2-微信，3-银联，4-汇款]',
+   order_return_id      bigint comment 'order_return_id',
+   refund               decimal(18,4) comment 'refund amount',
+   refund_sn            varchar(64) comment 'refund_sn',
+   refund_status        tinyint(1) comment 'refund_status',
+   refund_channel       tinyint comment 'Refund channels [1-Alipay, 2-WeChat, 3-UnionPay, 4-Remittance]',
    refund_content       varchar(5000),
    primary key (id)
 );
 
-alter table oms_refund_info comment '退款信息';
+alter table oms_refund_info comment 'Refund information';
