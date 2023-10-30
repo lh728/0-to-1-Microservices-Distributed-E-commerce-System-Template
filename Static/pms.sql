@@ -33,20 +33,20 @@ drop table if exists pms_spu_info_desc;
 /*==============================================================*/
 create table pms_attr
 (
-   attr_id              bigint not null auto_increment comment '属性id',
-   attr_name            char(30) comment '属性名',
-   search_type          tinyint comment '是否需要检索[0-不需要，1-需要]',
-  `value_type` tinyint(4) DEFAULT NULL COMMENT '值类型[0-为单个值，1-可以选择多个值]',
-  `icon` varchar(255) DEFAULT NULL COMMENT '属性图标',
-  `value_select` char(255) DEFAULT NULL COMMENT '可选值列表[用逗号分隔]',
-  `attr_type` tinyint(4) DEFAULT NULL COMMENT '属性类型[0-销售属性，1-基本属性，2-既是销售属性又是基本属性]',
-   enable               bigint comment '启用状态[0 - 禁用，1 - 启用]',
-   catelog_id           bigint comment '所属分类',
-   show_desc            tinyint comment '快速展示【是否展示在介绍上；0-否 1-是】，在sku中仍然可以调整',
+   attr_id              bigint not null auto_increment comment 'attr_id',
+   attr_name            char(30) comment 'attr_name',
+   search_type          tinyint comment 'Does it need to be retrieved? [0- not required, 1- required]',
+  `value_type` tinyint(4) DEFAULT NULL COMMENT 'value_type[0-single，1-multiple choice]',
+  `icon` varchar(255) DEFAULT NULL COMMENT 'Attribute ICONS',
+  `value_select` char(255) DEFAULT NULL COMMENT 'List of possible values [separated by commas]',
+  `attr_type` tinyint(4) DEFAULT NULL COMMENT 'Attribute type [0- sales attribute, 1- basic attribute, 2- both sales attribute and basic attribute]',
+   enable               bigint comment 'Enabled status [0 - disabled, 1 - enabled]',
+   catelog_id           bigint comment 'catelog_id',
+   show_desc            tinyint comment 'Quick display [whether to show on the introduction; 0- No 1- yes], can still be adjusted in the sku',
    primary key (attr_id)
 );
 
-alter table pms_attr comment '商品属性';
+alter table pms_attr comment 'Product attributes';
 
 /*==============================================================*/
 /* Table: pms_attr_attrgroup_relation                           */
@@ -54,65 +54,65 @@ alter table pms_attr comment '商品属性';
 create table pms_attr_attrgroup_relation
 (
    id                   bigint not null auto_increment comment 'id',
-   attr_id              bigint comment '属性id',
-   attr_group_id        bigint comment '属性分组id',
-   attr_sort            int comment '属性组内排序',
+   attr_id              bigint comment 'attr_id',
+   attr_group_id        bigint comment 'attr_group_id',
+   attr_sort            int comment 'attr_sort',
    primary key (id)
 );
 
-alter table pms_attr_attrgroup_relation comment '属性&属性分组关联';
+alter table pms_attr_attrgroup_relation comment 'Attribute & Attribute group association';
 
 /*==============================================================*/
 /* Table: pms_attr_group                                        */
 /*==============================================================*/
 create table pms_attr_group
 (
-   attr_group_id        bigint not null auto_increment comment '分组id',
-   attr_group_name      char(20) comment '组名',
-   sort                 int comment '排序',
-   descript             varchar(255) comment '描述',
-   icon                 varchar(255) comment '组图标',
-   catelog_id           bigint comment '所属分类id',
+   attr_group_id        bigint not null auto_increment comment 'attr_group_id',
+   attr_group_name      char(20) comment 'attr_group_name',
+   sort                 int comment 'sort',
+   descript             varchar(255) comment 'descript',
+   icon                 varchar(255) comment 'group icon',
+   catelog_id           bigint comment 'catelog_id',
    primary key (attr_group_id)
 );
 
-alter table pms_attr_group comment '属性分组';
+alter table pms_attr_group comment 'Grouping attributes';
 
 /*==============================================================*/
 /* Table: pms_brand                                             */
 /*==============================================================*/
 create table pms_brand
 (
-   brand_id             bigint not null auto_increment comment '品牌id',
-   name                 char(50) comment '品牌名',
-   logo                 varchar(2000) comment '品牌logo地址',
-   descript             longtext comment '介绍',
-   show_status          tinyint comment '显示状态[0-不显示；1-显示]',
-   first_letter         char(1) comment '检索首字母',
-   sort                 int comment '排序',
+   brand_id             bigint not null auto_increment comment 'brand_id',
+   name                 char(50) comment 'name',
+   logo                 varchar(2000) comment 'logo address',
+   descript             longtext comment 'descript',
+   show_status          tinyint comment 'show_status[0-no display；1-display]',
+   first_letter         char(1) comment 'Retrieving initials',
+   sort                 int comment 'sort',
    primary key (brand_id)
 );
 
-alter table pms_brand comment '品牌';
+alter table pms_brand comment 'brand';
 
 /*==============================================================*/
 /* Table: pms_category                                          */
 /*==============================================================*/
 create table pms_category
 (
-   cat_id               bigint not null auto_increment comment '分类id',
-   name                 char(50) comment '分类名称',
-   parent_cid           bigint comment '父分类id',
-   cat_level            int comment '层级',
-   show_status          tinyint comment '是否显示[0-不显示，1显示]',
-   sort                 int comment '排序',
-   icon                 char(255) comment '图标地址',
-   product_unit         char(50) comment '计量单位',
-   product_count        int comment '商品数量',
+   cat_id               bigint not null auto_increment comment 'cat_id',
+   name                 char(50) comment 'name',
+   parent_cid           bigint comment 'parent_cid',
+   cat_level            int comment 'cat_level',
+   show_status          tinyint comment 'show_status[0-no display；1-display]',
+   sort                 int comment 'sort',
+   icon                 char(255) comment 'icon',
+   product_unit         char(50) comment 'product_unit',
+   product_count        int comment 'product_count',
    primary key (cat_id)
 );
 
-alter table pms_category comment '商品三级分类';
+alter table pms_category comment 'Three-level classification of commodities';
 
 /*==============================================================*/
 /* Table: pms_category_brand_relation                           */
@@ -120,14 +120,14 @@ alter table pms_category comment '商品三级分类';
 create table pms_category_brand_relation
 (
    id                   bigint not null auto_increment,
-   brand_id             bigint comment '品牌id',
-   catelog_id           bigint comment '分类id',
+   brand_id             bigint comment 'brand_id',
+   catelog_id           bigint comment 'catelog_id',
    brand_name           varchar(255),
    catelog_name         varchar(255),
    primary key (id)
 );
 
-alter table pms_category_brand_relation comment '品牌分类关联';
+alter table pms_category_brand_relation comment 'Brand classification association';
 
 /*==============================================================*/
 /* Table: pms_comment_replay                                    */
@@ -135,12 +135,12 @@ alter table pms_category_brand_relation comment '品牌分类关联';
 create table pms_comment_replay
 (
    id                   bigint not null auto_increment comment 'id',
-   comment_id           bigint comment '评论id',
-   reply_id             bigint comment '回复id',
+   comment_id           bigint comment 'comment_id',
+   reply_id             bigint comment 'reply_id',
    primary key (id)
 );
 
-alter table pms_comment_replay comment '商品评价回复关系';
+alter table pms_comment_replay comment 'Product review response relationship';
 
 /*==============================================================*/
 /* Table: pms_product_attr_value                                */
@@ -148,16 +148,16 @@ alter table pms_comment_replay comment '商品评价回复关系';
 create table pms_product_attr_value
 (
    id                   bigint not null auto_increment comment 'id',
-   spu_id               bigint comment '商品id',
-   attr_id              bigint comment '属性id',
-   attr_name            varchar(200) comment '属性名',
-   attr_value           varchar(200) comment '属性值',
-   attr_sort            int comment '顺序',
-   quick_show           tinyint comment '快速展示【是否展示在介绍上；0-否 1-是】',
+   spu_id               bigint comment 'spu_id',
+   attr_id              bigint comment 'attr_id',
+   attr_name            varchar(200) comment 'attr_name',
+   attr_value           varchar(200) comment 'attr_value',
+   attr_sort            int comment 'attr_sort',
+   quick_show           tinyint comment 'quick_show【Whether to show it in the introduction 0- No 1- Yes】',
    primary key (id)
 );
 
-alter table pms_product_attr_value comment 'spu属性值';
+alter table pms_product_attr_value comment 'spu attribute value';
 
 /*==============================================================*/
 /* Table: pms_sku_images                                        */
@@ -166,13 +166,13 @@ create table pms_sku_images
 (
    id                   bigint not null auto_increment comment 'id',
    sku_id               bigint comment 'sku_id',
-   img_url              varchar(255) comment '图片地址',
-   img_sort             int comment '排序',
-   default_img          int comment '默认图[0 - 不是默认图，1 - 是默认图]',
+   img_url              varchar(255) comment 'img_url',
+   img_sort             int comment 'img_sort',
+   default_img          int comment 'Default graph [0 - not default graph, 1 - is default graph]',
    primary key (id)
 );
 
-alter table pms_sku_images comment 'sku图片';
+alter table pms_sku_images comment 'sku pictures';
 
 /*==============================================================*/
 /* Table: pms_sku_info                                          */
@@ -181,19 +181,19 @@ create table pms_sku_info
 (
    sku_id               bigint not null auto_increment comment 'skuId',
    spu_id               bigint comment 'spuId',
-   sku_name             varchar(255) comment 'sku名称',
-   sku_desc             varchar(2000) comment 'sku介绍描述',
-   catalog_id           bigint comment '所属分类id',
-   brand_id             bigint comment '品牌id',
-   sku_default_img      varchar(255) comment '默认图片',
-   sku_title            varchar(255) comment '标题',
-   sku_subtitle         varchar(2000) comment '副标题',
-   price                decimal(18,4) comment '价格',
-   sale_count           bigint comment '销量',
+   sku_name             varchar(255) comment 'sku_name',
+   sku_desc             varchar(2000) comment 'sku_desc',
+   catalog_id           bigint comment 'catalog_id',
+   brand_id             bigint comment 'brand_id',
+   sku_default_img      varchar(255) comment 'sku_default_img',
+   sku_title            varchar(255) comment 'sku_title',
+   sku_subtitle         varchar(2000) comment 'sku_subtitle',
+   price                decimal(18,4) comment 'price',
+   sale_count           bigint comment 'sale_count',
    primary key (sku_id)
 );
 
-alter table pms_sku_info comment 'sku信息';
+alter table pms_sku_info comment 'sku information';
 
 /*==============================================================*/
 /* Table: pms_sku_sale_attr_value                               */
@@ -203,13 +203,13 @@ create table pms_sku_sale_attr_value
    id                   bigint not null auto_increment comment 'id',
    sku_id               bigint comment 'sku_id',
    attr_id              bigint comment 'attr_id',
-   attr_name            varchar(200) comment '销售属性名',
-   attr_value           varchar(200) comment '销售属性值',
-   attr_sort            int comment '顺序',
+   attr_name            varchar(200) comment 'attr_name',
+   attr_value           varchar(200) comment 'attr_value',
+   attr_sort            int comment 'attr_sort',
    primary key (id)
 );
 
-alter table pms_sku_sale_attr_value comment 'sku销售属性&值';
+alter table pms_sku_sale_attr_value comment 'sku sales attributes & values';
 
 /*==============================================================*/
 /* Table: pms_spu_comment                                       */
@@ -219,23 +219,23 @@ create table pms_spu_comment
    id                   bigint not null auto_increment comment 'id',
    sku_id               bigint comment 'sku_id',
    spu_id               bigint comment 'spu_id',
-   spu_name             varchar(255) comment '商品名字',
-   member_nick_name     varchar(255) comment '会员昵称',
-   star                 tinyint(1) comment '星级',
-   member_ip            varchar(64) comment '会员ip',
-   create_time          datetime comment '创建时间',
-   show_status          tinyint(1) comment '显示状态[0-不显示，1-显示]',
-   spu_attributes       varchar(255) comment '购买时属性组合',
-   likes_count          int comment '点赞数',
-   reply_count          int comment '回复数',
-   resources            varchar(1000) comment '评论图片/视频[json数据；[{type:文件类型,url:资源路径}]]',
-   content              text comment '内容',
-   member_icon          varchar(255) comment '用户头像',
-   comment_type         tinyint comment '评论类型[0 - 对商品的直接评论，1 - 对评论的回复]',
+   spu_name             varchar(255) comment 'spu_name',
+   member_nick_name     varchar(255) comment 'member_nick_name',
+   star                 tinyint(1) comment 'star',
+   member_ip            varchar(64) comment 'member_ip',
+   create_time          datetime comment 'create_time',
+   show_status          tinyint(1) comment 'show_status[0-no display，1-display]',
+   spu_attributes       varchar(255) comment 'Attribute combination at purchase time',
+   likes_count          int comment 'likes_count',
+   reply_count          int comment 'reply_count',
+   resources            varchar(1000) comment 'Comment image/video [json data; [{type: file type,url: resource path}]]',
+   content              text comment 'content',
+   member_icon          varchar(255) comment 'member_icon',
+   comment_type         tinyint comment 'Review type [0 - direct review to item, 1 - reply to review]',
    primary key (id)
 );
 
-alter table pms_spu_comment comment '商品评价';
+alter table pms_spu_comment comment 'Product reviews';
 
 /*==============================================================*/
 /* Table: pms_spu_images                                        */
@@ -244,42 +244,42 @@ create table pms_spu_images
 (
    id                   bigint not null auto_increment comment 'id',
    spu_id               bigint comment 'spu_id',
-   img_name             varchar(200) comment '图片名',
-   img_url              varchar(255) comment '图片地址',
-   img_sort             int comment '顺序',
-   default_img          tinyint comment '是否默认图',
+   img_name             varchar(200) comment 'img_name',
+   img_url              varchar(255) comment 'img_url',
+   img_sort             int comment 'img_sort',
+   default_img          tinyint comment 'default_img',
    primary key (id)
 );
 
-alter table pms_spu_images comment 'spu图片';
+alter table pms_spu_images comment 'spu image';
 
 /*==============================================================*/
 /* Table: pms_spu_info                                          */
 /*==============================================================*/
 create table pms_spu_info
 (
-   id                   bigint not null auto_increment comment '商品id',
-   spu_name             varchar(200) comment '商品名称',
-   spu_description      varchar(1000) comment '商品描述',
-   catalog_id           bigint comment '所属分类id',
-   brand_id             bigint comment '品牌id',
+   id                   bigint not null auto_increment comment 'id',
+   spu_name             varchar(200) comment 'spu_name',
+   spu_description      varchar(1000) comment 'spu_description',
+   catalog_id           bigint comment 'catalog_id',
+   brand_id             bigint comment 'brand_id',
    weight               decimal(18,4),
-   publish_status       tinyint comment '上架状态[0 - 下架，1 - 上架]',
+   publish_status       tinyint comment 'Listing status [0 - Down, 1 - Up]',
    create_time          datetime,
    update_time          datetime,
    primary key (id)
 );
 
-alter table pms_spu_info comment 'spu信息';
+alter table pms_spu_info comment 'spu information';
 
 /*==============================================================*/
 /* Table: pms_spu_info_desc                                     */
 /*==============================================================*/
 create table pms_spu_info_desc
 (
-   spu_id               bigint not null comment '商品id',
-   decript              longtext comment '商品介绍',
+   spu_id               bigint not null comment 'spu_id',
+   decript              longtext comment 'decript',
    primary key (spu_id)
 );
 
-alter table pms_spu_info_desc comment 'spu信息介绍';
+alter table pms_spu_info_desc comment 'spu information introduction';

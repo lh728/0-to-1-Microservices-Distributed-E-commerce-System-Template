@@ -191,13 +191,13 @@ The project's GitHub repository can be found at the following address: [https://
 
 For the front-end pages, we use "renren-fast-vue" to achieve rapid development: https://github.com/renrenio/renren-fast-vue.git
 
-To start the administration service, a database named "ADMIN" needs to be created. The table creation statements for this database can also be found in the following location: <a href = "https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/tree/e72007596d45fa6a3885afc0e1dd9b42357ee3d0/Static" >Github</a>
+To start the administration service, a database named "ADMIN" needs to be created. The table creation statements for this database can also be found in the following location: <a href = "https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/blob/194bd2f724b6d54b20ba8940742e229caabfef9c/renren-fast/db/mysql.sql" >Github</a>
 
 
 
 
 
-
+<br>
 
 ## Acknowledgments.
 
