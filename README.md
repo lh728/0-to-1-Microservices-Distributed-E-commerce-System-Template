@@ -137,19 +137,51 @@ You can find the details of the CREATE TABLE statement here. <a href = "https://
 
 <br>
 
-- PMS(Product Management System):
+- **PMS(Product Management System):**
+  - pms_attr - Product attributes
+  - pms_attr_attrgroup_relation  - Attribute & Attribute group association
+  - pms_attr_group  - Grouping attributes
+  - pms_brand - brand
+  - pms_category  -  Three-level classification of commodities
+  - pms_category_brand_relation  -  Brand classification association
+  - pms_comment_replay  -  Product review response relationship
+  - pms_product_attr_value  -  spu attribute value
+  - pms_sku_images  -  sku pictures
+  - pms_sku_info  -  sku information
+  - pms_sku_sale_attr_value  -  sku sales attributes & values
+  - pms_spu_comment  -  Product reviews
+  -  pms_spu_images  -  spu image
+  - pms_spu_info  -  spu information
+  - pms_spu_info_desc  -  spu information introduction
+
 
 <br>
 
-- MMS(Member Management System):
+- **MMS(Member Management System):**
 
 <br>
 
-- SMS(Storage Management System):
+- **SMS(Storage Management System):**
+  - sms_coupon - Coupon information
+  - sms_coupon_history - Coupon history
+  - sms_coupon_spu_category_relation - Coupon category association
+  - sms_coupon_spu_relation - Coupons associated with products
+  - sms_home_adv - Home page carousel ads
+  - sms_home_subject - Home page topic table [each topic links to a new page to display topic product information]
+  - sms_home_subject_spu - subject products
+  - sms_member_price  - Product membership price
+  - sms_seckill_promotion  - flash sale activity
+  - sms_seckill_session  - flash sale events
+  - sms_seckill_sku_notice  - Flash sale product notification subscription
+  - sms_seckill_sku_relation  - Flash sale product association
+  - sms_sku_full_reduction  - Product discount information
+  - sms_sku_ladder  - Commodity ladder price
+  - sms_spu_bounds  - Product spu points setting
+
 
 <br>
 
-- UMS(Coupon Management System): 
+- **UMS(Coupon Management System):** 
 
 <br>
 
