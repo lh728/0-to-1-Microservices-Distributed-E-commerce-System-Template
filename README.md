@@ -182,8 +182,16 @@ You can find the details of the CREATE TABLE statement here. <a href = "https://
 <br>
 
 - **UMS(Coupon Management System):** 
+  - ums_growth_change_history  - Growth value change history
+  - ums_integration_change_history  - Points change history
+  - ums_member  - member
+  - ums_member_collect_spu  - Products collected by members
+  - ums_member_collect_subject  - Special events collected by members
+  - ums_member_level  - member level
+  - ums_member_login_log  - Member login record
+  - ums_member_receive_address  - Member shipping address
+  - ums_member_statistics_info  - Member statistics
 
-<br>
 
 <br>
 
