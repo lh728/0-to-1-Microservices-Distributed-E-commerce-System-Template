@@ -157,7 +157,14 @@ You can find the details of the CREATE TABLE statement here. <a href = "https://
 
 <br>
 
-- **MMS(Member Management System):**
+- **WMS(Warehouse Management System):**
+  - wms_purchase  -  Purchasing Information
+  - wms_purchase_detail  -  Purchasing detail
+  - wms_ware_info  -  Warehouse information
+  - wms_ware_order_task  -  Inventory work order
+  - wms_ware_order_task_detail  -  Inventory work order detail
+  - wms_ware_sku  -  Commodity stocks
+
 
 <br>
 
@@ -194,8 +201,6 @@ You can find the details of the CREATE TABLE statement here. <a href = "https://
 
 
 <br>
-
-
 
 ## Microservices Design
 
