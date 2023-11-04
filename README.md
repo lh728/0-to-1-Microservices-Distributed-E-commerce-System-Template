@@ -238,7 +238,15 @@ For the front-end pages, we use "renren-fast-vue" to achieve rapid development: 
 
 To start the administration service, a database named "ADMIN" needs to be created. The table creation statements for this database can also be found in the following location: <a href = "https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/blob/194bd2f724b6d54b20ba8940742e229caabfef9c/renren-fast/db/mysql.sql" >Github</a>
 
+另外，由于renren-fast的后端spring boot版本号较低，仅为2.6.6, 所以需要在pom文件中修改为 3.1.4 版本。修改后，还需要删除在spring-boot-maven-plugin 中的这段代码，这是因为在 3 以上的 spring boot 不再支持 fork标签
 
+```xml
+				<configuration>
+					<fork>true</fork>
+				</configuration>
+```
+
+除此之外，还需要修改各种Pom中的配置才能最终启动项目，修改后的配置文件可以在该项目中看到。
 
 
 
