@@ -238,7 +238,9 @@ For the front-end pages, we use "renren-fast-vue" to achieve rapid development: 
 
 To start the administration service, a database named "ADMIN" needs to be created. The table creation statements for this database can also be found in the following location: <a href = "https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/blob/194bd2f724b6d54b20ba8940742e229caabfef9c/renren-fast/db/mysql.sql" >Github</a>
 
-另外，由于renren-fast的后端spring boot版本号较低，仅为2.6.6, 所以需要在pom文件中修改为 3.1.4 版本。修改后，还需要删除在spring-boot-maven-plugin 中的这段代码，这是因为在 3 以上的 spring boot 不再支持 fork标签
+In addition, since the backend spring boot version of renren-fast is relatively low, only 2.6.6, it is necessary to modify it to version 3.1.4 in the pom file.
+
+After the modification, it is necessary to delete the following code in the spring-boot-maven-plugin because fork tags are no longer supported in Spring Boot 3 and above:
 
 ```xml
 				<configuration>
@@ -246,13 +248,9 @@ To start the administration service, a database named "ADMIN" needs to be create
 				</configuration>
 ```
 
-除此之外，还需要修改各种Pom中的配置才能最终启动项目，修改后的配置文件可以在该项目中看到。
+It is also necessary to modify the configurations in various POM files in order to successfully start the project. The modified configuration files can be found in the project.
 
-
-
-
-
-
+Additionally, a lot of javax-related HttpServletRequest imports need to be modified. For instance, change `import javax.servlet.http.HttpServletRequest;` to `import jakarta.servlet.http.HttpServletRequest;` as there have been changes in dependencies in higher spring boot versions.
 
 <br>
 
