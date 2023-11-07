@@ -238,19 +238,84 @@ For the front-end pages, we use "renren-fast-vue" to achieve rapid development: 
 
 To start the administration service, a database named "ADMIN" needs to be created. The table creation statements for this database can also be found in the following location: <a href = "https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/blob/194bd2f724b6d54b20ba8940742e229caabfef9c/renren-fast/db/mysql.sql" >Github</a>
 
-In addition, since the backend spring boot version of renren-fast is relatively low, only 2.6.6, it is necessary to modify it to version 3.1.4 in the pom file.
+**Here are some important considerations when upgrading versions:**
 
-After the modification, it is necessary to delete the following code in the spring-boot-maven-plugin because fork tags are no longer supported in Spring Boot 3 and above:
+- In addition, since the backend spring boot version of renren-fast is relatively low, only 2.6.6, it is necessary to modify it to version 3.1.4 in the pom file.
+- After the modification, it is necessary to delete the following code in the spring-boot-maven-plugin because fork tags are no longer supported in Spring Boot 3 and above:
 
 ```xml
-				<configuration>
-					<fork>true</fork>
-				</configuration>
+<configuration>
+	<fork>true</fork>
+</configuration>
 ```
 
-It is also necessary to modify the configurations in various POM files in order to successfully start the project. The modified configuration files can be found in the project.
+- Additionally, a lot of javax-related HttpServletRequest imports need to be modified. For instance, change `import javax.servlet.http.HttpServletRequest;` to `import jakarta.servlet.http.HttpServletRequest;` as there have been changes in dependencies in higher spring boot versions.
+- The following error occurs when trying to start the application directly:
 
-Additionally, a lot of javax-related HttpServletRequest imports need to be modified. For instance, change `import javax.servlet.http.HttpServletRequest;` to `import jakarta.servlet.http.HttpServletRequest;` as there have been changes in dependencies in higher spring boot versions.
+```java
+Field sysMenuDao in io.renren.modules.sys.service.impl.ShiroServiceImpl required a bean of type 'io.renren.modules.sys.dao.SysMenuDao' that could not be found.
+```
+
+To resolve this issue, you need to upgrade the MyBatis Plus version to 3.5.3.1 and modify the pagination function to:
+
+```java
+    @Bean
+    public MybatisPlusInterceptor paginationInterceptor() {
+
+        MybatisPlusInterceptor mybatisPlusInterceptor = new MybatisPlusInterceptor();
+        mybatisPlusInterceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
+        return mybatisPlusInterceptor;
+    }
+```
+
+Great! You've resolved the issue.
+
+- Additionally, for upgrading Shiro's version and modifying the POM file, you can make the following changes:
+
+```xml
+<dependency>
+	<groupId>org.apache.shiro</groupId>
+	<artifactId>shiro-spring</artifactId>
+	<classifier>jakarta</classifier>
+	<version>1.11.0</version>
+	<exclusions>
+		<exclusion>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-core</artifactId>
+		</exclusion>
+	<exclusion>
+		<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-web</artifactId>
+		</exclusion>
+	</exclusions>
+</dependency>
+<dependency>
+	<groupId>org.apache.shiro</groupId>
+	<artifactId>shiro-core</artifactId>
+	<classifier>jakarta</classifier>
+	<version>1.11.0</version>
+</dependency>
+<dependency>
+	<groupId>org.apache.shiro</groupId>
+	<artifactId>shiro-web</artifactId>
+	<classifier>jakarta</classifier>
+	<version>1.11.0</version>
+	<exclusions>
+		<exclusion>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-core</artifactId>
+		</exclusion>
+	</exclusions>
+</dependency>
+```
+
+
+
+
+
+
+
+
 
 <br>
 

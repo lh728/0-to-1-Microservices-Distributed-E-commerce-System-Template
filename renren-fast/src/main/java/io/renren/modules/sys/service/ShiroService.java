@@ -10,6 +10,7 @@ package io.renren.modules.sys.service;
 
 import io.renren.modules.sys.entity.SysUserEntity;
 import io.renren.modules.sys.entity.SysUserTokenEntity;
+import org.springframework.stereotype.Service;
 
 import java.util.Set;
 
