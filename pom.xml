@@ -13,12 +13,12 @@
     </properties>
     <packaging>pom</packaging>
     <modules>
-        <module>coupon</module>
-        <module>member</module>
-        <module>order</module>
-        <module>product</module>
-        <module>storage</module>
-        <module>renren-fast</module>
+        <module>Coupon</module>
+        <module>Member</module>
+        <module>Order</module>
+        <module>Product</module>
+        <module>Warehouse</module>
+<!--        <module>renren-fast</module>-->
     </modules>
 
 </project>

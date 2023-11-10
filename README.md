@@ -1,8 +1,6 @@
 # 0-to-1-Microservices-Distributed-E-commerce-System-Template
 This is a microservices-based distributed e-commerce system template designed to leverage a wide range of advanced management tools and practices from 0 to 1.
 
-**I would like to use the latest technologies as much as possible to complete this e-commerce template.**
-
 <br>
 
 ## Project Setup Guide
@@ -106,7 +104,7 @@ Git
 
 ### Dependency
 
-Springboot 3.1.4
+Springboot 2.7.17
 
 Spring Web
 
