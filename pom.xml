@@ -18,7 +18,7 @@
         <module>Order</module>
         <module>Product</module>
         <module>Warehouse</module>
-<!--        <module>renren-fast</module>-->
+        <module>renren-fast</module>
     </modules>
 
 </project>
