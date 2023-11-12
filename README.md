@@ -238,13 +238,13 @@ For the front-end pages, we use "renren-fast-vue" to achieve rapid development: 
 
 To start the administration service, a database named "ADMIN" needs to be created. The table creation statements for this database can also be found in the following location: <a href = "https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/blob/777679015934b1f745a7cd55b6e66a884eace26e/renren-fast/db/mysql.sql" >Github</a>
 
-后端修改数据库文件后启动。前端下载Node.js后，执行 `npm install` 命令后可以执行 `npm run dev`运行
+The backend starts after modifying the database files. For the frontend, after downloading Node.js, execute the `npm install` command and then run `npm run dev`.
 
 **Here are some important considerations when upgrading versions:**
 
 - In addition, since the backend spring boot version of renren-fast is relatively low, only 2.6.6, it is necessary to modify it to version 2.7.17 in the pom file.
 
-- 注意该项目前端启动需要下载Python，我下载了 3.12.0 版本，同时修改`package.json` 文件中的 `"node-sass": "4.13.1"`,以及 `"sass-loader": "7.3.1"`。然后运行以下命令：
+- Note: To start the frontend of this project, Python needs to be downloaded. I have downloaded version 3.12.0 and also need to make modifications to the `package.json` file, updating `"node-sass": "4.13.1"` and `"sass-loader": "7.3.1"`. Afterward, execute the following commands:
 
   ```shell
   npm install chromedriver@2.27.2 - -ignore -scripts
@@ -252,7 +252,7 @@ To start the administration service, a database named "ADMIN" needs to be create
   npm install 
   ```
 
-  你将会看到大量deprecated，但是没关系，项目能运行了
+  
 
 
 
