@@ -100,6 +100,8 @@ MAVEN 3.9.2
 
 Git
 
+Node.js 20.9.0
+
 <br>
 
 ### Dependency
@@ -120,7 +122,7 @@ The following databases will be established:
 
 The character set will be set to utf8mb4 to ensure compatibility with utf8 and address potential issues related to character encoding.
 
-You can find the details of the CREATE TABLE statement here. <a href = "https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/tree/e72007596d45fa6a3885afc0e1dd9b42357ee3d0/Static" >Github</a>
+You can find the details of the CREATE TABLE statement here. <a href = "https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/tree/777679015934b1f745a7cd55b6e66a884eace26e/Static" >Github</a>
 
 - **OMS(Order Management System)：**
   - oms_order  - order information 
@@ -234,82 +236,23 @@ The project's GitHub repository can be found at the following address: [https://
 
 For the front-end pages, we use "renren-fast-vue" to achieve rapid development: https://github.com/renrenio/renren-fast-vue.git
 
-To start the administration service, a database named "ADMIN" needs to be created. The table creation statements for this database can also be found in the following location: <a href = "https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/blob/194bd2f724b6d54b20ba8940742e229caabfef9c/renren-fast/db/mysql.sql" >Github</a>
+To start the administration service, a database named "ADMIN" needs to be created. The table creation statements for this database can also be found in the following location: <a href = "https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/blob/777679015934b1f745a7cd55b6e66a884eace26e/renren-fast/db/mysql.sql" >Github</a>
+
+后端修改数据库文件后启动。前端下载Node.js后，执行 `npm install` 命令后可以执行 `npm run dev`运行
 
 **Here are some important considerations when upgrading versions:**
 
-- In addition, since the backend spring boot version of renren-fast is relatively low, only 2.6.6, it is necessary to modify it to version 3.1.4 in the pom file.
-- After the modification, it is necessary to delete the following code in the spring-boot-maven-plugin because fork tags are no longer supported in Spring Boot 3 and above:
+- In addition, since the backend spring boot version of renren-fast is relatively low, only 2.6.6, it is necessary to modify it to version 2.7.17 in the pom file.
 
-```xml
-<configuration>
-	<fork>true</fork>
-</configuration>
-```
+- 注意该项目前端启动需要下载Python，我下载了 3.12.0 版本，同时修改`package.json` 文件中的 `"node-sass": "4.13.1"`,以及 `"sass-loader": "7.3.1"`。然后运行以下命令：
 
-- Additionally, a lot of javax-related HttpServletRequest imports need to be modified. For instance, change `import javax.servlet.http.HttpServletRequest;` to `import jakarta.servlet.http.HttpServletRequest;` as there have been changes in dependencies in higher spring boot versions.
-- The following error occurs when trying to start the application directly:
+  ```shell
+  npm install chromedriver@2.27.2 - -ignore -scripts
+  npm install chromedriver --chromedriver_cdnurl=http://cdn.npm.taobao.org/dist/chromedriver
+  npm install 
+  ```
 
-```java
-Field sysMenuDao in io.renren.modules.sys.service.impl.ShiroServiceImpl required a bean of type 'io.renren.modules.sys.dao.SysMenuDao' that could not be found.
-```
-
-To resolve this issue, you need to upgrade the MyBatis Plus version to 3.5.3.1 and modify the pagination function to:
-
-```java
-    @Bean
-    public MybatisPlusInterceptor paginationInterceptor() {
-
-        MybatisPlusInterceptor mybatisPlusInterceptor = new MybatisPlusInterceptor();
-        mybatisPlusInterceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
-        return mybatisPlusInterceptor;
-    }
-```
-
-Great! You've resolved the issue.
-
-- Additionally, for upgrading Shiro's version and modifying the POM file, you can make the following changes:
-
-```xml
-<dependency>
-	<groupId>org.apache.shiro</groupId>
-	<artifactId>shiro-spring</artifactId>
-	<classifier>jakarta</classifier>
-	<version>1.11.0</version>
-	<exclusions>
-		<exclusion>
-			<groupId>org.apache.shiro</groupId>
-			<artifactId>shiro-core</artifactId>
-		</exclusion>
-	<exclusion>
-		<groupId>org.apache.shiro</groupId>
-			<artifactId>shiro-web</artifactId>
-		</exclusion>
-	</exclusions>
-</dependency>
-<dependency>
-	<groupId>org.apache.shiro</groupId>
-	<artifactId>shiro-core</artifactId>
-	<classifier>jakarta</classifier>
-	<version>1.11.0</version>
-</dependency>
-<dependency>
-	<groupId>org.apache.shiro</groupId>
-	<artifactId>shiro-web</artifactId>
-	<classifier>jakarta</classifier>
-	<version>1.11.0</version>
-	<exclusions>
-		<exclusion>
-			<groupId>org.apache.shiro</groupId>
-			<artifactId>shiro-core</artifactId>
-		</exclusion>
-	</exclusions>
-</dependency>
-```
-
-
-
-
+  你将会看到大量deprecated，但是没关系，项目能运行了
 
 
 
