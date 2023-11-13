@@ -100,7 +100,7 @@ MAVEN 3.9.2
 
 Git
 
-Node.js 20.9.0
+Node.js 12.13.0
 
 <br>
 
