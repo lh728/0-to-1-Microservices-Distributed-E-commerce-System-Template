@@ -234,7 +234,7 @@ For the backend management, we will directly use the existing "renren-fast" to s
 
 The project's GitHub repository can be found at the following address: [https://github.com/renrenio/renren-fast.git](https://github.com/renrenio/renren-fast.git)
 
-For the front-end pages, we use "renren-fast-vue" to achieve rapid development: https://github.com/renrenio/renren-fast-vue.git. The frontend code is also built within the project folder, named <a href = "https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/tree/32c49a198ccd1ec7c5cf852baf7036d45eadb5e5/renren-fast-vue" >renren-fast-vue </a> .
+For the front-end pages, we use "renren-fast-vue" to achieve rapid development: https://github.com/renrenio/renren-fast-vue.git. The frontend code for this project is here: <a href = "https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template-front-end" >0-to-1-Microservices-Distributed-E-commerce-System-Template-front-end </a> .
 
 To start the administration service, a database named "ADMIN" needs to be created. The table creation statements for this database can also be found in the following location: <a href = "https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/blob/777679015934b1f745a7cd55b6e66a884eace26e/renren-fast/db/mysql.sql" >Github</a>
 
@@ -253,8 +253,12 @@ The backend starts after modifying the database files. For the frontend, after d
   ```
 
   Another solution is to change Node.js to version 12.13.0, which requires no modifications. This version is highly recommended.
-  
+
 - Note that after the front-end is launched, it is necessary to modify the directory file `/static/config/index.js` with the statement `window.SITE_CONFIG['baseUrl'] = 'local API interface request address';`.
+
+
+
+
 
 
 
