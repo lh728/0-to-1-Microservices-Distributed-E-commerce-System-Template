@@ -242,6 +242,8 @@ To start the administration service, a database named "ADMIN" needs to be create
 
 The backend starts after modifying the database files. For the frontend, after downloading Node.js, execute the `npm install` command and then run `npm run dev`.
 
+<br>
+
 **Here are some important considerations when upgrading versions:**
 
 - In addition, since the backend spring boot version of renren-fast is relatively low, only 2.6.6, it is necessary to modify it to version 2.7.17 in the pom file.
@@ -258,7 +260,7 @@ The backend starts after modifying the database files. For the frontend, after d
 
 - Note that after the front-end is launched, it is necessary to modify the directory file `/static/config/index.js` with the statement `window.SITE_CONFIG['baseUrl'] = 'local API interface request address';`.
 
-
+<br>
 
 The basic CRUD functionalities of microservices will be generated through the **[renren-generator](https://gitee.com/renrenio/renren-generator)**. This code generator can dynamically produce entity, XML, DAO, service, HTML, JS, and SQL code online, reducing over 70% of development tasks.
 
