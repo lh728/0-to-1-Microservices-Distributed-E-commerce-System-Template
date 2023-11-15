@@ -19,6 +19,7 @@
         <module>Product</module>
         <module>Warehouse</module>
         <module>renren-fast</module>
+        <module>renren-generator</module>
     </modules>
 
 </project>

@@ -204,6 +204,10 @@ You can find the details of the CREATE TABLE statement here. <a href = "https://
 
 ## Microservices Design
 
+微服务的基础增删改查功能将通过**[renren-generator](https://gitee.com/renrenio/renren-generator)**，这个代码生成器生成。该代码生成器可在线生成entity、xml、dao、service、html、js、sql代码，减少70%以上的开发任务。
+
+在项目中的位置如下：<a href = "https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/blob/777679015934b1f745a7cd55b6e66a884eace26e/renren-fast/db/mysql.sql" >renren-generator</a>
+
 ### Order
 
 <br>
