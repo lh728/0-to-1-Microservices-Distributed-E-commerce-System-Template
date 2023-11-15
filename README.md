@@ -204,9 +204,7 @@ You can find the details of the CREATE TABLE statement here. <a href = "https://
 
 ## Microservices Design
 
-微服务的基础增删改查功能将通过**[renren-generator](https://gitee.com/renrenio/renren-generator)**，这个代码生成器生成。该代码生成器可在线生成entity、xml、dao、service、html、js、sql代码，减少70%以上的开发任务。
 
-在项目中的位置如下：<a href = "https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/blob/777679015934b1f745a7cd55b6e66a884eace26e/renren-fast/db/mysql.sql" >renren-generator</a>
 
 ### Order
 
@@ -262,7 +260,13 @@ The backend starts after modifying the database files. For the frontend, after d
 
 
 
+The basic CRUD functionalities of microservices will be generated through the **[renren-generator](https://gitee.com/renrenio/renren-generator)**. This code generator can dynamically produce entity, XML, DAO, service, HTML, JS, and SQL code online, reducing over 70% of development tasks.
 
+The position of this code generator in the project is as follows: <a href="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/tree/6a093e115a0e6739b294cbba8af910d3b25c298d/renren-generator">renren-generator</a>.
+
+**Several points to note:**
+
+- Directly launching renren-generator will fail because Oracle JDBC cannot be configured directly like MySQL due to Oracle licensing issues. Maven3 does not provide the Oracle JDBC driver, so it needs to be configured manually. Therefore, you need to download `ojdbc6.jar` and then configure this dependency in the project structure of IDEA.
 
 
 
