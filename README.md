@@ -264,7 +264,7 @@ The backend starts after modifying the database files. For the frontend, after d
 
 The basic CRUD functionalities of microservices will be generated through the **[renren-generator](https://gitee.com/renrenio/renren-generator)**. This code generator can dynamically produce entity, XML, DAO, service, HTML, JS, and SQL code online, reducing over 70% of development tasks.
 
-The position of this code generator in the project is as follows: <a href="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/tree/6a093e115a0e6739b294cbba8af910d3b25c298d/renren-generator">renren-generator</a>.
+The position of this code generator in the project is as follows: <a href="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/tree/3e7badbe5f3cf8acd1607f7e73aeb69f76d2e3a5/renren-generator">renren-generator</a>.
 
 **Several points to note:**
 
