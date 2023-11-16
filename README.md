@@ -268,7 +268,15 @@ The position of this code generator in the project is as follows: <a href="https
 
 **Several points to note:**
 
-- Directly launching renren-generator will fail because Oracle JDBC cannot be configured directly like MySQL due to Oracle licensing issues. Maven3 does not provide the Oracle JDBC driver, so it needs to be configured manually. Therefore, you need to download `ojdbc6.jar` and then configure this dependency in the project structure of IDEA.
+- Directly launching renren-generator will fail because Oracle JDBC cannot be configured directly like MySQL due to Oracle licensing issues. Maven3 does not provide the Oracle JDBC driver, so it needs to be configured manually. Therefore, you need to download <a href="https://mvnrepository.com/artifact/oracle/ojdbc6/11.2.0.3">ojdbc6.jar</a>and then call this:
+
+```shell
+D:\apache-maven-3.9.2\bin> mvn install:install-file -DgroupId=com.oracle -DartifactId=ojdbc6 -Dversion=11.2.0.3 -Dpackaging=jar -Dfile=ojdbc6-11.2.0.3.jar -DgeneratePom=true -DlocalRepositoryPath=D:\apache-maven-3.9.2\repository
+```
+
+​	The command needs to be executed in the Maven 'bin' directory. The `-Dfile` flag corresponds to the path of the downloaded file, while `-DlocalRepositoryPath` represents the location of your local repository.
+
+
 
 
 
