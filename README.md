@@ -276,7 +276,7 @@ mvn install:install-file -DgroupId=com.oracle -DartifactId=ojdbc6 -Dversion=11.2
 
 ​	The command needs to be executed in the Maven 'bin' directory. The `-Dfile` flag corresponds to the path of the downloaded file, while `-DlocalRepositoryPath` represents the location of your local repository.
 
-- 除了上述的oracle之外，microsoft.sqlserver:sqljdbc4:jar:4.0也存在同样的问题，需要去 <a href="https://mvnrepository.com/artifact/com.microsoft.sqlserver/sqljdbc4/4.0">下载</a> 该jar文件。然后执行：
+- Apart from the mentioned Oracle, the `microsoft.sqlserver:sqljdbc4:jar:4.0` also encounters the same issue. You need to download the JAR file from <a href="https://mvnrepository.com/artifact/com.microsoft.sqlserver/sqljdbc4/4.0">this link</a>. After that, proceed with the following steps:
 
 ```shell
 mvn install:install-file -Dfile=sqljdbc4-4.0.jar -DgroupId=com.microsoft.sqlserver -DartifactId=sqljdbc4 -Dversion=4.0 -Dpackaging=jar -DlocalRepositoryPath=D:\apache-maven-3.9.2\repository
