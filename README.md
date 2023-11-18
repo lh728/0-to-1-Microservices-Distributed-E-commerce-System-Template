@@ -199,34 +199,7 @@ You can find the details of the CREATE TABLE statement here. <a href = "https://
   - ums_member_receive_address  - Member shipping address
   - ums_member_statistics_info  - Member statistics
 
-
 <br>
-
-## Microservices Design
-
-
-
-### Order
-
-<br>
-
-### Member
-
-<br>
-
-### Product
-
-<br>
-
-### Storage
-
-<br>
-
-### Coupon
-
-<br>
-
-
 
 
 
@@ -281,6 +254,60 @@ mvn install:install-file -DgroupId=com.oracle -DartifactId=ojdbc6 -Dversion=11.2
 ```shell
 mvn install:install-file -Dfile=sqljdbc4-4.0.jar -DgroupId=com.microsoft.sqlserver -DartifactId=sqljdbc4 -Dversion=4.0 -Dpackaging=jar -DlocalRepositoryPath=D:\apache-maven-3.9.2\repository
 ```
+
+<br>
+
+
+
+## Microservices Design
+
+使用 renren-generator生成微服务相关基础代码，注意启动前需要修改 application.yml 的数据库配置，指向需要的数据库；同时修改 generator.properties 中的路径配置，设定如下所示再启动服务：
+
+```properties
+mainPath=com.<your min path>
+#\u5305\u540D
+package=com.<your package path>
+moduleName=<your microserivce module name>
+#\u4F5C\u8005
+author=...
+#Email
+email=...@gmail.com
+#\u8868\u524D\u7F00(\u7C7B\u540D\u4E0D\u4F1A\u5305\u542B\u8868\u524D\u7F00)
+tablePrefix=<your datatable prefix>_
+```
+
+启动服务后选择需要生成的表的基础代码，直接剪切到对应main文件夹下，之后会发现导入文件缺少很多公共依赖。
+
+因此创建了PublicDependencies module用于存放公共依赖给其他 module 使用。
+
+需要添加的依赖和需要调整的结构：
+
+- mybatis-plus 3.5.3.2
+- lombok 1.18.8
+- Apache HttpCore 4.4.16
+- commons-lang 2.6
+- 分页、查询等功能类 PageUtils、Query、R、SQLfilter类从另一个 module renren-fast的common package里面找到后直接复制
+-  另外，由于工程会自动添加权限控制注解`RequiresPermissions`，我们暂时不需要这个，所以需要调整逆向工程，即将 `renren-generator` 中的`resources-template-Controller.java.vm`中的该注解注释
+
+### Order
+
+<br>
+
+### Member
+
+<br>
+
+### Product
+
+<br>
+
+### Storage
+
+<br>
+
+### Coupon
+
+<br>
 
 
 

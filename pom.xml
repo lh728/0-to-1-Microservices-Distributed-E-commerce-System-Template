@@ -20,6 +20,8 @@
         <module>Warehouse</module>
         <module>renren-fast</module>
         <module>renren-generator</module>
+        <module>PublicDependencies</module>
+        <module>PublicDependencies</module>
     </modules>
 
 </project>
