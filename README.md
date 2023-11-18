@@ -261,7 +261,7 @@ mvn install:install-file -Dfile=sqljdbc4-4.0.jar -DgroupId=com.microsoft.sqlserv
 
 ## Microservices Design
 
-使用 renren-generator生成微服务相关基础代码，注意启动前需要修改 application.yml 的数据库配置，指向需要的数据库；同时修改 generator.properties 中的路径配置，设定如下所示再启动服务：
+Utilize renren-generator to generate foundational code for microservices. Prior to launching, please modify the database configuration in the application.yml file to point to the desired database. Additionally, adjust the path configuration in generator.properties as follows before initiating the service:
 
 ```properties
 mainPath=com.<your min path>
@@ -276,18 +276,18 @@ email=...@gmail.com
 tablePrefix=<your datatable prefix>_
 ```
 
-启动服务后选择需要生成的表的基础代码，直接剪切到对应main文件夹下，之后会发现导入文件缺少很多公共依赖。
+After starting the service, selecting the tables to generate code, and creating a zip file of the generated code, when you move the chosen backend code section to the corresponding `main` folder, you may observe that the imported files lack many common dependencies.
 
-因此创建了PublicDependencies module用于存放公共依赖给其他 module 使用。
+Therefore, I created the `PublicDependencies` module to store shared dependencies for use by other modules.
 
-需要添加的依赖和需要调整的结构：
+Dependencies to be added and structural adjustments needed:
 
 - mybatis-plus 3.5.3.2
 - lombok 1.18.8
 - Apache HttpCore 4.4.16
 - commons-lang 2.6
-- 分页、查询等功能类 PageUtils、Query、R、SQLfilter类从另一个 module renren-fast的common package里面找到后直接复制
--  另外，由于工程会自动添加权限控制注解`RequiresPermissions`，我们暂时不需要这个，所以需要调整逆向工程，即将 `renren-generator` 中的`resources-template-Controller.java.vm`中的该注解注释
+- For functionalities such as pagination and querying, classes like `PageUtils`, `Query`, `R`, and `SQLfilter` can be found in the `common` package of another module, `renren-fast`. Please copy these classes directly.
+- Additionally, as the project automatically adds the permission control annotation `RequiresPermissions`, which is not currently needed, it is necessary to adjust the reverse engineering process. Specifically, comment out this annotation in `resources-template-Controller.java.vm` within the `renren-generator` module.
 
 ### Order
 
