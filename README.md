@@ -292,7 +292,7 @@ Dependencies to be added and structural adjustments needed:
 - For functionalities such as pagination and querying, classes like `PageUtils`, `Query`, `R`, and `SQLfilter` can be found in the `common` package of another module, `renren-fast`. Please copy these classes directly.
 - Additionally, as the project automatically adds the permission control annotation `RequiresPermissions`, which is not currently needed, it is necessary to adjust the reverse engineering process. Specifically, comment out this annotation in `resources-template-Controller.java.vm` within the `renren-generator` module.
 
-配置依赖完成后，各个微服务还需要配置自己的数据源、mybatis-plus的@MapperScan，sql文件映射位置等待，详情见每个微服务的application.yml 文件。
+After completing the dependency configuration, each microservice needs to further configure its own data source, utilize mybatis-plus's @MapperScan, specify the location for SQL file mappings, and so on. For detailed information, refer to the `application.yml` file in each respective microservice.
 
 
 
