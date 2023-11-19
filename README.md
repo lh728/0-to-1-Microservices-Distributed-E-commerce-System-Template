@@ -282,12 +282,19 @@ Therefore, I created the `PublicDependencies` module to store shared dependencie
 
 Dependencies to be added and structural adjustments needed:
 
-- mybatis-plus 3.5.3.2
+- mybatis-plus-boot-starter 3.2.0
 - lombok 1.18.8
 - Apache HttpCore 4.4.16
 - commons-lang 2.6
+- mysql drive 8.0.33
+- servlet-api 2.3
+- jakarta.validation-api 3.0.2
 - For functionalities such as pagination and querying, classes like `PageUtils`, `Query`, `R`, and `SQLfilter` can be found in the `common` package of another module, `renren-fast`. Please copy these classes directly.
 - Additionally, as the project automatically adds the permission control annotation `RequiresPermissions`, which is not currently needed, it is necessary to adjust the reverse engineering process. Specifically, comment out this annotation in `resources-template-Controller.java.vm` within the `renren-generator` module.
+
+配置依赖完成后，各个微服务还需要配置自己的数据源、mybatis-plus的@MapperScan，sql文件映射位置等待，详情见每个微服务的application.yml 文件。
+
+
 
 ### Order
 

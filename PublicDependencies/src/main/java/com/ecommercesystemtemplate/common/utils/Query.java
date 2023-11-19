@@ -11,7 +11,7 @@ package com.ecommercesystemtemplate.common.utils;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.ecommercesystemtemplate.common.utils.xss.SQLFilter;
+import com.ecommercesystemtemplate.common.xss.SQLFilter;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Map;

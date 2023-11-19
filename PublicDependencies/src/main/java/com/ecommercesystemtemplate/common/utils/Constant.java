@@ -8,9 +8,10 @@
 
 package com.ecommercesystemtemplate.common.utils;
 
-import io.renren.common.validator.group.AliyunGroup;
-import io.renren.common.validator.group.QcloudGroup;
-import io.renren.common.validator.group.QiniuGroup;
+
+import com.ecommercesystemtemplate.common.group.AliyunGroup;
+import com.ecommercesystemtemplate.common.group.QcloudGroup;
+import com.ecommercesystemtemplate.common.group.QiniuGroup;
 
 import java.util.Optional;
 import java.util.stream.Stream;
