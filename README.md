@@ -168,7 +168,7 @@ You can find the details of the CREATE TABLE statement here. <a href = "https://
 
 <br>
 
-- **SMS(Storage Management System):**
+- **SMS(Coupon Management System):**
   - sms_coupon - Coupon information
   - sms_coupon_history - Coupon history
   - sms_coupon_spu_category_relation - Coupon category association
@@ -188,7 +188,7 @@ You can find the details of the CREATE TABLE statement here. <a href = "https://
 
 <br>
 
-- **UMS(Coupon Management System):** 
+- **UMS(Storage Management System):** 
   - ums_growth_change_history  - Growth value change history
   - ums_integration_change_history  - Points change history
   - ums_member  - member
