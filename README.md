@@ -185,10 +185,9 @@ You can find the details of the CREATE TABLE statement here. <a href = "https://
   - sms_sku_ladder  - Commodity ladder price
   - sms_spu_bounds  - Product spu points setting
 
-
 <br>
 
-- **UMS(Storage Management System):** 
+- **UMS(Member Management System):** 
   - ums_growth_change_history  - Growth value change history
   - ums_integration_change_history  - Points change history
   - ums_member  - member
