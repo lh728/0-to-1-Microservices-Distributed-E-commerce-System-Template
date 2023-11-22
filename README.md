@@ -106,6 +106,22 @@ Node.js 12.13.0
 
 Configuring Spring Cloud Alibaba requires checking the official website to find the corresponding compatible versions.
 
+For our project. use:
+
+```xml
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+            <version>2021.0.5.0</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+```
+
 Spring Cloud Alibaba - **Nacos** (Service Registration and Configuration Center)
 
 Spring Cloud - **Ribbon** (Load Balancing)
@@ -119,6 +135,10 @@ Spring Cloud - **GateWay** (API Gateway)
 Spring Cloud - **Sleuth** (Distributed Tracing)
 
 Spring Cloud Alibaba - **Seata** (Formerly Fescar, a Distributed Transaction Solution)
+
+
+
+
 
 <br>
 
