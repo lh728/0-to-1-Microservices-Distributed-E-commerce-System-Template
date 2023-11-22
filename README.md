@@ -102,6 +102,24 @@ Git
 
 Node.js 12.13.0
 
+#### Microservices Environment
+
+Configuring Spring Cloud Alibaba requires checking the official website to find the corresponding compatible versions.
+
+Spring Cloud Alibaba - **Nacos** (Service Registration and Configuration Center)
+
+Spring Cloud - **Ribbon** (Load Balancing)
+
+Spring Cloud - **openFeign** (Remote Service Invocation)
+
+Spring Cloud Alibaba - **Sentinel** (Service Fault Tolerance — Rate Limiting, Degrade, and Circuit Breaking)
+
+Spring Cloud - **GateWay** (API Gateway)
+
+Spring Cloud - **Sleuth** (Distributed Tracing)
+
+Spring Cloud Alibaba - **Seata** (Formerly Fescar, a Distributed Transaction Solution)
+
 <br>
 
 ### Dependency
@@ -111,94 +129,6 @@ Springboot 2.7.17
 Spring Web
 
 Spring Cloud Routing - openFeign (microservices communication)
-
-<br>
-
-### Database Design
-
-**(No foreign keys will be established due to the hypothetical e-commerce project. This is to avoid potential performance impacts, as e-commerce databases often deal with a large volume of data.)**
-
-The following databases will be established: 
-
-The character set will be set to utf8mb4 to ensure compatibility with utf8 and address potential issues related to character encoding.
-
-You can find the details of the CREATE TABLE statement here. <a href = "https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/tree/777679015934b1f745a7cd55b6e66a884eace26e/Static" >Github</a>
-
-- **OMS(Order Management System)：**
-  - oms_order  - order information 
-  - oms_order_item - order detail
-  - oms_order_operate_history - Order operation history
-  - oms_order_return_apply - Order return request
-  - oms_order_return_reason - reasons for return
-  - oms_order_setting - Order configuration information
-  - oms_payment_info - Payment information form
-  - oms_refund_info - Refund information
-
-
-<br>
-
-- **PMS(Product Management System):**
-  - pms_attr - Product attributes
-  - pms_attr_attrgroup_relation  - Attribute & Attribute group association
-  - pms_attr_group  - Grouping attributes
-  - pms_brand - brand
-  - pms_category  -  Three-level classification of commodities
-  - pms_category_brand_relation  -  Brand classification association
-  - pms_comment_replay  -  Product review response relationship
-  - pms_product_attr_value  -  spu attribute value
-  - pms_sku_images  -  sku pictures
-  - pms_sku_info  -  sku information
-  - pms_sku_sale_attr_value  -  sku sales attributes & values
-  - pms_spu_comment  -  Product reviews
-  -  pms_spu_images  -  spu image
-  - pms_spu_info  -  spu information
-  - pms_spu_info_desc  -  spu information introduction
-
-
-<br>
-
-- **WMS(Warehouse Management System):**
-  - wms_purchase  -  Purchasing Information
-  - wms_purchase_detail  -  Purchasing detail
-  - wms_ware_info  -  Warehouse information
-  - wms_ware_order_task  -  Inventory work order
-  - wms_ware_order_task_detail  -  Inventory work order detail
-  - wms_ware_sku  -  Commodity stocks
-
-
-<br>
-
-- **SMS(Coupon Management System):**
-  - sms_coupon - Coupon information
-  - sms_coupon_history - Coupon history
-  - sms_coupon_spu_category_relation - Coupon category association
-  - sms_coupon_spu_relation - Coupons associated with products
-  - sms_home_adv - Home page carousel ads
-  - sms_home_subject - Home page topic table [each topic links to a new page to display topic product information]
-  - sms_home_subject_spu - subject products
-  - sms_member_price  - Product membership price
-  - sms_seckill_promotion  - flash sale activity
-  - sms_seckill_session  - flash sale events
-  - sms_seckill_sku_notice  - Flash sale product notification subscription
-  - sms_seckill_sku_relation  - Flash sale product association
-  - sms_sku_full_reduction  - Product discount information
-  - sms_sku_ladder  - Commodity ladder price
-  - sms_spu_bounds  - Product spu points setting
-
-<br>
-
-- **UMS(Member Management System):** 
-  - ums_growth_change_history  - Growth value change history
-  - ums_integration_change_history  - Points change history
-  - ums_member  - member
-  - ums_member_collect_spu  - Products collected by members
-  - ums_member_collect_subject  - Special events collected by members
-  - ums_member_level  - member level
-  - ums_member_login_log  - Member login record
-  - ums_member_receive_address  - Member shipping address
-  - ums_member_statistics_info  - Member statistics
-
-<br>
 
 
 
@@ -279,6 +209,16 @@ After starting the service, selecting the tables to generate code, and creating 
 
 Therefore, I created the `PublicDependencies` module to store shared dependencies for use by other modules.
 
+这个依赖在每个微服务按这样配置即可：
+
+```xml
+<dependency>
+    <groupId>com.EcommerceSystemTemplate</groupId>
+    <artifactId>PublicDependencies</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+</dependency>
+```
+
 Dependencies to be added and structural adjustments needed:
 
 - mybatis-plus-boot-starter 3.2.0
@@ -291,7 +231,7 @@ Dependencies to be added and structural adjustments needed:
 - For functionalities such as pagination and querying, classes like `PageUtils`, `Query`, `R`, and `SQLfilter` can be found in the `common` package of another module, `renren-fast`. Please copy these classes directly.
 - Additionally, as the project automatically adds the permission control annotation `RequiresPermissions`, which is not currently needed, it is necessary to adjust the reverse engineering process. Specifically, comment out this annotation in `resources-template-Controller.java.vm` within the `renren-generator` module.
 
-After completing the dependency configuration, each microservice needs to further configure its own data source, utilize mybatis-plus's @MapperScan, specify the location for SQL file mappings, and so on. For detailed information, refer to the `application.yml` file in each respective microservice.
+After completing the dependency configuration, each microservice needs to further configure its own data source, utilize `mybatis-plus's @MapperScan`, specify the location for SQL file mappings, and so on. For detailed information, refer to the `application.yml` file in each respective microservice.
 
 
 
@@ -315,7 +255,89 @@ After completing the dependency configuration, each microservice needs to furthe
 
 <br>
 
+### Database Design
 
+**(No foreign keys will be established due to the hypothetical e-commerce project. This is to avoid potential performance impacts, as e-commerce databases often deal with a large volume of data.)**
+
+The following databases will be established: 
+
+The character set will be set to utf8mb4 to ensure compatibility with utf8 and address potential issues related to character encoding.
+
+You can find the details of the CREATE TABLE statement here. <a href = "https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/tree/777679015934b1f745a7cd55b6e66a884eace26e/Static" >Github</a>
+
+- **OMS(Order Management System)：**
+  - oms_order  - order information 
+  - oms_order_item - order detail
+  - oms_order_operate_history - Order operation history
+  - oms_order_return_apply - Order return request
+  - oms_order_return_reason - reasons for return
+  - oms_order_setting - Order configuration information
+  - oms_payment_info - Payment information form
+  - oms_refund_info - Refund information
+
+
+<br>
+
+- **PMS(Product Management System):**
+  - pms_attr - Product attributes
+  - pms_attr_attrgroup_relation  - Attribute & Attribute group association
+  - pms_attr_group  - Grouping attributes
+  - pms_brand - brand
+  - pms_category  -  Three-level classification of commodities
+  - pms_category_brand_relation  -  Brand classification association
+  - pms_comment_replay  -  Product review response relationship
+  - pms_product_attr_value  -  spu attribute value
+  - pms_sku_images  -  sku pictures
+  - pms_sku_info  -  sku information
+  - pms_sku_sale_attr_value  -  sku sales attributes & values
+  - pms_spu_comment  -  Product reviews
+  - pms_spu_images  -  spu image
+  - pms_spu_info  -  spu information
+  - pms_spu_info_desc  -  spu information introduction
+
+
+<br>
+
+- **WMS(Warehouse Management System):**
+  - wms_purchase  -  Purchasing Information
+  - wms_purchase_detail  -  Purchasing detail
+  - wms_ware_info  -  Warehouse information
+  - wms_ware_order_task  -  Inventory work order
+  - wms_ware_order_task_detail  -  Inventory work order detail
+  - wms_ware_sku  -  Commodity stocks
+
+
+<br>
+
+- **SMS(Coupon Management System):**
+  - sms_coupon - Coupon information
+  - sms_coupon_history - Coupon history
+  - sms_coupon_spu_category_relation - Coupon category association
+  - sms_coupon_spu_relation - Coupons associated with products
+  - sms_home_adv - Home page carousel ads
+  - sms_home_subject - Home page topic table [each topic links to a new page to display topic product information]
+  - sms_home_subject_spu - subject products
+  - sms_member_price  - Product membership price
+  - sms_seckill_promotion  - flash sale activity
+  - sms_seckill_session  - flash sale events
+  - sms_seckill_sku_notice  - Flash sale product notification subscription
+  - sms_seckill_sku_relation  - Flash sale product association
+  - sms_sku_full_reduction  - Product discount information
+  - sms_sku_ladder  - Commodity ladder price
+  - sms_spu_bounds  - Product spu points setting
+
+<br>
+
+- **UMS(Member Management System):** 
+  - ums_growth_change_history  - Growth value change history
+  - ums_integration_change_history  - Points change history
+  - ums_member  - member
+  - ums_member_collect_spu  - Products collected by members
+  - ums_member_collect_subject  - Special events collected by members
+  - ums_member_level  - member level
+  - ums_member_login_log  - Member login record
+  - ums_member_receive_address  - Member shipping address
+  - ums_member_statistics_info  - Member statistics
 
 
 
