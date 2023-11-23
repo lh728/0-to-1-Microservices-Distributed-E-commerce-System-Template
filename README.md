@@ -11,6 +11,16 @@ Download a Linux virtual machine based on Windows using **VirtualBox** (Make sur
 
 Download the official image via Vagrant, create a Linux virtual machine by `vagrant init centos/7`, and modify the Vagrantfile network settings (change the private network to your computer's IP address for domain name mapping; you can find your IP address using the '`ipconfig`' command).
 
+### Install Docker
+
+```bash
+sudo yum install git
+
+# verify that git is working properly
+git --version
+
+```
+
 <br>
 
 ### Install Docker
@@ -102,6 +112,8 @@ Git
 
 Node.js 12.13.0
 
+Nacos-server 2.0.0
+
 #### Microservices Environment
 
 Configuring Spring Cloud Alibaba requires checking the official website to find the corresponding compatible versions.
@@ -122,7 +134,7 @@ For our project. use:
 </dependencyManagement>
 ```
 
-Spring Cloud Alibaba - **Nacos** (Service Registration and Configuration Center)
+Spring Cloud Alibaba - **Nacos** (Service Discovery and Configuration Center)
 
 Spring Cloud - **Ribbon** (Load Balancing)
 
@@ -138,8 +150,6 @@ Spring Cloud Alibaba - **Seata** (Formerly Fescar, a Distributed Transaction Sol
 
 
 
-
-
 <br>
 
 ### Dependency
@@ -149,6 +159,8 @@ Springboot 2.7.17
 Spring Web
 
 Spring Cloud Routing - openFeign (microservices communication)
+
+Spring Cloud Nacos-discovery
 
 
 
@@ -210,6 +222,8 @@ mvn install:install-file -Dfile=sqljdbc4-4.0.jar -DgroupId=com.microsoft.sqlserv
 
 ## Microservices Design
 
+#### Environment and Dependencies
+
 Utilize renren-generator to generate foundational code for microservices. Prior to launching, please modify the database configuration in the application.yml file to point to the desired database. Additionally, adjust the path configuration in generator.properties as follows before initiating the service:
 
 ```properties
@@ -229,7 +243,7 @@ After starting the service, selecting the tables to generate code, and creating 
 
 Therefore, I created the `PublicDependencies` module to store shared dependencies for use by other modules.
 
-这个依赖在每个微服务按这样配置即可：
+This dependency can be configured in each microservice as follows:
 
 ```xml
 <dependency>
@@ -252,6 +266,68 @@ Dependencies to be added and structural adjustments needed:
 - Additionally, as the project automatically adds the permission control annotation `RequiresPermissions`, which is not currently needed, it is necessary to adjust the reverse engineering process. Specifically, comment out this annotation in `resources-template-Controller.java.vm` within the `renren-generator` module.
 
 After completing the dependency configuration, each microservice needs to further configure its own data source, utilize `mybatis-plus's @MapperScan`, specify the location for SQL file mappings, and so on. For detailed information, refer to the `application.yml` file in each respective microservice.
+
+<br>
+
+#### Nacos
+
+To configure Nacos in the `PublicDependencies` modules, you need to first import the corresponding dependencies:
+
+```xml
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+```
+
+Nacos has its own middleware, and the Nacos server needs to be downloaded.
+
+Now, prepare to download and configure the `Docker server`:
+
+```shell
+# Clone project
+git clone --depth 1 https://github.com/nacos-group/nacos-docker.git
+cd nacos-docker
+
+# install docker-compose
+sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
+sudo chmod +x /usr/bin/docker-compose
+
+# Standalone Derby
+sudo docker-compose -f example/standalone-derby.yaml up
+
+# Standalone Mysql
+sudo docker-compose -f example/standalone-mysql-8.yaml up
+
+# Deploying a cluster mode on a single-node Docker setup
+docker-compose -f example/cluster-hostname.yaml up 
+
+# Service Registration Example
+curl -X PUT 'http://127.0.0.1:8848/nacos/v1/ns/instance?serviceName=nacos.naming.serviceName&ip=20.18.7.10&port=8080'
+
+# Service Discovery Example
+curl -X GET 'http://127.0.0.1:8848/nacos/v1/ns/instance/list?serviceName=nacos.naming.serviceName'
+
+# Configuration Push Example
+curl -X POST "http://127.0.0.1:8848/nacos/v1/cs/configs?dataId=nacos.cfg.dataId&group=test&content=helloWorld"
+
+# Configuration Retrieval Example
+curl -X GET "http://127.0.0.1:8848/nacos/v1/cs/configs?dataId=nacos.cfg.dataId&group=test"
+
+# or quick start
+docker run --name nacos-quick -e MODE=standalone -p 8848:8848 -p 9848:9848 -d nacos/nacos-server:v2.2.0
+
+```
+
+Afterwards, add the following configuration to the configuration files of each microservice:
+
+```yaml
+spring.cloud.nacos.discovery.server-addr=127.0.0.1:8848
+```
+
+To enable service registration and discovery functionality, use the `@EnableDiscoveryClient` annotation. Place this annotation on the **main** function of your application, and then start the service.
+
+You can now verify if the Nacos server has successfully started by accessing `http://127.0.0.1:8848/nacos`. The default username and password are both set to `nacos`.
 
 
 
