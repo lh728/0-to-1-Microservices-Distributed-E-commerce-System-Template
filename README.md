@@ -112,7 +112,7 @@ Git
 
 Node.js 12.13.0
 
-Nacos-server 2.0.0
+Nacos-server 2.3.0
 
 #### Microservices Environment
 
@@ -284,45 +284,23 @@ Nacos has its own middleware, and the Nacos server needs to be downloaded.
 
 Now, prepare to download and configure the `Docker server`:
 
+去官网下载 [nacos-server-2.3.0-BETA.zip](https://github.com/alibaba/nacos/releases/download/2.3.0-BETA/nacos-server-2.3.0-BETA.zip)版本（注意需要和我一样，使用spring boot 大于 2.7.15 版本的，并且需要java环境变量），下载完成后解压，运行Bin文件夹下的`startup.cmd`文件。
+
+此时会报错：`org.springframework.context.ApplicationContextException: Unable to start web server; nested exception is org.springframework.boot.web.server.WebServerException: Unable to start embedded Tomcat`表现为闪退，可以在log日志中看到原因。
+
+这是因为默认启动是cluster模式，解决方法是改为单机版启动。即在当前目录运行：
+
 ```shell
-# Clone project
-git clone --depth 1 https://github.com/nacos-group/nacos-docker.git
-cd nacos-docker
-
-# install docker-compose
-sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
-sudo chmod +x /usr/bin/docker-compose
-
-# Standalone Derby
-sudo docker-compose -f example/standalone-derby.yaml up
-
-# Standalone Mysql
-sudo docker-compose -f example/standalone-mysql-8.yaml up
-
-# Deploying a cluster mode on a single-node Docker setup
-docker-compose -f example/cluster-hostname.yaml up 
-
-# Service Registration Example
-curl -X PUT 'http://127.0.0.1:8848/nacos/v1/ns/instance?serviceName=nacos.naming.serviceName&ip=20.18.7.10&port=8080'
-
-# Service Discovery Example
-curl -X GET 'http://127.0.0.1:8848/nacos/v1/ns/instance/list?serviceName=nacos.naming.serviceName'
-
-# Configuration Push Example
-curl -X POST "http://127.0.0.1:8848/nacos/v1/cs/configs?dataId=nacos.cfg.dataId&group=test&content=helloWorld"
-
-# Configuration Retrieval Example
-curl -X GET "http://127.0.0.1:8848/nacos/v1/cs/configs?dataId=nacos.cfg.dataId&group=test"
-
-# or quick start
-docker run --name nacos-quick -e MODE=standalone -p 8848:8848 -p 9848:9848 -d nacos/nacos-server:v2.2.0
-
+startup.cmd -m standalone
 ```
+
+或者直接修改startup.cmd，增加一句：`set MODE="standalone"`避免每次都要执行这个命令。
 
 Afterwards, add the following configuration to the configuration files of each microservice:
 
 ```yaml
 spring.cloud.nacos.discovery.server-addr=127.0.0.1:8848
+spring.cloud.application.name=...
 ```
 
 To enable service registration and discovery functionality, use the `@EnableDiscoveryClient` annotation. Place this annotation on the **main** function of your application, and then start the service.
