@@ -4,6 +4,12 @@ spring:
     password: 425658167
     url: jdbc:mysql://192.168.56.10:3306/WMS
     driver-class-name: com.mysql.cj.jdbc.Driver
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+  application:
+    name: warehouse
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
