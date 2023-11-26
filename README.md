@@ -284,17 +284,17 @@ Nacos has its own middleware, and the Nacos server needs to be downloaded.
 
 Now, prepare to download and configure the `Docker server`:
 
-去官网下载 [nacos-server-2.3.0-BETA.zip](https://github.com/alibaba/nacos/releases/download/2.3.0-BETA/nacos-server-2.3.0-BETA.zip)版本（注意需要和我一样，使用spring boot 大于 2.7.15 版本的，并且需要java环境变量），下载完成后解压，运行Bin文件夹下的`startup.cmd`文件。
+To download the [nacos-server-2.3.0-BETA.zip](https://github.com/alibaba/nacos/releases/download/2.3.0-BETA/nacos-server-2.3.0-BETA.zip) version from the official website, please ensure that you are using a Spring Boot version greater than 2.7.15 and that the Java environment variable is set. After downloading, unzip the file and run the `startup.cmd` script located in the Bin folder.
 
-此时会报错：`org.springframework.context.ApplicationContextException: Unable to start web server; nested exception is org.springframework.boot.web.server.WebServerException: Unable to start embedded Tomcat`表现为闪退，可以在log日志中看到原因。
+At this point, you may encounter the error: `org.springframework.context.ApplicationContextException: Unable to start web server; nested exception is org.springframework.boot.web.server.WebServerException: Unable to start embedded Tomcat`, resulting in a crash. You can find the details of the issue in the log files.
 
-这是因为默认启动是cluster模式，解决方法是改为单机版启动。即在当前目录运行：
+This error occurs because the default startup mode is set to cluster. The solution is to switch to standalone mode. To do this, run the following command in the current directory:
 
 ```shell
 startup.cmd -m standalone
 ```
 
-或者直接修改startup.cmd，增加一句：`set MODE="standalone"`避免每次都要执行这个命令。
+Alternatively, you can modify the `startup.cmd` directly by adding the following line to avoid the need to execute this command every time.
 
 Afterwards, add the following configuration to the configuration files of each microservice:
 
