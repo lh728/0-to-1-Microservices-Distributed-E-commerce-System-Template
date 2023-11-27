@@ -309,6 +309,16 @@ You can now verify if the Nacos server has successfully started by accessing `ht
 
 
 
+#### Using Feign for Declarative Remote Invocation
+
+Remote invocations are essential in microservices architecture, and Feign serves as a declarative HTTP client designed to simplify this process. Feign provides templates for HTTP requests, allowing for the definition of parameters, formats, addresses, and other details through the creation of simple interfaces and the inclusion of annotations.
+Feign seamlessly integrates with **Ribbon** for load balancing and **Hystrix** for circuit-breaking, eliminating the explicit need for managing these components.
+Spring Cloud Feign extends the support for Spring MVC annotations on the foundation of Netflix Feign. With its implementation, creating an interface and configuring it with annotations is all that's required to bind to the service provider's interface. This simplification reduces the development effort needed to build a custom service invocation client, as opposed to the approach taken by Spring Cloud Ribbon.
+
+**To incorporate this functionality, it is only necessary to introduce this dependency when establishing each microservice.**
+
+
+
 ### Order
 
 <br>
