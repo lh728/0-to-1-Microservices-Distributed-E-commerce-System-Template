@@ -1,0 +1,22 @@
+2023-11-28 22:44:17,244 INFO [SelectorManager] Load SelectorContextBuilder(class com.alibaba.nacos.naming.selector.context.CmdbSelectorContextBuilder) contextType(CMDB) successfully.
+
+2023-11-28 22:44:17,244 INFO [SelectorManager] Load SelectorContextBuilder(class com.alibaba.nacos.naming.selector.context.NoneSelectorContextBuilder) contextType(NONE) successfully.
+
+2023-11-28 22:44:17,245 INFO [SelectorManager] Load Selector(class com.alibaba.nacos.naming.selector.LabelSelector) type(label) contextType(CMDB) successfully.
+
+2023-11-28 22:44:17,245 INFO [SelectorManager] Load Selector(class com.alibaba.nacos.naming.selector.NoneSelector) type(none) contextType(NONE) successfully.
+
+2023-11-28 22:44:17,981 INFO Load instance extension handler []
+
+2023-11-28 22:44:36,712 INFO Client connection 1701182676614_127.0.0.1_60480 connect
+
+2023-11-28 22:44:36,804 INFO Client change for service Service{namespace='public', group='DEFAULT_GROUP', name='coupon', ephemeral=true, revision=0}, 1701182676614_127.0.0.1_60480
+
+2023-11-28 22:53:57,655 INFO Client connection 1701183237619_127.0.0.1_61451 connect
+
+2023-11-28 22:53:57,813 INFO Client change for service Service{namespace='public', group='DEFAULT_GROUP', name='member', ephemeral=true, revision=0}, 1701183237619_127.0.0.1_61451
+
+2023-11-28 22:58:39,856 INFO Client remove for service Service{namespace='public', group='DEFAULT_GROUP', name='coupon', ephemeral=true, revision=1}, 1701182676614_127.0.0.1_60480
+
+2023-11-28 22:58:39,863 INFO Client connection 1701182676614_127.0.0.1_60480 disconnect, remove instances and subscribers
+

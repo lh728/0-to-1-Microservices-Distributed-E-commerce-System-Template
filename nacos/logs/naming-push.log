@@ -1,0 +1,4 @@
+2023-11-28 22:57:08,092 INFO [PUSH-SUCC] 31ms, all delay time 540ms for subscriber 192.168.56.1, Service{namespace='public', group='DEFAULT_GROUP', name='coupon', ephemeral=true, revision=1}, originalSize=1, DataSize=1
+
+2023-11-28 22:58:40,367 INFO [PUSH-SUCC] 8ms, all delay time 511ms, SLA 511ms, Service{namespace='public', group='DEFAULT_GROUP', name='coupon', ephemeral=true, revision=2}, originalSize=0, DataSize=0, target=192.168.56.1
+

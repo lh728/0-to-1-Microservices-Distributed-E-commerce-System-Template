@@ -1,0 +1,50 @@
+2023-11-28 22:44:15,666 INFO use local db service for init
+
+2023-11-28 22:44:16,093 WARN Lexical error at line 4, column 66.  Encountered: <EOF> after : "".
+
+2023-11-28 22:44:16,096 WARN Syntax error: Encountered "*" at line 1, column 1.
+
+2023-11-28 22:44:16,123 WARN Table/View 'CONFIG_INFO' already exists in Schema 'NACOS'.
+
+2023-11-28 22:44:16,164 WARN Table/View 'HIS_CONFIG_INFO' already exists in Schema 'NACOS'.
+
+2023-11-28 22:44:16,179 WARN Table/View 'CONFIG_INFO_BETA' already exists in Schema 'NACOS'.
+
+2023-11-28 22:44:16,187 WARN Table/View 'CONFIG_INFO_TAG' already exists in Schema 'NACOS'.
+
+2023-11-28 22:44:16,196 WARN Table/View 'CONFIG_INFO_AGGR' already exists in Schema 'NACOS'.
+
+2023-11-28 22:44:16,205 WARN Table/View 'APP_LIST' already exists in Schema 'NACOS'.
+
+2023-11-28 22:44:16,213 WARN Table/View 'APP_CONFIGDATA_RELATION_SUBS' already exists in Schema 'NACOS'.
+
+2023-11-28 22:44:16,220 WARN Table/View 'APP_CONFIGDATA_RELATION_PUBS' already exists in Schema 'NACOS'.
+
+2023-11-28 22:44:16,228 WARN Table/View 'CONFIG_TAGS_RELATION' already exists in Schema 'NACOS'.
+
+2023-11-28 22:44:16,237 WARN Table/View 'GROUP_CAPACITY' already exists in Schema 'NACOS'.
+
+2023-11-28 22:44:16,245 WARN Table/View 'TENANT_CAPACITY' already exists in Schema 'NACOS'.
+
+2023-11-28 22:44:16,252 WARN Table/View 'TENANT_INFO' already exists in Schema 'NACOS'.
+
+2023-11-28 22:44:16,260 WARN Table/View 'USERS' already exists in Schema 'NACOS'.
+
+2023-11-28 22:44:16,267 WARN Table/View 'ROLES' already exists in Schema 'NACOS'.
+
+2023-11-28 22:44:16,274 WARN Table/View 'PERMISSIONS' already exists in Schema 'NACOS'.
+
+2023-11-28 22:44:16,295 WARN The statement was aborted because it would have caused a duplicate key value in a unique or primary key constraint or unique index identified by 'SQL231126224131000' defined on 'USERS'.
+
+2023-11-28 22:44:16,299 WARN The statement was aborted because it would have caused a duplicate key value in a unique or primary key constraint or unique index identified by 'UK_USERNAME_ROLE' defined on 'ROLES'.
+
+2023-11-28 22:44:16,299 WARN Lexical error at line 4, column 13.  Encountered: "`" (96), after : "".
+
+2023-11-28 22:44:16,299 WARN Lexical error at line 1, column 13.  Encountered: "`" (96), after : "".
+
+2023-11-28 22:44:16,299 WARN Lexical error at line 1, column 13.  Encountered: "`" (96), after : "".
+
+2023-11-28 22:44:16,299 WARN Lexical error at line 1, column 13.  Encountered: "`" (96), after : "".
+
+2023-11-28 22:44:16,299 INFO use StandaloneDatabaseOperateImpl
+
