@@ -9,6 +9,4 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Service
 public interface CouponFeignService {
 
-    @RequestMapping("coupon/coupon/member/list")
-    R memberCoupons();
 }
