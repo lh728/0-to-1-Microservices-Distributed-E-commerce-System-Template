@@ -1,10 +1,10 @@
-2023-11-28 22:44:36,614 INFO Connection transportReady,connectionId = 1701182676614_127.0.0.1_60480 
+2023-11-30 20:22:46,230 INFO Connection transportReady,connectionId = 1701346966230_127.0.0.1_52391 
 
-2023-11-28 22:53:57,619 INFO Connection transportReady,connectionId = 1701183237619_127.0.0.1_61451 
+2023-11-30 20:22:48,055 INFO Connection transportReady,connectionId = 1701346968055_127.0.0.1_52400 
 
-2023-11-28 22:58:39,861 INFO Connection transportTerminated,connectionId = 1701182676614_127.0.0.1_60480 
+2023-11-30 20:39:49,962 INFO Connection transportTerminated,connectionId = 1701346968055_127.0.0.1_52400 
 
-2023-11-28 22:58:39,863 WARN [1701182676614_127.0.0.1_60480] connection  close exception  : {}
+2023-11-30 20:39:49,966 WARN [1701346968055_127.0.0.1_52400] connection  close exception  : {}
 
 java.lang.IllegalStateException: call already closed
 	at com.google.common.base.Preconditions.checkState(Preconditions.java:512)
@@ -42,5 +42,13 @@ java.lang.IllegalStateException: call already closed
 	at io.grpc.netty.shaded.io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
 	at io.grpc.netty.shaded.io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
 	at java.base/java.lang.Thread.run(Thread.java:833)
-2023-11-28 22:58:39,864 INFO [1701182676614_127.0.0.1_60480]client disconnected,clear config listen context
+2023-11-30 20:39:49,967 INFO [1701346968055_127.0.0.1_52400]client disconnected,clear config listen context
+
+2023-11-30 20:39:50,325 INFO Connection transportTerminated,connectionId = 1701346966230_127.0.0.1_52391 
+
+2023-11-30 20:39:50,327 INFO [1701346966230_127.0.0.1_52391]client disconnected,clear config listen context
+
+2023-11-30 20:39:54,769 INFO Connection transportReady,connectionId = 1701347994769_127.0.0.1_54305 
+
+2023-11-30 20:39:56,471 INFO Connection transportReady,connectionId = 1701347996471_127.0.0.1_54306 
 

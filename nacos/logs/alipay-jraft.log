@@ -1,88 +1,110 @@
-2023-11-28 22:44:17,322 INFO SPI service [com.alipay.sofa.jraft.JRaftServiceFactory - com.alipay.sofa.jraft.core.DefaultJRaftServiceFactory] loading.
+2023-11-30 20:20:24,600 INFO SPI service [com.alipay.sofa.jraft.JRaftServiceFactory - com.alipay.sofa.jraft.core.DefaultJRaftServiceFactory] loading.
 
-2023-11-28 22:44:17,382 INFO SPI service [com.alipay.sofa.jraft.rpc.RaftRpcFactory - com.alipay.sofa.jraft.rpc.impl.GrpcRaftRpcFactory] loading.
+2023-11-30 20:20:24,665 INFO SPI service [com.alipay.sofa.jraft.rpc.RaftRpcFactory - com.alipay.sofa.jraft.rpc.impl.GrpcRaftRpcFactory] loading.
 
-2023-11-28 22:44:17,451 INFO SPI service [com.alipay.sofa.jraft.util.timer.RaftTimerFactory - com.alipay.sofa.jraft.util.timer.DefaultRaftTimerFactory] loading.
+2023-11-30 20:20:24,737 INFO SPI service [com.alipay.sofa.jraft.util.timer.RaftTimerFactory - com.alipay.sofa.jraft.util.timer.DefaultRaftTimerFactory] loading.
 
-2023-11-28 22:44:17,454 INFO The number of active nodes increment to 1.
+2023-11-30 20:20:24,740 INFO The number of active nodes increment to 1.
 
-2023-11-28 22:44:17,785 INFO Starts FSMCaller successfully.
+2023-11-30 20:20:26,548 INFO Starts FSMCaller successfully.
 
-2023-11-28 22:44:17,788 WARN No data for snapshot reader D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\nacos\data\protocol\raft\naming_persistent_service_v2\snapshot.
+2023-11-30 20:20:26,550 INFO Truncated prefix logs in data path: D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\nacos\data\protocol\raft\naming_persistent_service_v2\log from log index 0 to 1, cost 0 ms.
 
-2023-11-28 22:44:17,789 INFO Node <naming_persistent_service_v2/192.168.56.1:7848> target priority value has changed from: 0, to: -1.
+2023-11-30 20:20:26,552 WARN No data for snapshot reader D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\nacos\data\protocol\raft\naming_persistent_service_v2\snapshot.
 
-2023-11-28 22:44:17,792 INFO Node <naming_persistent_service_v2/192.168.56.1:7848> init, term=1, lastLogId=LogId [index=1, term=1], conf=192.168.56.1:7848, oldConf=.
+2023-11-30 20:20:26,552 INFO Node <naming_persistent_service_v2/192.168.56.1:7848> target priority value has changed from: 0, to: -1.
 
-2023-11-28 22:44:17,793 INFO Node <naming_persistent_service_v2/192.168.56.1:7848> start vote and grant vote self, term=1.
+2023-11-30 20:20:26,556 INFO Node <naming_persistent_service_v2/192.168.56.1:7848> init, term=2, lastLogId=LogId [index=2, term=2], conf=192.168.56.1:7848, oldConf=.
 
-2023-11-28 22:44:17,806 WARN Unable to fsync directory D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\nacos\data\protocol\raft\naming_persistent_service_v2\meta-data on windows.
+2023-11-30 20:20:26,557 INFO Node <naming_persistent_service_v2/192.168.56.1:7848> start vote and grant vote self, term=2.
 
-2023-11-28 22:44:17,809 INFO Save raft meta, path=D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\nacos\data\protocol\raft\naming_persistent_service_v2\meta-data, term=2, votedFor=192.168.56.1:7848, cost time=12 ms
+2023-11-30 20:20:26,569 WARN Unable to fsync directory D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\nacos\data\protocol\raft\naming_persistent_service_v2\meta-data on windows.
 
-2023-11-28 22:44:17,809 INFO Node <naming_persistent_service_v2/192.168.56.1:7848> become leader of group, term=2, conf=192.168.56.1:7848, oldConf=.
+2023-11-30 20:20:26,569 INFO Save raft meta, path=D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\nacos\data\protocol\raft\naming_persistent_service_v2\meta-data, term=3, votedFor=192.168.56.1:7848, cost time=11 ms
 
-2023-11-28 22:44:17,810 INFO -Djraft.recyclers.maxCapacityPerThread: 4096.
+2023-11-30 20:20:26,569 INFO Node <naming_persistent_service_v2/192.168.56.1:7848> become leader of group, term=3, conf=192.168.56.1:7848, oldConf=.
 
-2023-11-28 22:44:17,811 WARN RPC server is not started in RaftGroupService.
+2023-11-30 20:20:26,571 INFO -Djraft.recyclers.maxCapacityPerThread: 4096.
 
-2023-11-28 22:44:17,811 INFO Start the RaftGroupService successfully.
+2023-11-30 20:20:26,572 WARN RPC server is not started in RaftGroupService.
 
-2023-11-28 22:44:17,815 INFO The number of active nodes increment to 2.
+2023-11-30 20:20:26,572 INFO Start the RaftGroupService successfully.
 
-2023-11-28 22:44:17,816 INFO onLeaderStart: term=2.
+2023-11-30 20:20:26,576 INFO The number of active nodes increment to 2.
 
-2023-11-28 22:44:17,850 INFO Creating new channel to: 192.168.56.1:7848.
+2023-11-30 20:20:26,577 INFO onLeaderStart: term=3.
 
-2023-11-28 22:44:17,870 INFO The channel 192.168.56.1:7848 is in state: CONNECTING.
+2023-11-30 20:20:26,613 INFO Truncated prefix logs in data path: D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\nacos\data\protocol\raft\naming_instance_metadata\log from log index 0 to 1, cost 1 ms.
 
-2023-11-28 22:44:17,884 INFO Starts FSMCaller successfully.
+2023-11-30 20:20:26,614 INFO Starts FSMCaller successfully.
 
-2023-11-28 22:44:17,884 WARN No data for snapshot reader D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\nacos\data\protocol\raft\naming_instance_metadata\snapshot.
+2023-11-30 20:20:26,614 WARN No data for snapshot reader D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\nacos\data\protocol\raft\naming_instance_metadata\snapshot.
 
-2023-11-28 22:44:17,884 INFO Node <naming_instance_metadata/192.168.56.1:7848> target priority value has changed from: 0, to: -1.
+2023-11-30 20:20:26,614 INFO Node <naming_instance_metadata/192.168.56.1:7848> target priority value has changed from: 0, to: -1.
 
-2023-11-28 22:44:17,885 INFO Node <naming_instance_metadata/192.168.56.1:7848> init, term=1, lastLogId=LogId [index=1, term=1], conf=192.168.56.1:7848, oldConf=.
+2023-11-30 20:20:26,615 INFO Creating new channel to: 192.168.56.1:7848.
 
-2023-11-28 22:44:17,885 INFO Node <naming_instance_metadata/192.168.56.1:7848> start vote and grant vote self, term=1.
+2023-11-30 20:20:26,616 INFO Node <naming_instance_metadata/192.168.56.1:7848> init, term=2, lastLogId=LogId [index=2, term=2], conf=192.168.56.1:7848, oldConf=.
 
-2023-11-28 22:44:17,890 WARN Unable to fsync directory D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\nacos\data\protocol\raft\naming_instance_metadata\meta-data on windows.
+2023-11-30 20:20:26,616 INFO Node <naming_instance_metadata/192.168.56.1:7848> start vote and grant vote self, term=2.
 
-2023-11-28 22:44:17,890 INFO Save raft meta, path=D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\nacos\data\protocol\raft\naming_instance_metadata\meta-data, term=2, votedFor=192.168.56.1:7848, cost time=5 ms
+2023-11-30 20:20:26,621 WARN Unable to fsync directory D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\nacos\data\protocol\raft\naming_instance_metadata\meta-data on windows.
 
-2023-11-28 22:44:17,890 INFO Node <naming_instance_metadata/192.168.56.1:7848> become leader of group, term=2, conf=192.168.56.1:7848, oldConf=.
+2023-11-30 20:20:26,621 INFO Save raft meta, path=D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\nacos\data\protocol\raft\naming_instance_metadata\meta-data, term=3, votedFor=192.168.56.1:7848, cost time=5 ms
 
-2023-11-28 22:44:17,890 WARN RPC server is not started in RaftGroupService.
+2023-11-30 20:20:26,621 INFO Node <naming_instance_metadata/192.168.56.1:7848> become leader of group, term=3, conf=192.168.56.1:7848, oldConf=.
 
-2023-11-28 22:44:17,890 INFO Start the RaftGroupService successfully.
+2023-11-30 20:20:26,621 WARN RPC server is not started in RaftGroupService.
 
-2023-11-28 22:44:17,891 INFO The number of active nodes increment to 3.
+2023-11-30 20:20:26,621 INFO Start the RaftGroupService successfully.
 
-2023-11-28 22:44:17,892 INFO onLeaderStart: term=2.
+2023-11-30 20:20:26,623 INFO The number of active nodes increment to 3.
 
-2023-11-28 22:44:17,936 INFO Starts FSMCaller successfully.
+2023-11-30 20:20:26,623 INFO onLeaderStart: term=3.
 
-2023-11-28 22:44:17,936 WARN No data for snapshot reader D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\nacos\data\protocol\raft\naming_service_metadata\snapshot.
+2023-11-30 20:20:26,643 INFO The channel 192.168.56.1:7848 is in state: CONNECTING.
 
-2023-11-28 22:44:17,936 INFO Node <naming_service_metadata/192.168.56.1:7848> target priority value has changed from: 0, to: -1.
+2023-11-30 20:20:26,662 INFO Starts FSMCaller successfully.
 
-2023-11-28 22:44:17,937 INFO Node <naming_service_metadata/192.168.56.1:7848> init, term=1, lastLogId=LogId [index=1, term=1], conf=192.168.56.1:7848, oldConf=.
+2023-11-30 20:20:26,662 WARN No data for snapshot reader D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\nacos\data\protocol\raft\naming_service_metadata\snapshot.
 
-2023-11-28 22:44:17,937 INFO Node <naming_service_metadata/192.168.56.1:7848> start vote and grant vote self, term=1.
+2023-11-30 20:20:26,662 INFO Node <naming_service_metadata/192.168.56.1:7848> target priority value has changed from: 0, to: -1.
 
-2023-11-28 22:44:17,942 WARN Unable to fsync directory D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\nacos\data\protocol\raft\naming_service_metadata\meta-data on windows.
+2023-11-30 20:20:26,662 INFO Node <naming_service_metadata/192.168.56.1:7848> init, term=2, lastLogId=LogId [index=2, term=2], conf=192.168.56.1:7848, oldConf=.
 
-2023-11-28 22:44:17,942 INFO Save raft meta, path=D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\nacos\data\protocol\raft\naming_service_metadata\meta-data, term=2, votedFor=192.168.56.1:7848, cost time=4 ms
+2023-11-30 20:20:26,662 INFO Node <naming_service_metadata/192.168.56.1:7848> start vote and grant vote self, term=2.
 
-2023-11-28 22:44:17,942 INFO Node <naming_service_metadata/192.168.56.1:7848> become leader of group, term=2, conf=192.168.56.1:7848, oldConf=.
+2023-11-30 20:20:26,666 INFO Truncated prefix logs in data path: D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\nacos\data\protocol\raft\naming_service_metadata\log from log index 0 to 1, cost 0 ms.
 
-2023-11-28 22:44:17,942 WARN RPC server is not started in RaftGroupService.
+2023-11-30 20:20:26,671 WARN Unable to fsync directory D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\nacos\data\protocol\raft\naming_service_metadata\meta-data on windows.
 
-2023-11-28 22:44:17,942 INFO Start the RaftGroupService successfully.
+2023-11-30 20:20:26,671 INFO Save raft meta, path=D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\nacos\data\protocol\raft\naming_service_metadata\meta-data, term=3, votedFor=192.168.56.1:7848, cost time=4 ms
 
-2023-11-28 22:44:17,944 INFO onLeaderStart: term=2.
+2023-11-30 20:20:26,671 INFO Node <naming_service_metadata/192.168.56.1:7848> become leader of group, term=3, conf=192.168.56.1:7848, oldConf=.
 
-2023-11-28 22:44:17,946 INFO The channel 192.168.56.1:7848 is in state: READY.
+2023-11-30 20:20:26,671 WARN RPC server is not started in RaftGroupService.
 
-2023-11-28 22:44:17,946 INFO The channel 192.168.56.1:7848 has successfully established.
+2023-11-30 20:20:26,671 INFO Start the RaftGroupService successfully.
+
+2023-11-30 20:20:26,673 INFO onLeaderStart: term=3.
+
+2023-11-30 20:20:26,738 INFO The channel 192.168.56.1:7848 is in state: READY.
+
+2023-11-30 20:20:26,738 INFO The channel 192.168.56.1:7848 has successfully established.
+
+2023-11-30 20:37:08,712 WARN Unable to fsync directory D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\nacos\data\protocol\raft\naming_service_metadata\snapshot\temp on windows.
+
+2023-11-30 20:37:08,712 INFO Deleting snapshot D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\nacos\data\protocol\raft\naming_service_metadata\snapshot\snapshot_3.
+
+2023-11-30 20:37:08,712 INFO Renaming D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\nacos\data\protocol\raft\naming_service_metadata\snapshot\temp to D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\nacos\data\protocol\raft\naming_service_metadata\snapshot\snapshot_3.
+
+2023-11-30 20:37:08,717 WARN Unable to fsync directory D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\nacos\data\protocol\raft\naming_service_metadata\snapshot on windows.
+
+2023-11-30 20:37:25,271 WARN Unable to fsync directory D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\nacos\data\protocol\raft\naming_persistent_service_v2\snapshot\temp on windows.
+
+2023-11-30 20:37:25,271 INFO Deleting snapshot D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\nacos\data\protocol\raft\naming_persistent_service_v2\snapshot\snapshot_3.
+
+2023-11-30 20:37:25,271 INFO Renaming D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\nacos\data\protocol\raft\naming_persistent_service_v2\snapshot\temp to D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\nacos\data\protocol\raft\naming_persistent_service_v2\snapshot\snapshot_3.
+
+2023-11-30 20:37:25,273 WARN Unable to fsync directory D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\nacos\data\protocol\raft\naming_persistent_service_v2\snapshot on windows.
 

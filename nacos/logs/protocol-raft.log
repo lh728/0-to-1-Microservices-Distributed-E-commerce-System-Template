@@ -1,18 +1,18 @@
-2023-11-28 22:44:17,307 INFO Initializes the Raft protocol, raft-config info : {}
+2023-11-30 20:20:24,577 INFO Initializes the Raft protocol, raft-config info : {}
 
-2023-11-28 22:44:17,425 INFO ========= The raft protocol is starting... =========
+2023-11-30 20:20:24,707 INFO ========= The raft protocol is starting... =========
 
-2023-11-28 22:44:17,437 INFO ========= The raft protocol start finished... =========
+2023-11-30 20:20:24,722 INFO ========= The raft protocol start finished... =========
 
-2023-11-28 22:44:17,444 INFO create raft group : naming_persistent_service_v2
+2023-11-30 20:20:24,730 INFO create raft group : naming_persistent_service_v2
 
-2023-11-28 22:44:17,815 INFO create raft group : naming_instance_metadata
+2023-11-30 20:20:26,576 INFO create raft group : naming_instance_metadata
 
-2023-11-28 22:44:17,817 INFO This Raft event changes : RaftEvent{groupId='naming_persistent_service_v2', leader='192.168.56.1:7848', term=2, raftClusterInfo=[192.168.56.1:7848]}
+2023-11-30 20:20:26,577 INFO This Raft event changes : RaftEvent{groupId='naming_persistent_service_v2', leader='192.168.56.1:7848', term=3, raftClusterInfo=[192.168.56.1:7848]}
 
-2023-11-28 22:44:17,891 INFO create raft group : naming_service_metadata
+2023-11-30 20:20:26,623 INFO create raft group : naming_service_metadata
 
-2023-11-28 22:44:17,892 INFO This Raft event changes : RaftEvent{groupId='naming_instance_metadata', leader='192.168.56.1:7848', term=2, raftClusterInfo=[192.168.56.1:7848]}
+2023-11-30 20:20:26,623 INFO This Raft event changes : RaftEvent{groupId='naming_instance_metadata', leader='192.168.56.1:7848', term=3, raftClusterInfo=[192.168.56.1:7848]}
 
-2023-11-28 22:44:17,944 INFO This Raft event changes : RaftEvent{groupId='naming_service_metadata', leader='192.168.56.1:7848', term=2, raftClusterInfo=[192.168.56.1:7848]}
+2023-11-30 20:20:26,673 INFO This Raft event changes : RaftEvent{groupId='naming_service_metadata', leader='192.168.56.1:7848', term=3, raftClusterInfo=[192.168.56.1:7848]}
 
