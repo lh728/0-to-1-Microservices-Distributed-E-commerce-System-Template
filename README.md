@@ -269,7 +269,7 @@ After completing the dependency configuration, each microservice needs to furthe
 
 <br>
 
-#### Nacos
+#### Nacos （Discovery Center）
 
 To configure Nacos in the `PublicDependencies` modules, you need to first import the corresponding dependencies:
 
@@ -312,6 +312,51 @@ You can also directly download the [nacos folder](https://github.com/lh728/0-to-
 
 
 
+#### Nacos （Configuration Center）
+
+Configuring Nacos Configuration Center also requires importing packages in the `publicDependencies` microservice:
+
+```xml
+<dependency>
+    <groupId>com.alibaba.cloud</groupId>
+    <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+</dependency>
+```
+
+Then, in the each moicroservice  `/src/main/resources/application.yaml` configuration file, configure the Nacos Config address and import the service configuration.
+
+```yaml
+spring:
+  cloud:
+    nacos:
+      serverAddr: 127.0.0.1:8848
+  config:
+    import:
+      - nacos:nacos-config-example.properties?refresh=true
+```
+
+Here, it is similar to what we previously configured for the configuration center.
+
+After the configuration is complete, go to `127.0.0.1:8848/nacos`, enter the configuration management section (`configurations`), and then create a new configuration. Typically, fill in the **Data ID** field with `nacos-config-example.properties` and the **Group** field with `DEFAULT_GROUP`.
+
+Next, change the configuration's format to `properties`, and fill in the content that needs to be updated. This way, you can apply multiple configurations to different microservices at once within Nacos.
+
+Example as follows:
+
+<img src="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/raw/f50a28ecef002c0e2d1f30a7660b9068f9886c45/Static/nacos-config.png" style="zoom: 50%;" />
+
+Finally, click on `Publish`, and then add the `@RefreshScope` annotation to the classes that need to dynamically fetch configuration values. Afterward, you can dynamically obtain the configuration values.
+
+By modifying the configuration in this way, the changes will take effect in each microservice, and this change is dynamically applied without the need to restart the services.
+
+<br/>
+
+
+
+
+
+
+
 #### Using Feign for Declarative Remote Invocation
 
 Remote invocations are essential in microservices architecture, and Feign serves as a declarative HTTP client designed to simplify this process. Feign provides templates for HTTP requests, allowing for the definition of parameters, formats, addresses, and other details through the creation of simple interfaces and the inclusion of annotations.
@@ -321,7 +366,8 @@ Spring Cloud Feign extends the support for Spring MVC annotations on the foundat
 **To incorporate this functionality, it is necessary to introduce these  dependencies when establishing each microservice:**
 
 ```xml
-        <dependency>
+         <!-- put loadbalancer in publicDependencies-->
+		<dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-loadbalancer</artifactId>
             <version>2.2.0.RELEASE</version>
