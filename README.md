@@ -1,5 +1,22 @@
 # 0-to-1-Microservices-Distributed-E-commerce-System-Template
-This is a microservices-based distributed e-commerce system template designed to leverage a wide range of advanced management tools and practices from 0 to 1.
+这是一个还在搭建中的基于微服务的分布式电子商务系统模板，旨在利用从0到1的各种先进管理工具和实践，实现微服务+分布式+全栈+集群+部署+自动化运维+可视化CICD。
+
+**我将尽可能使用各种高版本的编程语言和依赖。**
+
+- 前后端分离开发，内网、外网部署，前端APP和WEB，内网部署后端集群；
+- 实现功能：
+  - 商品服务包括商品的增删改查、上下架、详情、支付、 优惠等等；
+  - 用户服务包括个人中心、收货地址等；
+  - 仓储服务包括商品库存、秒杀等；
+  - 订单服务包括订单增删改查 ；
+  - 检索服务包括商品的检索ES；
+  - 以及中央认证服务例如登录、注册、单点登录、社交登录等
+
+<br>
+
+该项目的中文版本点击此处： 中文
+
+
 
 <br>
 
