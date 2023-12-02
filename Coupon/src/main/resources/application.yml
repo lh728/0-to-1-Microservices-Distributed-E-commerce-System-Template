@@ -10,6 +10,8 @@ spring:
         server-addr: 127.0.0.1:8848
       config:
         server-addr: 127.0.0.1:8848
+        namespace: 7201755b-6f7f-4300-8d26-eea32695c636
+        group: dev
   config:
     import:
       - nacos:nacos-config-example.properties?refresh=true

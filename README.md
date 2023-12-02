@@ -1,20 +1,20 @@
 # 0-to-1-Microservices-Distributed-E-commerce-System-Template
-这是一个还在搭建中的基于微服务的分布式电子商务系统模板，旨在利用从0到1的各种先进管理工具和实践，实现微服务+分布式+全栈+集群+部署+自动化运维+可视化CICD。
+This is an ongoing construction of a microservices-based distributed e-commerce system template, aimed at leveraging various advanced management tools and practices from 0 to 1, to achieve microservices, distributed architecture, full-stack development, clustering, deployment, automated operations, and visualized CI/CD.
 
-**我将尽可能使用各种高版本的编程语言和依赖。**
+**I will strive to use various high-version programming languages and dependencies.**
 
-- 前后端分离开发，内网、外网部署，前端APP和WEB，内网部署后端集群；
-- 实现功能：
-  - 商品服务包括商品的增删改查、上下架、详情、支付、 优惠等等；
-  - 用户服务包括个人中心、收货地址等；
-  - 仓储服务包括商品库存、秒杀等；
-  - 订单服务包括订单增删改查 ；
-  - 检索服务包括商品的检索ES；
-  - 以及中央认证服务例如登录、注册、单点登录、社交登录等
+- Front-end and back-end separation development, deployment for both intranet and internet, front-end apps, and web, backend cluster deployment for intranet.
+- Implemented functionalities include
+  - Product service, which involves CRUD operations, inventory management, product details, payment, discounts, etc.；
+  - User service, covering user profiles, shipping addresses, etc.
+  - Warehousing service, managing product inventory, flash sales, etc.
+  - Order service, handling order operations.
+  - Search service, integrating Elasticsearch for product searches.
+  - Centralized authentication service, including features like login, registration, single sign-on, social login, etc.
 
 <br>
 
-该项目的中文版本点击此处： 中文
+For the Chinese version of this project, click [中文版本](https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/blob/3964901befed44bceb2f5b5ca32ce964ec621e03/README_ZH.md).
 
 
 
@@ -28,7 +28,9 @@ Download a Linux virtual machine based on Windows using **VirtualBox** (Make sur
 
 Download the official image via Vagrant, create a Linux virtual machine by `vagrant init centos/7`, and modify the Vagrantfile network settings (change the private network to your computer's IP address for domain name mapping; you can find your IP address using the '`ipconfig`' command).
 
-### Install Docker
+<br>
+
+### Install Git
 
 ```bash
 sudo yum install git
@@ -96,7 +98,7 @@ default-character-set=utf8
 
 <br>
 
-### Install redis
+### Install Redis
 
 ```bash
 # Pull the Redis image
@@ -197,7 +199,7 @@ The backend starts after modifying the database files. For the frontend, after d
 
 **Here are some important considerations when upgrading versions:**
 
-- In addition, since the backend spring boot version of renren-fast is relatively low, only 2.6.6, it is necessary to modify it to version 2.7.17 in the pom file.
+- Since the backend spring boot version of renren-fast is relatively low, only 2.6.6, it is necessary to modify it to version 2.7.17 in the pom file.
 
 - Note: To start the frontend of this project, Python needs to be downloaded. I have downloaded version 3.12.0 and also need to make modifications to the `package.json` file, updating `"node-sass": "4.13.1"` and `"sass-loader": "7.3.1"`. Afterward, execute the following commands:
 
@@ -207,7 +209,7 @@ The backend starts after modifying the database files. For the frontend, after d
   npm install 
   ```
 
-  Another solution is to change Node.js to version 12.13.0, which requires no modifications. This version is highly recommended.
+  **Another solution is to change Node.js to version 12.13.0, which requires no modifications. This version is highly recommended.**
 
 - Note that after the front-end is launched, it is necessary to modify the directory file `/static/config/index.js` with the statement `window.SITE_CONFIG['baseUrl'] = 'local API interface request address';`.
 
@@ -300,8 +302,6 @@ To configure Nacos in the `PublicDependencies` modules, you need to first import
 
 Nacos has its own middleware, and the Nacos server needs to be downloaded.
 
-Now, prepare to download and configure the `Docker server`:
-
 To download the [nacos-server-2.3.0-BETA.zip](https://github.com/alibaba/nacos/releases/download/2.3.0-BETA/nacos-server-2.3.0-BETA.zip) version from the official website, please ensure that you are using a Spring Boot version greater than 2.7.15 and that the Java environment variable is set. After downloading, unzip the file and run the `startup.cmd` script located in the Bin folder.
 
 At this point, you may encounter the error: `org.springframework.context.ApplicationContextException: Unable to start web server; nested exception is org.springframework.boot.web.server.WebServerException: Unable to start embedded Tomcat`, resulting in a crash. You can find the details of the issue in the log files.
@@ -362,9 +362,11 @@ Example as follows:
 
 <img src="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/raw/f50a28ecef002c0e2d1f30a7660b9068f9886c45/Static/nacos-config.png" style="zoom: 50%;" />
 
-Finally, click on `Publish`, and then add the `@RefreshScope` annotation to the classes that need to dynamically fetch configuration values. Afterward, you can dynamically obtain the configuration values.
+Click on `Publish`, and then add the `@RefreshScope` annotation to the classes that need to dynamically fetch configuration values. Afterward, you can dynamically obtain the configuration values.
 
 By modifying the configuration in this way, the changes will take effect in each microservice, and this change is dynamically applied without the need to restart the services.
+
+Finally, this template will use the name of each microservice as a namespace, utilizing configuration groups to distinguish environments (development, testing, production).
 
 <br/>
 
@@ -448,7 +450,7 @@ Lastly, add the annotation to the main class `MemberApplication` in the Member m
 
 ### Database Design
 
-**(No foreign keys will be established due to the hypothetical e-commerce project. This is to avoid potential performance impacts, as e-commerce databases often deal with a large volume of data.)**
+**(No foreign keys will be established due to this is a e-commerce project. This is to avoid potential performance impacts, as e-commerce databases often deal with a large volume of data.)**
 
 The following databases will be established: 
 
