@@ -1,6 +1,0 @@
-2023-11-30 20:36:16,434 INFO push [1] clients, groupKey=[nacos-config-example.properties+DEFAULT_GROUP]
-
-2023-11-30 20:38:51,279 INFO push [1] clients, groupKey=[nacos-config-example.properties+DEFAULT_GROUP]
-
-2023-11-30 20:40:37,391 INFO push [1] clients, groupKey=[nacos-config-example.properties+DEFAULT_GROUP]
-
