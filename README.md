@@ -209,7 +209,7 @@ The backend starts after modifying the database files. For the frontend, after d
   npm install 
   ```
 
-  <span style="background-color:yellow;">**Another solution is to change Node.js to version 12.13.0, which requires no modifications. This version is highly recommended.**</span>
+  ***Another solution is to change Node.js to version 12.13.0, which requires no modifications. This version is highly recommended.***
 
 - Note that after the front-end is launched, it is necessary to modify the directory file `/static/config/index.js` with the statement `window.SITE_CONFIG['baseUrl'] = 'local API interface request address';`.
 
@@ -362,7 +362,7 @@ Example as follows:
 
 <img src="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/raw/f50a28ecef002c0e2d1f30a7660b9068f9886c45/Static/nacos-config.png" style="zoom: 50%;" />
 
-Finally, click `Publish` and then add the <span style="background-color:yellow;">@RefreshScope annotation to the class that requires dynamically retrieved configuration values</span>. Subsequently, you will be able to dynamically obtain the configuration values.
+Finally, click `Publish` and then add the ***@RefreshScope annotation to the class that requires dynamically retrieved configuration values***. Subsequently, you will be able to dynamically obtain the configuration values.
 
 Modifying the configuration in this manner ensures that the changes take effect in each microservice, and this adjustment dynamically applies without the need to restart the services.
 

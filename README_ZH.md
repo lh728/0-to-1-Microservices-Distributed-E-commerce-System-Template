@@ -206,7 +206,7 @@ Spring Cloud Nacos-discovery
   npm install 
   ```
 
-  <span style="background-color:yellow;">**另一种解决方案是将 Node.js 版本更改为 12.13.0，无需进行任何修改。强烈推荐使用此版本。**</span>
+  ***另一种解决方案是将 Node.js 版本更改为 12.13.0，无需进行任何修改。强烈推荐使用此版本*。**
 
 - 请注意，在启动前端之后，需要修改目录文件 `/static/config/index.js`，添加语句 `window.SITE_CONFIG['baseUrl'] = '本地API接口请求地址';`
 
@@ -360,7 +360,7 @@ spring:
 
 <img src="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/raw/f50a28ecef002c0e2d1f30a7660b9068f9886c45/Static/nacos-config.png" style="zoom: 50%;" />
 
-最后，点击 `Publish`，然后给<span style="background-color:yellow;">需要动态获取配置值的类加上 @RefreshScope 注解</span>。之后，就可以动态获取到配置值了。
+最后，点击 `Publish`，***然后给需要动态获取配置值的类加上 @RefreshScope 注解***。之后，就可以动态获取到配置值了。
 
 通过这种方式修改配置，更改将在每个微服务中生效，而且这种更改是动态生效的，无需重新启动服务。
 
