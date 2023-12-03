@@ -16,4 +16,4 @@ buildNumber.properties
 **/target/
 
 .idea
-/nacos/
+nacos
