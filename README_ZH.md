@@ -372,7 +372,7 @@ spring:
 
 然后把原有的`application.properties` 中的内容迁移到 naocs上，例如：
 
-![image-20231203181135230](D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\Static\nacos-config2.png)
+![image-20231203181135230](https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/raw/2a9178a24f290885048611b19fa35e35779f96a3/Static/nacos-config2.png)
 
 然后新增 `bootstrap.properties` 文件，按照如下配置：
 

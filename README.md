@@ -14,7 +14,7 @@ This is an ongoing construction of a microservices-based distributed e-commerce 
 
 <br>
 
-For the Chinese version of this project, click [中文版本](https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/blob/3964901befed44bceb2f5b5ca32ce964ec621e03/README_ZH.md).
+For the Chinese version of this project, click [中文版本](https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/blob/2a9178a24f290885048611b19fa35e35779f96a3/README_ZH.md).
 
 
 
@@ -209,7 +209,7 @@ The backend starts after modifying the database files. For the frontend, after d
   npm install 
   ```
 
-  **Another solution is to change Node.js to version 12.13.0, which requires no modifications. This version is highly recommended.**
+  <span style="background-color:yellow;">**Another solution is to change Node.js to version 12.13.0, which requires no modifications. This version is highly recommended.**</span>
 
 - Note that after the front-end is launched, it is necessary to modify the directory file `/static/config/index.js` with the statement `window.SITE_CONFIG['baseUrl'] = 'local API interface request address';`.
 
@@ -362,19 +362,61 @@ Example as follows:
 
 <img src="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/raw/f50a28ecef002c0e2d1f30a7660b9068f9886c45/Static/nacos-config.png" style="zoom: 50%;" />
 
-Click on `Publish`, and then add the `@RefreshScope` annotation to the classes that need to dynamically fetch configuration values. Afterward, you can dynamically obtain the configuration values.
+Finally, click `Publish` and then add the <span style="background-color:yellow;">@RefreshScope annotation to the class that requires dynamically retrieved configuration values</span>. Subsequently, you will be able to dynamically obtain the configuration values.
 
-By modifying the configuration in this way, the changes will take effect in each microservice, and this change is dynamically applied without the need to restart the services.
-
-Finally, this template will use the name of each microservice as a namespace, utilizing configuration groups to distinguish environments (development, testing, production).
+Modifying the configuration in this manner ensures that the changes take effect in each microservice, and this adjustment dynamically applies without the need to restart the services.
 
 <br/>
 
+**Setting Namespace and Configuration Groups**
 
+In actual development, each microservice's name will be used as a namespace. For example, the "coupon" namespace will be employed for the configuration files of the coupon microservice. Configuration groups are used to differentiate environments; for instance, the development branch will use the "DEV" group.
 
+Subsequently, migrate the content from the original `application.properties` to Nacos, for example:
 
+![image-20231203181135230](https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/raw/2a9178a24f290885048611b19fa35e35779f96a3/Static/nacos-config2.png)
 
+Then, add a new `bootstrap.properties` file and configure it as follows:
 
+```properties
+spring.application.name=coupon
+
+spring.cloud.nacos.config.server-addr=127.0.0.1:8848
+# namespace id as picture
+spring.cloud.nacos.config.namespace=7201755b-6f7f-4300-8d26-eea32695c636
+spring.cloud.nacos.config.group=DEV
+spring.config.import=nacos:coupon.properties?refresh=true
+
+# config extension configs
+spring.cloud.nacos.config.extension-configs[0].data-id=datasource.yml
+spring.cloud.nacos.config.extension-configs[0].group=DEV
+spring.cloud.nacos.config.extension-configs[0].refresh=true
+
+spring.cloud.nacos.config.extension-configs[1].data-id=mybatis.yml
+spring.cloud.nacos.config.extension-configs[1].group=DEV
+spring.cloud.nacos.config.extension-configs[1].refresh=true
+
+spring.cloud.nacos.config.extension-configs[2].data-id=other.yml
+spring.cloud.nacos.config.extension-configs[2].group=DEV
+spring.cloud.nacos.config.extension-configs[2].refresh=true
+```
+
+Now, you can comment out the contents of the original `application.yml` and place them separately in `datasource.yml`, `mybatis.yml`, and `other.yml`. If there are changes to the configuration files later on, you only need to update the content in Nacos.
+
+Additionally, it's worth noting that attempting to start the application directly will fail now. This is because, starting from the Spring Cloud 2020.0.2 version, the relevant dependencies for bootstrap have been removed from `spring-cloud-starter-config`. Therefore, from version 2020.02 onwards, you need to include the `spring-cloud-starter-bootstrap` dependency separately:
+
+```xml
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-bootstrap</artifactId>
+            <version>3.0.3</version>
+        </dependency>
+
+```
+
+**The content of `application.yml` will be commented out but kept in sync for demonstration purposes.**
+
+<br/>
 
 #### Using Feign for Declarative Remote Invocation
 
