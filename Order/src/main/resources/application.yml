@@ -1,27 +1,27 @@
-spring:
-  datasource:
-    username: root
-    password: 425658167
-    url: jdbc:mysql://192.168.56.10:3306/OMS
-    driver-class-name: com.mysql.cj.jdbc.Driver
-  cloud:
-    nacos:
-      discovery:
-        server-addr: 127.0.0.1:8848
-      config:
-        server-addr: 127.0.0.1:8848
-        namespace: bdf512fb-731e-4bb7-8e42-ef320bd4852a
-        group: dev
-  config:
-    import:
-      - nacos:nacos-config-example.properties?refresh=true
-  application:
-    name: order
-
-mybatis-plus:
-  mapper-locations: classpath:/mapper/**/*.xml
-  global-config:
-    db-config:
-      id-type: auto
-server:
-  port: 9000
+#spring:
+#  datasource:
+#    username: root
+#    password: 425658167
+#    url: jdbc:mysql://192.168.56.10:3306/OMS
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#  cloud:
+#    nacos:
+#      discovery:
+#        server-addr: 127.0.0.1:8848
+#      config:
+#        server-addr: 127.0.0.1:8848
+#        namespace: bdf512fb-731e-4bb7-8e42-ef320bd4852a
+#        group: dev
+#  config:
+#    import:
+#      - nacos:nacos-config-example.properties?refresh=true
+#  application:
+#    name: order
+#
+#mybatis-plus:
+#  mapper-locations: classpath:/mapper/**/*.xml
+#  global-config:
+#    db-config:
+#      id-type: auto
+#server:
+#  port: 9000

@@ -206,7 +206,7 @@ Spring Cloud Nacos-discovery
   npm install 
   ```
 
-  **另一种解决方案是将 Node.js 版本更改为 12.13.0，无需进行任何修改。强烈推荐使用此版本。**
+  <span style="background-color:yellow;">**另一种解决方案是将 Node.js 版本更改为 12.13.0，无需进行任何修改。强烈推荐使用此版本。**</span>
 
 - 请注意，在启动前端之后，需要修改目录文件 `/static/config/index.js`，添加语句 `window.SITE_CONFIG['baseUrl'] = '本地API接口请求地址';`
 
@@ -360,11 +360,59 @@ spring:
 
 <img src="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/raw/f50a28ecef002c0e2d1f30a7660b9068f9886c45/Static/nacos-config.png" style="zoom: 50%;" />
 
-最后，点击 `Publish`，然后给需要动态获取配置值的类加上 `@RefreshScope` 注解。之后，就可以动态获取到配置值了。
+最后，点击 `Publish`，然后给<span style="background-color:yellow;">需要动态获取配置值的类加上 @RefreshScope 注解</span>。之后，就可以动态获取到配置值了。
 
 通过这种方式修改配置，更改将在每个微服务中生效，而且这种更改是动态生效的，无需重新启动服务。
 
-本模板将使用每个微服务的名称作为命名空间，使用配置分组来区分环境（开发测试生产）。
+<br/>
+
+**设置命名空间和配置组**
+
+正式开发中，将使用每个微服务的名称作为命名空间，例如coupon 命名空间将被用于coupon微服务的配置文件，使用配置分组来区分环境，例如开发分支将会使用DEV group。
+
+然后把原有的`application.properties` 中的内容迁移到 naocs上，例如：
+
+![image-20231203181135230](D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\Static\nacos-config2.png)
+
+然后新增 `bootstrap.properties` 文件，按照如下配置：
+
+```properties
+spring.application.name=coupon
+
+spring.cloud.nacos.config.server-addr=127.0.0.1:8848
+# namespace id as picture
+spring.cloud.nacos.config.namespace=7201755b-6f7f-4300-8d26-eea32695c636
+spring.cloud.nacos.config.group=DEV
+spring.config.import=nacos:coupon.properties?refresh=true
+
+# config extension configs
+spring.cloud.nacos.config.extension-configs[0].data-id=datasource.yml
+spring.cloud.nacos.config.extension-configs[0].group=DEV
+spring.cloud.nacos.config.extension-configs[0].refresh=true
+
+spring.cloud.nacos.config.extension-configs[1].data-id=mybatis.yml
+spring.cloud.nacos.config.extension-configs[1].group=DEV
+spring.cloud.nacos.config.extension-configs[1].refresh=true
+
+spring.cloud.nacos.config.extension-configs[2].data-id=other.yml
+spring.cloud.nacos.config.extension-configs[2].group=DEV
+spring.cloud.nacos.config.extension-configs[2].refresh=true
+```
+
+现在，可以把原有的 application.yml中的内容注释掉，分别放在 datasource.yml，mybatis.yml 和 other.yml 里面了。之后如果配置文件有变动，只需要更改nacos中的内容即可。
+
+另外，值得注意的是，现在直接启动是会失败的，因为springcloud 2020.0.2版本中把bootstrap的相关依赖从spring-cloud-starter-config中移除了，所以现在在2020.02 以后需要单独引入spring-cloud-starter-bootstrap 依赖：
+
+```xml
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-bootstrap</artifactId>
+            <version>3.0.3</version>
+        </dependency>
+
+```
+
+ **application.yml 的内容将会注释掉但是保持同步更新，用于向大家展示内容。**
 
 <br/>
 
