@@ -14,7 +14,7 @@ This is an ongoing construction of a microservices-based distributed e-commerce 
 
 <br>
 
-For the Chinese version of this project, click [中文版本](https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/blob/d190a57a68e9e903d2e9c011f63b7c1046e8f888/README_ZH.md).
+For the Chinese version of this project, click [中文版本](https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/blob/38ec75d25befae9a1489247aec3c9567c0caac3e/README_ZH.md).
 
 
 
@@ -74,6 +74,8 @@ Spring Cloud Alibaba - **Seata** (Formerly Fescar, a Distributed Transaction Sol
 
 ### Dependency
 
+**Please refer to the pom.xml file under the PublicDependencies package for details.**
+
 Springboot 2.7.17
 
 Spring Web
@@ -81,6 +83,12 @@ Spring Web
 Spring Cloud Routing - openFeign (microservices communication)
 
 Spring Cloud Nacos-discovery
+
+Spring Cloud Nacos-config
+
+Spring loadbalancer
+
+Spring gateway
 
 
 
@@ -471,6 +479,23 @@ Lastly, add the annotation to the main class `MemberApplication` in the Member m
 ```
 
  
+
+#### GateWay
+
+The common functionalities of a gateway include route forwarding, permission verification, rate limiting, and API management. In this context, Spring Cloud Gateway is utilized as the gateway, replacing the Zuul gateway.
+
+To enable gateway functionality, the following dependency needs to be added:
+
+```xml
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-gateway</artifactId>
+        </dependency>
+```
+
+To use the gateway, service registration and discovery must be enabled. Therefore, the `GatewayApplication` should be annotated with `@EnableDiscoveryClient`. Additionally, configure the Nacos registry center address, referring to the Nacos configuration center setup mentioned earlier.
+
+It's worth noting that, since all dependencies from PublicDependencies are directly used, it includes MyBatis configuration, which is currently not required for the gateway. To exclude database configuration, add `(exclude = {DataSourceAutoConfiguration.class})` to the `@SpringBootApplication` annotation.
 
 
 
