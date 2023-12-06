@@ -14,112 +14,13 @@ This is an ongoing construction of a microservices-based distributed e-commerce 
 
 <br>
 
-For the Chinese version of this project, click [中文版本](https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/blob/2a9178a24f290885048611b19fa35e35779f96a3/README_ZH.md).
+For the Chinese version of this project, click [中文版本](https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/blob/d190a57a68e9e903d2e9c011f63b7c1046e8f888/README_ZH.md).
 
 
 
 <br>
 
 ## Project Setup Guide
-
-### Virtual Machine
-
-Download a Linux virtual machine based on Windows using **VirtualBox** (Make sure to enable CPU virtualization mode).
-
-Download the official image via Vagrant, create a Linux virtual machine by `vagrant init centos/7`, and modify the Vagrantfile network settings (change the private network to your computer's IP address for domain name mapping; you can find your IP address using the '`ipconfig`' command).
-
-<br>
-
-### Install Git
-
-```bash
-sudo yum install git
-
-# verify that git is working properly
-git --version
-
-```
-
-<br>
-
-### Install Docker
-
-```bash
-# Update the software packages
-sudo yum update -y
-
-# Install necessary dependencies to be able to install Docker from the official repository
-sudo yum install -y yum-utils device-mapper-persistent-data lvm2
-
-# Add the Docker official repository
-sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-
-# Install Docker Engine (Docker CE)
-sudo yum install docker-ce docker-ce-cli containerd.io
-
-# Start the Docker service and set it to start on boot
-sudo systemctl start docker
-sudo systemctl enable docker
-
-# Confirm that Docker is correctly installed and running
-sudo docker --version
-
-# Verify that Docker is working properly
-sudo docker run hello-world
-
-```
-
-<br>
-
-### Install mysql 8.0.17
-
-```bash
-# Pull the MySQL 8.0.17 image
-docker pull mysql:8.0.17
-
-# Run the MySQL container. Remember to create the necessary data volume directories using mkdir.
-docker run -d -p 3306:3306 --name mysql-container \
--v /mydata/mysql/log:/var/log/mysql \
--v /mydata/mysql/data:/var/lib/mysql \
--v /mydata/mysql/conf:/etc/mysql \
--v /mydata/mysql-files:/var/lib/mysql-files -e MYSQL_ROOT_PASSWORD=425658167 mysql:8.0.17
-
-# Verify if the MySQL container is running
-docker ps
-
-# Set the character encoding (if needed). Create a my.cnf file in /mydata/mysql/conf using vi.
-[mysqld]
-character-set-server=utf8
-
-[client]
-default-character-set=utf8
-
-```
-
-<br>
-
-### Install Redis
-
-```bash
-# Pull the Redis image
-docker pull redis
-
-# Run the Redis container
-docker run -p 6379:6379 --name redis -v /mydata/redis/data:/data \
--v /mydata/redis/conf/redis.conf:/etc/redis/redis.conf \
--d redis redis-server /etc/redis/redis.conf
-
-# Verify if the Redis container is running
-docker ps
-
-# Interact with Redis (optional)
-docker exec -it redis redis-cli
-
-# The latest Redis versions have persistence enabled by default, so you don't need to modify the configuration file for now. 
-
-```
-
-<br>
 
 ### **Environment**
 
@@ -133,7 +34,7 @@ Node.js 12.13.0
 
 Nacos-server 2.3.0
 
-#### Microservices Environment
+### Microservices Environment
 
 Configuring Spring Cloud Alibaba requires checking the official website to find the corresponding compatible versions.
 
@@ -180,6 +81,111 @@ Spring Web
 Spring Cloud Routing - openFeign (microservices communication)
 
 Spring Cloud Nacos-discovery
+
+
+
+
+
+### Virtual Machine
+
+Download a Linux virtual machine based on Windows using **VirtualBox** (Make sure to enable CPU virtualization mode).
+
+Download the official image via Vagrant, create a Linux virtual machine by `vagrant init centos/7`, and modify the Vagrantfile network settings (change the private network to your computer's IP address for domain name mapping; you can find your IP address using the '`ipconfig`' command).
+
+<br>
+
+#### Install Git
+
+```bash
+sudo yum install git
+
+# verify that git is working properly
+git --version
+
+```
+
+<br>
+
+#### Install Docker
+
+```bash
+# Update the software packages
+sudo yum update -y
+
+# Install necessary dependencies to be able to install Docker from the official repository
+sudo yum install -y yum-utils device-mapper-persistent-data lvm2
+
+# Add the Docker official repository
+sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+# Install Docker Engine (Docker CE)
+sudo yum install docker-ce docker-ce-cli containerd.io
+
+# Start the Docker service and set it to start on boot
+sudo systemctl start docker
+sudo systemctl enable docker
+
+# Confirm that Docker is correctly installed and running
+sudo docker --version
+
+# Verify that Docker is working properly
+sudo docker run hello-world
+
+```
+
+<br>
+
+#### Install mysql 8.0.17
+
+```bash
+# Pull the MySQL 8.0.17 image
+docker pull mysql:8.0.17
+
+# Run the MySQL container. Remember to create the necessary data volume directories using mkdir.
+docker run -d -p 3306:3306 --name mysql-container \
+-v /mydata/mysql/log:/var/log/mysql \
+-v /mydata/mysql/data:/var/lib/mysql \
+-v /mydata/mysql/conf:/etc/mysql \
+-v /mydata/mysql-files:/var/lib/mysql-files -e MYSQL_ROOT_PASSWORD=425658167 mysql:8.0.17
+
+# Verify if the MySQL container is running
+docker ps
+
+# Set the character encoding (if needed). Create a my.cnf file in /mydata/mysql/conf using vi.
+[mysqld]
+character-set-server=utf8
+
+[client]
+default-character-set=utf8
+
+```
+
+<br>
+
+#### Install Redis
+
+```bash
+# Pull the Redis image
+docker pull redis
+
+# Run the Redis container
+docker run -p 6379:6379 --name redis -v /mydata/redis/data:/data \
+-v /mydata/redis/conf/redis.conf:/etc/redis/redis.conf \
+-d redis redis-server /etc/redis/redis.conf
+
+# Verify if the Redis container is running
+docker ps
+
+# Interact with Redis (optional)
+docker exec -it redis redis-cli
+
+# The latest Redis versions have persistence enabled by default, so you don't need to modify the configuration file for now. 
+
+```
+
+<br>
+
+<br/>
 
 
 
@@ -490,7 +496,7 @@ Lastly, add the annotation to the main class `MemberApplication` in the Member m
 
 <br>
 
-### Database Design
+## Database Design
 
 **(No foreign keys will be established due to this is a e-commerce project. This is to avoid potential performance impacts, as e-commerce databases often deal with a large volume of data.)**
 

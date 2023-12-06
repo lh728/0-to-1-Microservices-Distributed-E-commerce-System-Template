@@ -17,105 +17,6 @@
 
 ##  项目设置指南
 
-### 虚拟机
-
-在 Windows 上使用 **VirtualBox** 下载一个基于 Linux 的虚拟机（确保启用了 CPU 虚拟化模式）。
-
-通过 Vagrant 下载官方镜像，使用 `vagrant init centos/7` 命令创建一个 Linux 虚拟机，并修改 Vagrantfile 网络设置（将私有网络更改为计算机的 IP 地址以进行域名映射；可以使用 '`ipconfig`' 命令找到你的 IP 地址）。
-
-<br>
-
-### 安装 Git
-
-```bash
-sudo yum install git
-
-# verify that git is working properly
-git --version
-
-```
-
-<br>
-
-### 安装 Docker
-
-```bash
-# Update the software packages
-sudo yum update -y
-
-# Install necessary dependencies to be able to install Docker from the official repository
-sudo yum install -y yum-utils device-mapper-persistent-data lvm2
-
-# Add the Docker official repository
-sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-
-# Install Docker Engine (Docker CE)
-sudo yum install docker-ce docker-ce-cli containerd.io
-
-# Start the Docker service and set it to start on boot
-sudo systemctl start docker
-sudo systemctl enable docker
-
-# Confirm that Docker is correctly installed and running
-sudo docker --version
-
-# Verify that Docker is working properly
-sudo docker run hello-world
-
-```
-
-<br>
-
-### 安装 mysql 8.0.17
-
-```bash
-# Pull the MySQL 8.0.17 image
-docker pull mysql:8.0.17
-
-# Run the MySQL container. Remember to create the necessary data volume directories using mkdir.
-docker run -d -p 3306:3306 --name mysql-container \
--v /mydata/mysql/log:/var/log/mysql \
--v /mydata/mysql/data:/var/lib/mysql \
--v /mydata/mysql/conf:/etc/mysql \
--v /mydata/mysql-files:/var/lib/mysql-files -e MYSQL_ROOT_PASSWORD=425658167 mysql:8.0.17
-
-# Verify if the MySQL container is running
-docker ps
-
-# Set the character encoding (if needed). Create a my.cnf file in /mydata/mysql/conf using vi.
-[mysqld]
-character-set-server=utf8
-
-[client]
-default-character-set=utf8
-
-```
-
-<br>
-
-### 安装 Redis
-
-```bash
-# Pull the Redis image
-docker pull redis
-
-# Run the Redis container
-docker run -p 6379:6379 --name redis -v /mydata/redis/data:/data \
--v /mydata/redis/conf/redis.conf:/etc/redis/redis.conf \
--d redis redis-server /etc/redis/redis.conf
-
-# Verify if the Redis container is running
-docker ps
-
-# Interact with Redis (optional)
-docker exec -it redis redis-cli
-
-# The latest Redis versions have persistence enabled by default, so you don't need to modify the configuration file for now. 
-
-```
-
-<br>
-
 ### **环境**
 
 Java17.0.6 
@@ -130,7 +31,7 @@ Nacos-server 2.3.0
 
 <br>
 
-#### 微服务环境
+### 微服务环境
 
 配置 Spring Cloud Alibaba 需要查看官方网站以找到相应的兼容版本。
 
@@ -170,6 +71,8 @@ Spring Cloud Alibaba - **Seata**（前身为 Fescar，分布式事务解决方�
 
 ### 依赖
 
+详情见PublicDependencies包下的pom.xml文件
+
 Springboot 2.7.17
 
 Spring Web
@@ -178,7 +81,116 @@ Spring Cloud Routing - openFeign (microservices communication)
 
 Spring Cloud Nacos-discovery
 
+Spring Cloud Nacos-config
+
+Spring loadbalancer
+
+Spring gateway
+
 <br>
+
+
+
+### 虚拟机
+
+在 Windows 上使用 **VirtualBox** 下载一个基于 Linux 的虚拟机（确保启用了 CPU 虚拟化模式）。
+
+通过 Vagrant 下载官方镜像，使用 `vagrant init centos/7` 命令创建一个 Linux 虚拟机，并修改 Vagrantfile 网络设置（将私有网络更改为计算机的 IP 地址以进行域名映射；可以使用 '`ipconfig`' 命令找到你的 IP 地址）。
+
+<br>
+
+#### 安装 Git
+
+```bash
+sudo yum install git
+
+# verify that git is working properly
+git --version
+
+```
+
+<br>
+
+#### 安装 Docker
+
+```bash
+# Update the software packages
+sudo yum update -y
+
+# Install necessary dependencies to be able to install Docker from the official repository
+sudo yum install -y yum-utils device-mapper-persistent-data lvm2
+
+# Add the Docker official repository
+sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+# Install Docker Engine (Docker CE)
+sudo yum install docker-ce docker-ce-cli containerd.io
+
+# Start the Docker service and set it to start on boot
+sudo systemctl start docker
+sudo systemctl enable docker
+
+# Confirm that Docker is correctly installed and running
+sudo docker --version
+
+# Verify that Docker is working properly
+sudo docker run hello-world
+
+```
+
+<br>
+
+#### 安装 mysql 8.0.17
+
+```bash
+# Pull the MySQL 8.0.17 image
+docker pull mysql:8.0.17
+
+# Run the MySQL container. Remember to create the necessary data volume directories using mkdir.
+docker run -d -p 3306:3306 --name mysql-container \
+-v /mydata/mysql/log:/var/log/mysql \
+-v /mydata/mysql/data:/var/lib/mysql \
+-v /mydata/mysql/conf:/etc/mysql \
+-v /mydata/mysql-files:/var/lib/mysql-files -e MYSQL_ROOT_PASSWORD=425658167 mysql:8.0.17
+
+# Verify if the MySQL container is running
+docker ps
+
+# Set the character encoding (if needed). Create a my.cnf file in /mydata/mysql/conf using vi.
+[mysqld]
+character-set-server=utf8
+
+[client]
+default-character-set=utf8
+
+```
+
+<br>
+
+#### 安装 Redis
+
+```bash
+# Pull the Redis image
+docker pull redis
+
+# Run the Redis container
+docker run -p 6379:6379 --name redis -v /mydata/redis/data:/data \
+-v /mydata/redis/conf/redis.conf:/etc/redis/redis.conf \
+-d redis redis-server /etc/redis/redis.conf
+
+# Verify if the Redis container is running
+docker ps
+
+# Interact with Redis (optional)
+docker exec -it redis redis-cli
+
+# The latest Redis versions have persistence enabled by default, so you don't need to modify the configuration file for now. 
+
+```
+
+<br>
+
+
 
 ## 管理系统
 
@@ -468,6 +480,25 @@ public interface CouponFeignService {
 
  
 
+#### GateWay
+
+网关的常用功能包括路由转发、权限校验、限流控制、API管理等。这里使用的是Spring Cloud Gateway作为网关，取代Zuul网关。
+
+网关功能需要导入依赖:
+
+```xml
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-gateway</artifactId>
+        </dependency>
+```
+
+如果要使用网关，需要开启服务注册发现，因此需要往 `GatewayApplication` 添加注解：  `@EnableDiscoveryClient`，然后配置nacos相关的注册中心地址，这里参照前文的nacos 配置中心配置即可。
+
+
+
+
+
 
 
 <br>
@@ -492,7 +523,7 @@ public interface CouponFeignService {
 
 <br>
 
-### 数据库设计
+## 数据库设计
 
 **(由于这是一个电子商务项目，我们将不会建立外键，以避免潜在的性能影响，因为电子商务数据库通常需要处理大量的数据。)**
 

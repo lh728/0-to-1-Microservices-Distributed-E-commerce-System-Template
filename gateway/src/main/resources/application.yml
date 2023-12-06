@@ -1,0 +1,22 @@
+#spring:
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: test_route
+#          uri: https://thellu.com
+#          predicates:
+#            - Query=url, thellu
+#        - id: test_route
+#          uri: https://baidu.com
+#          predicates:
+#            - Query=url, baidu
+#    nacos:
+#      discovery:
+#        server-addr: 127.0.0.1:8848
+#  application:
+#    name: gateway
+#
+#server:
+#  port: 88
+#
+#
