@@ -19,15 +19,41 @@
 
 ### **环境**
 
-Java17.0.6 
+Java 17.0.6 
 
 MAVEN 3.9.2
 
 Git
 
+Nacos-server 2.3.0
+
 Node.js 12.13.0
 
-Nacos-server 2.3.0
+ES 6
+
+Vue 2
+
+<br>
+
+
+
+### 依赖
+
+详情见PublicDependencies包下的pom.xml文件
+
+Springboot 2.7.17
+
+Spring Web
+
+Spring Cloud Routing - openFeign (microservices communication)
+
+Spring Cloud Nacos-discovery
+
+Spring Cloud Nacos-config
+
+Spring loadbalancer
+
+Spring gateway
 
 <br>
 
@@ -66,26 +92,6 @@ Spring Cloud - **Sleuth** （分布式追踪）
 Spring Cloud Alibaba - **Seata**（前身为 Fescar，分布式事务解决方案）
 
 
-
-<br>
-
-### 依赖
-
-详情见PublicDependencies包下的pom.xml文件
-
-Springboot 2.7.17
-
-Spring Web
-
-Spring Cloud Routing - openFeign (microservices communication)
-
-Spring Cloud Nacos-discovery
-
-Spring Cloud Nacos-config
-
-Spring loadbalancer
-
-Spring gateway
 
 <br>
 
@@ -495,7 +501,7 @@ public interface CouponFeignService {
 
 如果要使用网关，需要开启服务注册发现，因此需要往 `GatewayApplication` 添加注解：  `@EnableDiscoveryClient`，然后配置nacos相关的注册中心地址，这里参照前文的nacos 配置中心配置即可。
 
-
+另外这里注意，由于我们直接使用了 PublicDependencies 的所有依赖，因此会引入 mybatis 的配置，但是gateway 暂时不需要，因此可以在 @SpringBootApplication 注解增加 `(exclude = {DataSourceAutoConfiguration.class})`排除数据库配置。
 
 
 

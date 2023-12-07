@@ -24,15 +24,41 @@ For the Chinese version of this project, click [中文版本](https://github.com
 
 ### **Environment**
 
-Java17.0.6 
+Java 17.0.6 
 
 MAVEN 3.9.2
 
 Git
 
+Nacos-server 2.3.0
+
 Node.js 12.13.0
 
-Nacos-server 2.3.0
+ES 6
+
+Vue 2
+
+<br>
+
+### Dependency
+
+**Please refer to the pom.xml file under the PublicDependencies package for details.**
+
+Springboot 2.7.17
+
+Spring Web
+
+Spring Cloud Routing - openFeign (microservices communication)
+
+Spring Cloud Nacos-discovery
+
+Spring Cloud Nacos-config
+
+Spring loadbalancer
+
+Spring gateway
+
+<br>
 
 ### Microservices Environment
 
@@ -71,28 +97,6 @@ Spring Cloud Alibaba - **Seata** (Formerly Fescar, a Distributed Transaction Sol
 
 
 <br>
-
-### Dependency
-
-**Please refer to the pom.xml file under the PublicDependencies package for details.**
-
-Springboot 2.7.17
-
-Spring Web
-
-Spring Cloud Routing - openFeign (microservices communication)
-
-Spring Cloud Nacos-discovery
-
-Spring Cloud Nacos-config
-
-Spring loadbalancer
-
-Spring gateway
-
-
-
-
 
 ### Virtual Machine
 
