@@ -25,7 +25,7 @@ import com.ecommercesystemtemplate.common.utils.R;
  * @date 2023-11-18 14:12:59
  */
 @RestController
-@RequestMapping("coupon/categorybrandrelation")
+@RequestMapping("product/categorybrandrelation")
 public class CategoryBrandRelationController {
     @Autowired
     private CategoryBrandRelationService categoryBrandRelationService;

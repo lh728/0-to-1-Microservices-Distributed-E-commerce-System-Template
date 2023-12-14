@@ -25,7 +25,7 @@ import com.ecommercesystemtemplate.common.utils.R;
  * @date 2023-11-18 14:12:59
  */
 @RestController
-@RequestMapping("coupon/spuinfodesc")
+@RequestMapping("product/spuinfodesc")
 public class SpuInfoDescController {
     @Autowired
     private SpuInfoDescService spuInfoDescService;

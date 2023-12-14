@@ -25,7 +25,7 @@ import com.ecommercesystemtemplate.common.utils.R;
  * @date 2023-11-18 14:12:59
  */
 @RestController
-@RequestMapping("coupon/commentreplay")
+@RequestMapping("product/commentreplay")
 public class CommentReplayController {
     @Autowired
     private CommentReplayService commentReplayService;

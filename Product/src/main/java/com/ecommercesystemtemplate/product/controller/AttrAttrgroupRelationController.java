@@ -25,7 +25,7 @@ import com.ecommercesystemtemplate.common.utils.R;
  * @date 2023-11-18 14:12:59
  */
 @RestController
-@RequestMapping("coupon/attrattrgrouprelation")
+@RequestMapping("product/attrattrgrouprelation")
 public class AttrAttrgroupRelationController {
     @Autowired
     private AttrAttrgroupRelationService attrAttrgroupRelationService;
