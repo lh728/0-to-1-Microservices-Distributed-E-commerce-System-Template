@@ -226,7 +226,7 @@ docker exec -it redis redis-cli
 
   ***另一种解决方案是将 Node.js 版本更改为 12.13.0，无需进行任何修改。强烈推荐使用此版本*。**
 
-- 请注意，在启动前端之后，需要修改目录文件 `/static/config/index.js`，添加语句 `window.SITE_CONFIG['baseUrl'] = '本地API接口请求地址';`
+- 请注意，在启动前端之后，需要修改目录文件 `/static/config/index.js`，添加语句 `window.SITE_CONFIG['baseUrl'] = '本地API接口请求地址';`（例如'http://localhost:8080/renren-fast'）。注意，实际项目中会使用 'http://localhost:88/api' 网关作为地址。
 
 <br>
 
@@ -251,6 +251,8 @@ mvn install:install-file -Dfile=sqljdbc4-4.0.jar -DgroupId=com.microsoft.sqlserv
 ```
 
 <br>
+
+
 
 
 
@@ -503,6 +505,43 @@ public interface CouponFeignService {
 
 另外这里注意，由于我们直接使用了 PublicDependencies 的所有依赖，因此会引入 mybatis 的配置，但是gateway 暂时不需要，因此可以在 @SpringBootApplication 注解增加 `(exclude = {DataSourceAutoConfiguration.class})`排除数据库配置。
 
+为了前后端相应，需要修改前端为'http://localhost:88/api'网关作为api接口请求地址，因此需要在renren-fast微服务中也导入PublicDependencies 依赖。
+
+导入依赖后，还需要在nacos配置，即在renren-fast的 `application.yml` 中写明`application.name`和`nacos.discovery.server-addr`，然后在`RenrenApplication`上加`@EnableDiscoveryClient`注解。
+
+再导入gson依赖，我这里导入的是 2.8.5
+
+还需要排除冲突的依赖：
+
+```xml
+		<dependency>
+			<groupId>com.EcommerceSystemTemplate</groupId>
+			<artifactId>PublicDependencies</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.projectlombok</groupId>
+					<artifactId>lombok</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework.cloud</groupId>
+					<artifactId>spring-cloud-starter-loadbalancer</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+```
+
+当然，也需要修改网关的配置：（可以直接参考项目内文件）
+
+```yaml
+        - id: admin_route
+          uri: lb://renren-fast
+          predicates:
+            - Path=/api/**
+          filters:
+            - RewritePath=/api/?(?<segment>.*), /renren-fast/$\{segment}
+```
+
 
 
 
@@ -518,6 +557,14 @@ public interface CouponFeignService {
 <br>
 
 ### Product
+
+商品系统通过后台管理系统新增Product System目录以及Product maintenance菜单即可，Product maintenance的路由是product/category。
+
+商品服务需要支持三级分类下，一次性查出所有分类与子分类，并以树数据结构组装起来。
+
+
+
+
 
 <br>
 
@@ -537,7 +584,7 @@ public interface CouponFeignService {
 
 字符集将设置为utf8mb4，以确保与utf8的兼容性并解决与字符编码相关的潜在问题。
 
-您可以在此处找到CREATE TABLE语句的详细信息：<a href="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/tree/777679015934b1f745a7cd55b6e66a884eace26e/Static">Github</a>
+您可以在此处找到CREATE TABLE语句和插入语句的详细信息：<a href="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/tree/777679015934b1f745a7cd55b6e66a884eace26e/Static">Github</a>
 
 - **OMS（订单管理系统）：**
   - oms_order - 订单信息

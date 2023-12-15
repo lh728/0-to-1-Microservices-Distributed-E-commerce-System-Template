@@ -1,7 +1,11 @@
 # 0-to-1-Microservices-Distributed-E-commerce-System-Template
 This is an ongoing construction of a microservices-based distributed e-commerce system template, aimed at leveraging various advanced management tools and practices from 0 to 1, to achieve microservices, distributed architecture, full-stack development, clustering, deployment, automated operations, and visualized CI/CD.
 
+<br>
+
 **I will strive to use various high-version programming languages and dependencies.**
+
+<br>
 
 - Front-end and back-end separation development, deployment for both intranet and internet, front-end apps, and web, backend cluster deployment for intranet.
 - Implemented functionalities include
@@ -101,6 +105,8 @@ Spring Cloud Alibaba - **Seata** (Formerly Fescar, a Distributed Transaction Sol
 ### Virtual Machine
 
 Download a Linux virtual machine based on Windows using **VirtualBox** (Make sure to enable CPU virtualization mode).
+
+<br>
 
 Download the official image via Vagrant, create a Linux virtual machine by `vagrant init centos/7`, and modify the Vagrantfile network settings (change the private network to your computer's IP address for domain name mapping; you can find your IP address using the '`ipconfig`' command).
 
@@ -205,11 +211,21 @@ docker exec -it redis redis-cli
 
 For the backend management, we will directly use the existing "renren-fast" to save time.
 
-The project's GitHub repository can be found at the following address: [https://github.com/renrenio/renren-fast.git](https://github.com/renrenio/renren-fast.git)
+<br>
 
-For the front-end pages, we use "renren-fast-vue" to achieve rapid development: https://github.com/renrenio/renren-fast-vue.git. The frontend code for this project is here: <a href = "https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template-front-end" >0-to-1-Microservices-Distributed-E-commerce-System-Template-front-end </a> .
+The project's GitHub repository can be found at the following address: https://github.com/renrenio/renren-fast.git
+
+<br>
+
+For the front-end pages, we use "renren-fast-vue" to achieve rapid development: https://github.com/renrenio/renren-fast-vue.git. 
+
+<br>The frontend code for this project is here: <a href = "https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template-front-end" >0-to-1-Microservices-Distributed-E-commerce-System-Template-front-end </a> .
+
+<br>
 
 To start the administration service, a database named "ADMIN" needs to be created. The table creation statements for this database can also be found in the following location: <a href = "https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/blob/777679015934b1f745a7cd55b6e66a884eace26e/renren-fast/db/mysql.sql" >Github</a>
+
+<br>
 
 The backend starts after modifying the database files. For the frontend, after downloading Node.js, execute the `npm install` command and then run `npm run dev`.
 
@@ -229,13 +245,17 @@ The backend starts after modifying the database files. For the frontend, after d
 
   ***Another solution is to change Node.js to version 12.13.0, which requires no modifications. This version is highly recommended.***
 
-- Note that after the front-end is launched, it is necessary to modify the directory file `/static/config/index.js` with the statement `window.SITE_CONFIG['baseUrl'] = 'local API interface request address';`.
+- Please note that, after starting the frontend, you need to modify the directory file `/static/config/index.js` by adding the statement `window.SITE_CONFIG['baseUrl'] = 'local API interface request address';` (for example, 'http://localhost:8080/renren-fast'). Please be aware that in the actual project, the 'http://localhost:88/api' gateway will be used as the address.
 
 <br>
 
 The basic CRUD functionalities of microservices will be generated through the **[renren-generator](https://gitee.com/renrenio/renren-generator)**. This code generator can dynamically produce entity, XML, DAO, service, HTML, JS, and SQL code online, reducing over 70% of development tasks.
 
+<br>
+
 The position of this code generator in the project is as follows: <a href="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/tree/3e7badbe5f3cf8acd1607f7e73aeb69f76d2e3a5/renren-generator">renren-generator</a>.
+
+<br>
 
 **Several points to note to solve pom file problems:**
 
@@ -278,7 +298,11 @@ tablePrefix=<your datatable prefix>_
 
 After starting the service, selecting the tables to generate code, and creating a zip file of the generated code, when you move the chosen backend code section to the corresponding `main` folder, you may observe that the imported files lack many common dependencies.
 
+<br>
+
 Therefore, I created the `PublicDependencies` module to store shared dependencies for use by other modules.
+
+<br>
 
 This dependency can be configured in each microservice as follows:
 
@@ -320,9 +344,15 @@ To configure Nacos in the `PublicDependencies` modules, you need to first import
 
 Nacos has its own middleware, and the Nacos server needs to be downloaded.
 
+<br>
+
 To download the [nacos-server-2.3.0-BETA.zip](https://github.com/alibaba/nacos/releases/download/2.3.0-BETA/nacos-server-2.3.0-BETA.zip) version from the official website, please ensure that you are using a Spring Boot version greater than 2.7.15 and that the Java environment variable is set. After downloading, unzip the file and run the `startup.cmd` script located in the Bin folder.
 
+<br>
+
 At this point, you may encounter the error: `org.springframework.context.ApplicationContextException: Unable to start web server; nested exception is org.springframework.boot.web.server.WebServerException: Unable to start embedded Tomcat`, resulting in a crash. You can find the details of the issue in the log files.
+
+<br>
 
 This error occurs because the default startup mode is set to cluster. The solution is to switch to standalone mode. To do this, run the following command in the current directory:
 
@@ -331,6 +361,8 @@ startup.cmd -m standalone
 ```
 
 Alternatively, you can modify the `startup.cmd` directly by adding the following line to avoid the need to execute this command every time.
+
+<br>
 
 Afterwards, add the following configuration to the configuration files of each microservice:
 
@@ -341,7 +373,11 @@ spring.cloud.application.name=...
 
 To enable service registration and discovery functionality, use the `@EnableDiscoveryClient` annotation. Place this annotation on the **main** function of your application, and then start the service.
 
+<br>
+
 You can now verify if the Nacos server has successfully started by accessing `http://127.0.0.1:8848/nacos`. The default username and password are both set to `nacos`.
+
+<br>
 
 You can also directly download the [nacos folder](https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/tree/5de76cb9e651c8ca79420374efd360b11d1b2e40/nacos) stored in my project. After that, double-click on the `startup.cmd` file in the 'bin' directory to initiate the service.
 
@@ -372,15 +408,23 @@ spring:
 
 Here, it is similar to what we previously configured for the configuration center.
 
+<br>
+
 After the configuration is complete, go to `127.0.0.1:8848/nacos`, enter the configuration management section (`configurations`), and then create a new configuration. Typically, fill in the **Data ID** field with `nacos-config-example.properties` and the **Group** field with `DEFAULT_GROUP`.
 
+<br>
+
 Next, change the configuration's format to `properties`, and fill in the content that needs to be updated. This way, you can apply multiple configurations to different microservices at once within Nacos.
+
+<br>
 
 Example as follows:
 
 <img src="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/raw/f50a28ecef002c0e2d1f30a7660b9068f9886c45/Static/nacos-config.png" style="zoom: 50%;" />
 
 Finally, click `Publish` and then add the ***@RefreshScope annotation to the class that requires dynamically retrieved configuration values***. Subsequently, you will be able to dynamically obtain the configuration values.
+
+<br>
 
 Modifying the configuration in this manner ensures that the changes take effect in each microservice, and this adjustment dynamically applies without the need to restart the services.
 
@@ -389,6 +433,8 @@ Modifying the configuration in this manner ensures that the changes take effect 
 **Setting Namespace and Configuration Groups**
 
 In actual development, each microservice's name will be used as a namespace. For example, the "coupon" namespace will be employed for the configuration files of the coupon microservice. Configuration groups are used to differentiate environments; for instance, the development branch will use the "DEV" group.
+
+<br>
 
 Subsequently, migrate the content from the original `application.properties` to Nacos, for example:
 
@@ -421,6 +467,8 @@ spring.cloud.nacos.config.extension-configs[2].refresh=true
 
 Now, you can comment out the contents of the original `application.yml` and place them separately in `datasource.yml`, `mybatis.yml`, and `other.yml`. If there are changes to the configuration files later on, you only need to update the content in Nacos.
 
+<br>
+
 Additionally, it's worth noting that attempting to start the application directly will fail now. This is because, starting from the Spring Cloud 2020.0.2 version, the relevant dependencies for bootstrap have been removed from `spring-cloud-starter-config`. Therefore, from version 2020.02 onwards, you need to include the `spring-cloud-starter-bootstrap` dependency separately:
 
 ```xml
@@ -439,8 +487,10 @@ Additionally, it's worth noting that attempting to start the application directl
 #### Using Feign for Declarative Remote Invocation
 
 Remote invocations are essential in microservices architecture, and Feign serves as a declarative HTTP client designed to simplify this process. Feign provides templates for HTTP requests, allowing for the definition of parameters, formats, addresses, and other details through the creation of simple interfaces and the inclusion of annotations.
-Feign seamlessly integrates with **Ribbon** for load balancing and **Hystrix** for circuit-breaking, eliminating the explicit need for managing these components.
-Spring Cloud Feign extends the support for Spring MVC annotations on the foundation of Netflix Feign. With its implementation, creating an interface and configuring it with annotations is all that's required to bind to the service provider's interface. This simplification reduces the development effort needed to build a custom service invocation client, as opposed to the approach taken by Spring Cloud Ribbon.
+
+<br>Feign seamlessly integrates with **Ribbon** for load balancing and **Hystrix** for circuit-breaking, eliminating the explicit need for managing these components.
+
+<br>Spring Cloud Feign extends the support for Spring MVC annotations on the foundation of Netflix Feign. With its implementation, creating an interface and configuring it with annotations is all that's required to bind to the service provider's interface. This simplification reduces the development effort needed to build a custom service invocation client, as opposed to the approach taken by Spring Cloud Ribbon.
 
 **To incorporate this functionality, it is necessary to introduce these  dependencies when establishing each microservice:**
 
@@ -476,6 +526,8 @@ public interface CouponFeignService {
 
 Following the code provided above, I have implemented remote invocation of Coupon microservice methods within the Member microservice. This involves filling in the FeignClient annotation with the name of the remote service (i.e., the name registered in Nacos), and specifying the complete path and signature for the method.
 
+<br>
+
 Lastly, add the annotation to the main class `MemberApplication` in the Member microservice. The `basePackages` following it should be the package path where you created the `CouponFeignService` interface.
 
 ```
@@ -488,6 +540,8 @@ Lastly, add the annotation to the main class `MemberApplication` in the Member m
 
 The common functionalities of a gateway include route forwarding, permission verification, rate limiting, and API management. In this context, Spring Cloud Gateway is utilized as the gateway, replacing the Zuul gateway.
 
+<br>
+
 To enable gateway functionality, the following dependency needs to be added:
 
 ```xml
@@ -499,7 +553,54 @@ To enable gateway functionality, the following dependency needs to be added:
 
 To use the gateway, service registration and discovery must be enabled. Therefore, the `GatewayApplication` should be annotated with `@EnableDiscoveryClient`. Additionally, configure the Nacos registry center address, referring to the Nacos configuration center setup mentioned earlier.
 
+<br>
+
 It's worth noting that, since all dependencies from PublicDependencies are directly used, it includes MyBatis configuration, which is currently not required for the gateway. To exclude database configuration, add `(exclude = {DataSourceAutoConfiguration.class})` to the `@SpringBootApplication` annotation.
+
+<br>
+
+To ensure communication between the frontend and backend, you need to modify the frontend to use 'http://localhost:88/api' as the gateway for API interface requests. Therefore, it is necessary to import the 'PublicDependencies' dependency into the 'renren-fast' microservice.
+
+<br>
+
+After importing the dependency, you also need to configure Nacos. This involves specifying `application.name` and `nacos.discovery.server-addr` in the 'application.yml' file of 'renren-fast'. Additionally, add the `@EnableDiscoveryClient` annotation to the `RenrenApplication` class.
+
+<br>
+
+Import the Gson dependency (in this case, version 2.8.5).
+
+<br>
+
+Exclude conflicting dependencies as needed.
+
+```xml
+		<dependency>
+			<groupId>com.EcommerceSystemTemplate</groupId>
+			<artifactId>PublicDependencies</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.projectlombok</groupId>
+					<artifactId>lombok</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework.cloud</groupId>
+					<artifactId>spring-cloud-starter-loadbalancer</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+```
+
+Of course, you also need to modify the configuration of the gateway. (You can refer directly to the files in the project.)
+
+```yaml
+        - id: admin_route
+          uri: lb://renren-fast
+          predicates:
+            - Path=/api/**
+          filters:
+            - RewritePath=/api/?(?<segment>.*), /renren-fast/$\{segment}
+```
 
 
 
@@ -531,9 +632,13 @@ It's worth noting that, since all dependencies from PublicDependencies are direc
 
 The following databases will be established: 
 
+<br>
+
 The character set will be set to utf8mb4 to ensure compatibility with utf8 and address potential issues related to character encoding.
 
-You can find the details of the CREATE TABLE statement here. <a href = "https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/tree/777679015934b1f745a7cd55b6e66a884eace26e/Static" >Github</a>
+<br>
+
+You can find the details of the CREATE TABLE statement and insert data here. <a href = "https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/tree/777679015934b1f745a7cd55b6e66a884eace26e/Static" >Github</a>
 
 - **OMS(Order Management System)：**
   - oms_order  - order information 
