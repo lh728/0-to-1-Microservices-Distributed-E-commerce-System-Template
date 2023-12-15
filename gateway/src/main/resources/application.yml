@@ -10,6 +10,13 @@
 #          uri: https://baidu.com
 #          predicates:
 #            - Query=url, baidu
+#        - id: admin_route
+#          uri: lb://renren-fast
+#          predicates:
+#            - Path=/api/**
+#          filters:
+#            - RewritePath=/api/?(?<segment>.*), /renren-fast/$\{segment}
+### front end use api prefix
 #    nacos:
 #      discovery:
 #        server-addr: 127.0.0.1:8848
