@@ -45,15 +45,7 @@ Springboot 2.7.17
 
 Spring Web
 
-Spring Cloud Routing - openFeign (microservices communication)
-
-Spring Cloud Nacos-discovery
-
-Spring Cloud Nacos-config
-
 Spring loadbalancer
-
-Spring gateway
 
 <br>
 
@@ -542,9 +534,45 @@ public interface CouponFeignService {
             - RewritePath=/api/?(?<segment>.*), /renren-fast/$\{segment}
 ```
 
+修改完成后，还需要解决CROS跨域问题，所以需要在gateway module单独写一个类用于解决该问题：
 
+```java
+@Configuration
+public class CorsConfig {
+    @Bean
+    public CorsWebFilter corsWebFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
 
+        // 1. config allow origin
+        corsConfiguration.addAllowedHeader("*");
+        corsConfiguration.addAllowedMethod("*");
+        corsConfiguration.addAllowedOriginPattern("*");
+        corsConfiguration.setAllowCredentials(true);
+
+        source.registerCorsConfiguration("/**",corsConfiguration );
+        return new CorsWebFilter(source);
+    }
+}
+```
+
+另外还需要注释掉原本的renren-fast项目的配置（renren-fast/src/main/java/io/renren/config/CorsConfig.java）：
+
+```java
+@Configuration
+public class CorsConfig implements WebMvcConfigurer {
+
+//    @Override
+//    public void addCorsMappings(CorsRegistry registry) {
+//        registry.addMapping("/**")
+//            .allowedOriginPatterns("*")
+//            .allowCredentials(true)
+//            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+//            .maxAge(3600);
+//    }
+}
+```
 
 <br>
 
