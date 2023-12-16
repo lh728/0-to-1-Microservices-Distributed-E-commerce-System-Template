@@ -18,7 +18,7 @@ This is an ongoing construction of a microservices-based distributed e-commerce 
 
 <br>
 
-For the Chinese version of this project, click [中文版本](https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/blob/38ec75d25befae9a1489247aec3c9567c0caac3e/README_ZH.md).
+For the Chinese version of this project, click [中文版本](https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/blob/9e6f1e2177d20173908f7e4244e981068b56afa5/README_ZH.md).
 
 
 
@@ -52,15 +52,7 @@ Springboot 2.7.17
 
 Spring Web
 
-Spring Cloud Routing - openFeign (microservices communication)
-
-Spring Cloud Nacos-discovery
-
-Spring Cloud Nacos-config
-
 Spring loadbalancer
-
-Spring gateway
 
 <br>
 
@@ -602,7 +594,45 @@ Of course, you also need to modify the configuration of the gateway. (You can re
             - RewritePath=/api/?(?<segment>.*), /renren-fast/$\{segment}
 ```
 
+After the modification, you also need to address the CORS (Cross-Origin Resource Sharing) issue. Therefore, in the gateway module, you should create a separate class to handle this problem:
 
+```java
+@Configuration
+public class CorsConfig {
+    @Bean
+    public CorsWebFilter corsWebFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+
+        // 1. config allow origin
+        corsConfiguration.addAllowedHeader("*");
+        corsConfiguration.addAllowedMethod("*");
+        corsConfiguration.addAllowedOriginPattern("*");
+        corsConfiguration.setAllowCredentials(true);
+
+        source.registerCorsConfiguration("/**",corsConfiguration );
+        return new CorsWebFilter(source);
+    }
+}
+```
+
+Additionally, you need to comment out the original configuration in the `renren-fast` project (`renren-fast/src/main/java/io/renren/config/CorsConfig.java`):
+
+```java
+@Configuration
+public class CorsConfig implements WebMvcConfigurer {
+
+//    @Override
+//    public void addCorsMappings(CorsRegistry registry) {
+//        registry.addMapping("/**")
+//            .allowedOriginPatterns("*")
+//            .allowCredentials(true)
+//            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+//            .maxAge(3600);
+//    }
+}
+```
 
 <br>
 
