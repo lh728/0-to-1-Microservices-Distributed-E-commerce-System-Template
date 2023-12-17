@@ -523,9 +523,16 @@ public interface CouponFeignService {
 		</dependency>
 ```
 
-当然，也需要修改网关的配置：（可以直接参考项目内文件）
+当然，也需要修改网关的配置：（可以直接参考项目内文件）**注意微服务项目的网关需要在admin前面**
 
 ```yaml
+        - id: product_route
+          uri: lb://product
+          predicates:
+            - Path=/api/product/**
+          filters:
+            - RewritePath=/api/?(?<segment>.*), /$\{segment}
+
         - id: admin_route
           uri: lb://renren-fast
           predicates:
@@ -584,11 +591,13 @@ public class CorsConfig implements WebMvcConfigurer {
 
 <br>
 
-### Product
+### Product System
 
-商品系统通过后台管理系统新增Product System目录以及Product maintenance菜单即可，Product maintenance的路由是product/category。
+商品系统通过后台管理系统新增Product System目录
 
-商品服务需要支持三级分类下，一次性查出所有分类与子分类，并以树数据结构组装起来。
+#### Product maintenance
+
+Product maintenance的路由是product/category。该配置用于管理商品服务三级分类下，一次性查出所有分类与子分类，并以树数据结构组装起来进行管理
 
 
 

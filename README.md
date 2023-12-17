@@ -583,9 +583,16 @@ Exclude conflicting dependencies as needed.
 		</dependency>
 ```
 
-Of course, you also need to modify the configuration of the gateway. (You can refer directly to the files in the project.)
+Certainly, you also need to modify the configuration of the gateway. (You can directly refer to the files in the project.) **Note that the gateway of the microservices project needs to be placed in front of the admin.**
 
 ```yaml
+        - id: product_route
+          uri: lb://product
+          predicates:
+            - Path=/api/product/**
+          filters:
+            - RewritePath=/api/?(?<segment>.*), /$\{segment}
+
         - id: admin_route
           uri: lb://renren-fast
           predicates:
@@ -644,7 +651,13 @@ public class CorsConfig implements WebMvcConfigurer {
 
 <br>
 
-### Product
+### Product System
+
+The product system added a new "Product System" directory through the backend management system.
+
+#### Product maintenance
+
+The route for product maintenance is "product/category." This configuration is used to manage the three-level classification of product services. It retrieves all categories and subcategories in one go, assembling them into a tree data structure for management.
 
 <br>
 
