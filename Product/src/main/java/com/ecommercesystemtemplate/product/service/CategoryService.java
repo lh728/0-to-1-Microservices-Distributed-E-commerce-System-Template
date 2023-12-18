@@ -18,6 +18,15 @@ public interface CategoryService extends IService<CategoryEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
 
+    /**
+     * Retrieve all categories and subcategories, assembling them into a tree data structure.
+     **/
     List<CategoryEntity> listWithTree();
+
+    /**
+     * Delete multiple categories
+     * @param list
+     */
+    void removeMenuByIds(List<Long> list);
 }
 

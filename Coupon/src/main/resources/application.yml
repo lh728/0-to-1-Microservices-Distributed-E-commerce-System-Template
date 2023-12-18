@@ -1,25 +1,17 @@
 #spring:
-##  datasource:
-##    username: root
-##    password: 425658167
-##    url: jdbc:mysql://192.168.56.10:3306/SMS
-##    driver-class-name: com.mysql.cj.jdbc.Driver
+#  datasource:
+#    username: root
+#    password: 425658167
+#    url: jdbc:mysql://192.168.56.10:3306/SMS
+#    driver-class-name: com.mysql.cj.jdbc.Driver
 #  cloud:
 #    nacos:
-##      discovery:
-##        server-addr: 127.0.0.1:8848
+#      discovery:
+#        server-addr: 127.0.0.1:8848
 #      config:
 #        server-addr: 127.0.0.1:8848
-#        file-extension: yml
-#        extension-configs:
-#          - data-id: datasource.yml
-#            group: DEV
-#          - data-id: mybatis.yml
-#            group: DEV
-#          - data-id: other.yml
-#            group: DEV
 #        namespace: 7201755b-6f7f-4300-8d26-eea32695c636
-##        group: dev
+#        group: dev
 #  config:
 #    import:
 #      - nacos:nacos-config-example.properties?refresh=true
@@ -27,11 +19,14 @@
 #    name: coupon
 #
 #
-##mybatis-plus:
-##  mapper-locations: classpath:/mapper/**/*.xml
-##  global-config:
-##    db-config:
-##      id-type: auto
+#mybatis-plus:
+#  mapper-locations: classpath:/mapper/**/*.xml
+#  global-config:
+#    db-config:
+#      id-type: auto
+#      logic-delete-value: 1
+#      logic-not-delete-value: 0
 #
-##server:
-##  port: 7000
+#server:
+#  port: 7000
+#

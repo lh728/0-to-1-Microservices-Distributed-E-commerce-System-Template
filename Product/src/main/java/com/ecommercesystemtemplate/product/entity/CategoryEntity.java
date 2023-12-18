@@ -2,6 +2,7 @@ package com.ecommercesystemtemplate.product.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
@@ -11,7 +12,7 @@ import lombok.Data;
 
 /**
  * Three-level classification of commodities
- * 
+ *
  * @author thel.lu
  * @email lhjlslw@gmail.com
  * @date 2023-11-18 12:20:53
@@ -41,6 +42,7 @@ public class CategoryEntity implements Serializable {
 	/**
 	 * show_status[0-no display；1-display]
 	 */
+	@TableLogic(value = "1", delval = "0")
 	private Integer showStatus;
 	/**
 	 * sort

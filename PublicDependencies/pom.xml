@@ -24,7 +24,7 @@
     <url>http://maven.apache.org</url>
 
     <dependencies>
-<!--        mybatis-plus; -->
+        <!--        mybatis-plus; -->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
