@@ -597,9 +597,11 @@ public class CorsConfig implements WebMvcConfigurer {
 
 #### Product maintenance
 
-Product maintenance的路由是product/category。该配置用于管理商品服务三级分类下，一次性查出所有分类与子分类，并以树数据结构组装起来进行管理
+Product maintenance的路由是product/category。该配置用于管理商品服务三级分类下，一次性查出所有分类与子分类，并以树数据结构组装起来进行管理，并支持append, delete，batch delete和update功能。
 
+该功能预览大致如此：
 
+<img src="C:\Users\lhjls\AppData\Roaming\Typora\typora-user-images\image-20231220195823018.png" alt="image-20231220195823018" style="zoom: 50%;" />
 
 
 

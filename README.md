@@ -24,7 +24,7 @@ For the Chinese version of this project, click [中文版本](https://github.com
 
 <br>
 
-------
+
 
 ## Project Setup Guide
 
@@ -659,7 +659,13 @@ The product system added a new "Product System" directory through the backend ma
 
 #### Product maintenance
 
-The route for product maintenance is "product/category." This configuration is used to manage the three-level classification of product services. It retrieves all categories and subcategories in one go, assembling them into a tree data structure for management.
+The configuration for `product/category` is designed for managing the three-level classification of the product maintenance service. It aims to retrieve all categories and subcategories in a single query, organize them into a tree data structure for efficient management, and support functionalities such as `append`, `delete`, `batch delete`, and `update`.
+
+A preview of this functionality is as follows:
+
+<img src="C:\Users\lhjls\AppData\Roaming\Typora\typora-user-images\image-20231220195823018.png" alt="image-20231220195823018" style="zoom: 50%;" />
+
+
 
 <br>
 
