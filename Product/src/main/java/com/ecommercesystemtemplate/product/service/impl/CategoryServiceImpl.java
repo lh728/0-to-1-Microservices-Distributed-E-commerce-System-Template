@@ -38,7 +38,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         // 2. assemble to tree (parent-son)
         // 2.1 find all first-level category
         List<CategoryEntity> firstLevel = entities.stream().filter((item) ->
-             item.getParentCid() == 0L
+             item.getParentCid() == 0
         ).map((cat) -> {
             cat.setChildren(getChildren(cat,entities));
             return cat;
@@ -52,7 +52,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
      */
     private List<CategoryEntity> getChildren(CategoryEntity root, List<CategoryEntity> all){
         List<CategoryEntity> children = all.stream().filter(categoryEntity -> {
-            return categoryEntity.getParentCid() == root.getCatId();
+            return categoryEntity.getParentCid().equals(root.getCatId());
         }).map(category -> {
             // find children category
             category.setChildren(getChildren(category,all));
