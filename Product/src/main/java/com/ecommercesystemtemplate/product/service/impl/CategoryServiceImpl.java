@@ -66,8 +66,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         // TODO check if the category is used before deleting
 
         // logic delete
-
         baseMapper.deleteBatchIds(list);
     }
+
 
 }
