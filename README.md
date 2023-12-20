@@ -24,6 +24,8 @@ For the Chinese version of this project, click [中文版本](https://github.com
 
 <br>
 
+------
+
 ## Project Setup Guide
 
 ### **Environment**
