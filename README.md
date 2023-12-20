@@ -18,7 +18,7 @@ This is an ongoing construction of a microservices-based distributed e-commerce 
 
 <br>
 
-For the Chinese version of this project, click [中文版本](https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/blob/9e6f1e2177d20173908f7e4244e981068b56afa5/README_ZH.md).
+For the Chinese version of this project, click [中文版本](https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/blob/e506621a17f5208b5685663765bbde960a9a9305/README_ZH.md).
 
 
 
@@ -663,7 +663,7 @@ The configuration for `product/category` is designed for managing the three-leve
 
 A preview of this functionality is as follows:
 
-<img src="C:\Users\lhjls\AppData\Roaming\Typora\typora-user-images\image-20231220195823018.png" alt="image-20231220195823018" style="zoom: 50%;" />
+<img src="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/raw/e506621a17f5208b5685663765bbde960a9a9305/Static/product_maintenance.png" style="zoom: 50%;" />
 
 
 
