@@ -12,6 +12,13 @@
 #        server-addr: 127.0.0.1:8848
 #        namespace: 7201755b-6f7f-4300-8d26-eea32695c636
 #        group: dev
+#    alicloud:
+#      access-key: <your access key>
+#      secret-key: <your secret key>
+#      oss:
+#        endpoint: https://oss-cn-beijing.aliyuncs.com
+#    util:
+#      enabled: false
 #  config:
 #    import:
 #      - nacos:nacos-config-example.properties?refresh=true

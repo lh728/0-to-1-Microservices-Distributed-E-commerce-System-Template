@@ -1,11 +1,9 @@
 package com.ecommercesystemtemplate.product;
 
-import com.aliyun.oss.ClientException;
-import com.aliyun.oss.OSS;
-import com.aliyun.oss.OSSClientBuilder;
-import com.aliyun.oss.OSSException;
+import com.aliyun.oss.*;
 import com.aliyun.oss.common.auth.CredentialsProviderFactory;
 import com.aliyun.oss.common.auth.EnvironmentVariableCredentialsProvider;
+import com.aliyun.oss.model.GetObjectRequest;
 import com.aliyun.oss.model.PutObjectRequest;
 import com.aliyun.oss.model.PutObjectResult;
 import com.ecommercesystemtemplate.product.entity.BrandEntity;
@@ -14,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import javax.annotation.Resource;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -23,14 +23,24 @@ class ProductApplicationTests {
     @Autowired
     BrandService brandService;
 
+    @Resource
+    OSSClient ossClient;
+
     @Test
     void contextLoads() {
-
         BrandEntity brandEntity = new BrandEntity();
         brandEntity.setName("aaa");
         brandEntity.setDescript("");
         brandService.save(brandEntity);
-        System.out.printf("保存成功");
+        System.out.printf("save success");
+    }
+    @Test
+    public void saveFile() {
+        // download file to local
+        ossClient.putObject("0-to-1-microservices-distributed-e-commerce-system-template",
+                "test.png",
+                new File("D:\\0-to-1-Microservices-Distributed-E-commerce-System-Template\\Static\\test.png"));
+        ossClient.shutdown();
     }
 
     @Test

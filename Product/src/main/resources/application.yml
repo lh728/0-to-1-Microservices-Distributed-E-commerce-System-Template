@@ -12,6 +12,13 @@
 #        server-addr: 127.0.0.1:8848
 #        namespace: 1765a952-5b9a-4fee-9e20-51ae42d736cc
 #        group: dev
+#    alicloud:
+#      access-key: <your access key>
+#      secret-key: <your secret key>
+#      oss:
+#        endpoint: https://oss-cn-beijing.aliyuncs.com
+#    util:
+#      enabled: false
 #  config:
 #    import:
 #      - nacos:nacos-config-example.properties?refresh=true
@@ -29,3 +36,6 @@
 #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 #server:
 #  port: 10000
+#
+#
+#

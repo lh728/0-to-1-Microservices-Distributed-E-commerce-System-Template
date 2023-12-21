@@ -26,6 +26,12 @@
             <groupId>com.EcommerceSystemTemplate</groupId>
             <artifactId>PublicDependencies</artifactId>
             <version>0.0.1-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.alibaba.cloud</groupId>
+                    <artifactId>spring-cloud-starter-alicloud-oss</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
