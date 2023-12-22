@@ -5,6 +5,7 @@ import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.common.utils.BinaryUtil;
 import com.aliyun.oss.model.MatchMode;
 import com.aliyun.oss.model.PolicyConditions;
+import com.ecommercesystemtemplate.common.utils.R;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,7 +32,7 @@ public class OssController {
     private String accessId;
 
     @RequestMapping("/oss/policy")
-    public Map<String, String> policy() {
+    public R policy() {
 
         // https://0-to-1-microservices-distributed-e-commerce-system-template.oss-cn-beijing.aliyuncs.com/test.png
         // format https://bucketname.endpoint。
@@ -51,7 +52,7 @@ public class OssController {
             long expireTime = 30;
             long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
             Date expiration = new Date(expireEndTime);
-            // PostObject请求最大可支持的文件大小为5 GB，即CONTENT_LENGTH_RANGE为5*1024*1024*1024。
+            // PostObject max file 5 GB，CONTENT_LENGTH_RANGE 5*1024*1024*1024。
             PolicyConditions policyConds = new PolicyConditions();
             policyConds.addConditionItem(PolicyConditions.COND_CONTENT_LENGTH_RANGE, 0, 1048576000);
             policyConds.addConditionItem(MatchMode.StartWith, PolicyConditions.COND_KEY, dir);
@@ -77,6 +78,6 @@ public class OssController {
             ossClient.shutdown();
         }
 
-        return respMap;
+        return R.ok().put("data",respMap);
     }
 }
