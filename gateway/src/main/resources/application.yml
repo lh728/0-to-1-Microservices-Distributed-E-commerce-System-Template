@@ -2,22 +2,19 @@
 #  cloud:
 #    gateway:
 #      routes:
-#        - id: test_route
-#          uri: https://thellu.com
-#          predicates:
-#            - Query=url, thellu
-#
-#        - id: test_route
-#          uri: https://baidu.com
-#          predicates:
-#            - Query=url, baidu
-#
 #        - id: product_route
 #          uri: lb://product
 #          predicates:
 #            - Path=/api/product/**
 #          filters:
 #            - RewritePath=/api/?(?<segment>.*), /$\{segment}
+#
+#        - id: third_party_route
+#          uri: lb://thirdParty
+#          predicates:
+#            - Path=/api/thirdparty/**
+#          filters:
+#            - RewritePath=/api/thirdparty/?(?<segment>.*), /$\{segment}
 #
 #        - id: admin_route
 #          uri: lb://renren-fast
