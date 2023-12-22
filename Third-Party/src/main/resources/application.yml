@@ -1,0 +1,12 @@
+#spring:
+#  cloud:
+#    nacos:
+#      discovery:
+#        server-addr: 127.0.0.1:8848
+#    util:
+#      enabled: false
+#  application:
+#    name: thirdParty
+#server:
+#  port: 30000
+#
