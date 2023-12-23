@@ -1,5 +1,7 @@
 # 0-to-1-Microservices-Distributed-E-commerce-System-Template
-This is an ongoing construction of a microservices-based distributed e-commerce system template, aimed at leveraging various advanced management tools and practices from 0 to 1, to achieve microservices, distributed architecture, full-stack development, clustering, deployment, automated operations, and visualized CI/CD.
+SpringBoot + Vue2 + Maven3 + Java17 + Spring Cloud + Redis + Docker + OSS + Mysql + MybatisPlus + Nginx + Git + Unit Testing
+
+This is an ongoing construction of a microservices-based distributed e-commerce system template, aimed at leveraging various advanced management tools and practices from 0 to 1, to achieve distributed solutions such as application monitoring, network limiting, gateways, circuit breaker degradation, etc.; distributed transactions, distributed locks; high concurrency, thread pools, asynchronous orchestration; stress testing and performance optimization; cluster technology; and CI/CD
 
 <br>
 
@@ -18,7 +20,7 @@ This is an ongoing construction of a microservices-based distributed e-commerce 
 
 <br>
 
-For the Chinese version of this project, click [中文版本](https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/blob/e506621a17f5208b5685663765bbde960a9a9305/README_ZH.md).
+For the Chinese version of this project, click [中文版本](https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/blob/c1e9f9be829f4cffc694bcba5e0209531082ed80/README_ZH.md#brand-management).
 
 
 
@@ -91,6 +93,8 @@ Spring Cloud - **GateWay** (API Gateway)
 Spring Cloud - **Sleuth** (Distributed Tracing)
 
 Spring Cloud Alibaba - **Seata** (Formerly Fescar, a Distributed Transaction Solution)
+
+Spring Cloud Alibaba - **OSS** (Cloud Storage)
 
 
 
@@ -321,6 +325,10 @@ Dependencies to be added and structural adjustments needed:
 - Additionally, as the project automatically adds the permission control annotation `RequiresPermissions`, which is not currently needed, it is necessary to adjust the reverse engineering process. Specifically, comment out this annotation in `resources-template-Controller.java.vm` within the `renren-generator` module.
 
 After completing the dependency configuration, each microservice needs to further configure its own data source, utilize `mybatis-plus's @MapperScan`, specify the location for SQL file mappings, and so on. For detailed information, refer to the `application.yml` file in each respective microservice.
+
+<br>
+
+In addition, `PublicDependencies` also serves as a repository for various public information, such as error exception codes, group validation details, and more.
 
 <br>
 
@@ -645,6 +653,151 @@ public class CorsConfig implements WebMvcConfigurer {
 
 <br>
 
+
+
+#### OSS
+
+Due to geographical considerations, we have currently opted to use Alibaba Cloud to set up OSS (Object Storage Service) as a cloud file storage for our distributed system, serving as a repository for images and other information. (Alternatively, AWS S3 can also be used.)
+
+<br>
+
+During the testing phase, we have chosen public read permissions (write operations to files require authentication, while files can be anonymously read). Versioning has not been enabled, server-side encryption is not in use, and real-time log querying and HDFS services have not been activated.
+
+You can refer to the diagram below:
+
+<img src="D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\Static\oss.png" alt="image-20231221165409092" style="zoom:50%;" />
+
+Once completed, you can perform file read and write operations through OSS.
+
+(Of course, you'll also need to configure relevant information such as access keys. This part will not be elaborated here; you can refer to the official website for detailed tutorials.)
+
+<br>
+
+To support direct uploads after server-side signing, bypassing the need to send requests to your own server, you need to [modify CORS for cross-origin support](https://help.aliyun.com/zh/oss/use-cases/java-1?spm=a2c4g.11186623.0.0.2b415d03FeF1lg). Next, create a microservice called "Third-Party," dedicated to managing third-party services.
+
+This project requires importing dependencies and dependency management: [Link to Dependencies Documentation]
+
+```xml
+		<dependency>
+			<groupId>com.EcommerceSystemTemplate</groupId>
+			<artifactId>PublicDependencies</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.baomidou</groupId>
+					<artifactId>mybatis-plus-boot-starter</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>        
+
+		<dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alicloud-oss</artifactId>
+            <version>2.2.0.RELEASE</version>
+        </dependency>
+```
+
+then config:
+
+```yaml
+spring:
+  cloud: 
+    alicloud:
+      access-key: <your access key>
+      secret-key: <your secret key>
+      oss:
+        endpoint: oss-cn-beijing.aliyuncs.com
+    util:
+      enabled: false
+```
+
+Please note that configuring the corresponding namespace and service discovery in Nacos is similar to configuring microservices, with the exception that MyBatis-Plus configuration is not required.
+
+Afterward, create a dedicated Controller class to manage OSS:
+
+```java
+@RestController
+public class OssController {
+
+    @Resource
+    OSSClient ossClient;
+
+    @Value("${spring.cloud.alicloud.oss.endpoint}")
+    private String endpoint;
+
+    @Value("${spring.cloud.alicloud.oss.bucket}")
+    private String bucket;
+
+    @Value("${spring.cloud.alicloud.access-key}")
+    private String accessId;
+
+    @RequestMapping("/oss/policy")
+    public Map<String, String> policy() {
+
+        // https://0-to-1-microservices-distributed-e-commerce-system-template.oss-cn-					beijing.aliyuncs.com/test.png
+        // format https://bucketname.endpoint。
+        String host = "https://" + bucket + "." + endpoint;
+        /*
+        Set up the upload callback URL, which is the callback server address used for communication between 		the application server and OSS.
+        After the file upload is complete, OSS will send the file upload information to the application 			server through this callback URL.
+         */
+		// String callbackUrl = "https://192.168.0.0:8888";
+        // Set the prefix for uploading files to OSS; this field can be left empty.
+        // When left empty, files will be uploaded to the root directory of the Bucket.
+        String format = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        String dir = format + "/";
+
+        Map<String, String> respMap = null;
+        try {
+            long expireTime = 30;
+            long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
+            Date expiration = new Date(expireEndTime);
+            // PostObject max file 5 GB，CONTENT_LENGTH_RANGE 5*1024*1024*1024。
+            PolicyConditions policyConds = new PolicyConditions();
+            policyConds.addConditionItem(PolicyConditions.COND_CONTENT_LENGTH_RANGE, 0, 1048576000);
+            policyConds.addConditionItem(MatchMode.StartWith, PolicyConditions.COND_KEY, dir);
+
+            String postPolicy = ossClient.generatePostPolicy(expiration, policyConds);
+            byte[] binaryData = postPolicy.getBytes("utf-8");
+            String encodedPolicy = BinaryUtil.toBase64String(binaryData);
+            String postSignature = ossClient.calculatePostSignature(postPolicy);
+
+            respMap = new LinkedHashMap<String, String>();
+            respMap.put("accessid", accessId);
+            respMap.put("policy", encodedPolicy);
+            respMap.put("signature", postSignature);
+            respMap.put("dir", dir);
+            respMap.put("host", host);
+            respMap.put("expire", String.valueOf(expireEndTime / 1000));
+            // respMap.put("expire", formatISO8601Date(expiration));
+
+        } catch (Exception e) {
+            // Assert.fail(e.getMessage());
+            System.out.println(e.getMessage());
+        } finally {
+            ossClient.shutdown();
+        }
+
+        return respMap;
+    }
+}
+```
+
+final，update gateway congif：
+
+```yaml
+        - id: third_party_route
+          uri: lb://thirdParty
+          predicates:
+            - Path=/api/thirdparty/**
+          filters:
+            - RewritePath=/api/thirdparty/?(?<segment>.*), /$\{segment}
+```
+
+Please be aware that in the Gateway configuration YAML file, when setting up load balancing (lb://), make sure to use the custom service name defined in Nacos.
+
+<br>
+
 ### Order
 
 <br>
@@ -665,7 +818,19 @@ A preview of this functionality is as follows:
 
 <img src="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/raw/e506621a17f5208b5685663765bbde960a9a9305/Static/product_maintenance.png" style="zoom: 50%;" />
 
+#### Brand Management
 
+The route for Brand Management is configured as `product/brand`. It is designed to facilitate the management of electronic product brands, supporting operations such as adding, deleting, modifying, querying, and paginated display. Additionally, it provides support for file upload and retrieval under distributed conditions.
+
+To achieve this, the brand URL is modified to support file upload and retrieval in a distributed environment. Files are uploaded to the OSS (Object Storage Service) cloud server for read and write operations.
+
+<br>The implementation involves server-side signing for direct upload. Prior to uploading, the client requests the brand name and signature from the server, and then submits the request to Alibaba Cloud. This method bypasses the need to send requests to one's own server, thus conserving resources.
+
+By configuring the external network domain of the bucket on the frontend, support for both single and multiple file uploads is enabled. Single file upload functionality is achieved through entering the logo address.
+
+<img src="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/raw/722c94adf20cc6e55752cbebe8c1488c4bf7a89c/Static/brand_management2.png" style="zoom:50%;" />
+
+<img src="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/raw/6d891db6976c4e3b62de60f101d999bc41a9cd99/Static/brand_management.png" style="zoom:50%;" />
 
 <br>
 
