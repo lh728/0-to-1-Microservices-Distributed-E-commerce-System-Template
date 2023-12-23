@@ -1,6 +1,8 @@
 # 从0到1的微服务分布式电子商务系统模板
 
-这是一个正在构建中的基于微服务的分布式电子商务系统模板，旨在利用各种先进的管理工具和实践，从零到一实现微服务、分布式架构、全栈开发、集群、部署、自动化运维以及可视化CI/CD。
+SpringBoot + Vue2 + Maven3 + Java17 + Spring Cloud + Redis + Docker + OSS + Mysql + MybatisPlus + Nginx + Git + Unit Testing
+
+这是一个正在构建中的基于微服务的分布式电子商务系统模板，旨在利用各种先进的管理工具和实践，从零到一实现应用监控、限流、网关、熔断降级等分布式方案；分布式事务、分布式锁；高并发、线程池、异步编排；压力测试与性能优化；集群技术；CI/CD。
 
 **我将尽可能使用高版本的编程语言和依赖环境。**
 
@@ -83,7 +85,7 @@ Spring Cloud - **Sleuth** （分布式追踪）
 
 Spring Cloud Alibaba - **Seata**（前身为 Fescar，分布式事务解决方案）
 
-
+Spring Cloud Alibaba - **OSS** （云存储）
 
 <br>
 
@@ -294,6 +296,10 @@ tablePrefix=<your datatable prefix>_
 - 此外，由于项目自动添加了权限控制注解 `RequiresPermissions`，目前不需要此注解，因此需要调整逆向工程过程。具体来说，在 `renren-generator` 模块的 `resources-template-Controller.java.vm` 中将该注解注释掉。
 
 完成依赖配置后，每个微服务需要进一步配置自己的数据源，使用 `mybatis-plus` 的 `@MapperScan` 注解，指定 SQL 文件映射的位置等。详细信息请参考每个微服务中的 `application.yml` 文件。
+
+另外，PublicDependencies 还会存放一些公共信息，例如错误异常码、分组校验信息等等。
+
+
 
 <br>
 
@@ -583,6 +589,147 @@ public class CorsConfig implements WebMvcConfigurer {
 
 <br>
 
+#### OSS
+
+由于地域问题，目前选择使用阿里云开通OSS对象存储，将作为分布式系统的云文件存储器使用，存储图片等信息。（也可以使用AWS S3)
+
+测试阶段，读写权限选择的公共读（对文件写操作需要进行身份验证，可以对文件进行匿名读），未开通版本控制，服务端未加密，也未开通实时日志查询和HDFS服务。
+
+你可以参考下图：
+
+<img src="D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\Static\oss.png" alt="image-20231221165409092" style="zoom:50%;" />
+
+完成后，就可以通过OSS进行文件读写了。
+
+（当然，还需要配置accessKey之类的相关信息，这一部分就不赘述了，可以去官网查看，有详细教程）
+
+为了支持服务端签名后直传，即跳过向自己的服务器发送请求，需要 [修改CORS支持跨域](https://help.aliyun.com/zh/oss/use-cases/java-1?spm=a2c4g.11186623.0.0.2b415d03FeF1lg)。，再创建一个微服务Third-Party，专门用于管理第三方服务。
+
+该项目需要导入依赖和依赖管理：
+
+```xml
+		<dependency>
+			<groupId>com.EcommerceSystemTemplate</groupId>
+			<artifactId>PublicDependencies</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.baomidou</groupId>
+					<artifactId>mybatis-plus-boot-starter</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>        
+
+		<dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alicloud-oss</artifactId>
+            <version>2.2.0.RELEASE</version>
+        </dependency>
+```
+
+然后增加配置：
+
+```yaml
+spring:
+  cloud: 
+    alicloud:
+      access-key: <your access key>
+      secret-key: <your secret key>
+      oss:
+        endpoint: oss-cn-beijing.aliyuncs.com
+    util:
+      enabled: false
+```
+
+需要注意，在Nacos配置对应的命名空间、服务发现等，这部分内容和微服务配置是一样的，只不过不需要配置mybatis-plus。
+
+之后，设置专门的Controller类用于管理OSS：
+
+```java
+@RestController
+public class OssController {
+
+    @Resource
+    OSSClient ossClient;
+
+    @Value("${spring.cloud.alicloud.oss.endpoint}")
+    private String endpoint;
+
+    @Value("${spring.cloud.alicloud.oss.bucket}")
+    private String bucket;
+
+    @Value("${spring.cloud.alicloud.access-key}")
+    private String accessId;
+
+    @RequestMapping("/oss/policy")
+    public Map<String, String> policy() {
+
+        // https://0-to-1-microservices-distributed-e-commerce-system-template.oss-cn-beijing.aliyuncs.com/test.png
+        // format https://bucketname.endpoint。
+        String host = "https://" + bucket + "." + endpoint;
+        /*
+        Set up the upload callback URL, which is the callback server address used for communication between the application server and OSS.
+        After the file upload is complete, OSS will send the file upload information to the application server through this callback URL.
+         */
+//        String callbackUrl = "https://192.168.0.0:8888";
+        // Set the prefix for uploading files to OSS; this field can be left empty.
+        // When left empty, files will be uploaded to the root directory of the Bucket.
+        String format = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        String dir = format + "/";
+
+        Map<String, String> respMap = null;
+        try {
+            long expireTime = 30;
+            long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
+            Date expiration = new Date(expireEndTime);
+            // PostObject请求最大可支持的文件大小为5 GB，即CONTENT_LENGTH_RANGE为5*1024*1024*1024。
+            PolicyConditions policyConds = new PolicyConditions();
+            policyConds.addConditionItem(PolicyConditions.COND_CONTENT_LENGTH_RANGE, 0, 1048576000);
+            policyConds.addConditionItem(MatchMode.StartWith, PolicyConditions.COND_KEY, dir);
+
+            String postPolicy = ossClient.generatePostPolicy(expiration, policyConds);
+            byte[] binaryData = postPolicy.getBytes("utf-8");
+            String encodedPolicy = BinaryUtil.toBase64String(binaryData);
+            String postSignature = ossClient.calculatePostSignature(postPolicy);
+
+            respMap = new LinkedHashMap<String, String>();
+            respMap.put("accessid", accessId);
+            respMap.put("policy", encodedPolicy);
+            respMap.put("signature", postSignature);
+            respMap.put("dir", dir);
+            respMap.put("host", host);
+            respMap.put("expire", String.valueOf(expireEndTime / 1000));
+            // respMap.put("expire", formatISO8601Date(expiration));
+
+        } catch (Exception e) {
+            // Assert.fail(e.getMessage());
+            System.out.println(e.getMessage());
+        } finally {
+            ossClient.shutdown();
+        }
+
+        return respMap;
+    }
+}
+```
+
+最后，修改网关配置即可：
+
+```yaml
+        - id: third_party_route
+          uri: lb://thirdParty
+          predicates:
+            - Path=/api/thirdparty/**
+          filters:
+            - RewritePath=/api/thirdparty/?(?<segment>.*), /$\{segment}
+```
+
+注意这里gateway的yml中配置负载均衡（lb://)，一定写的是nacos中自定义的服务名称
+
+
+
+<br>
+
 ### Order
 
 <br>
@@ -599,9 +746,21 @@ public class CorsConfig implements WebMvcConfigurer {
 
 Product maintenance的路由是product/category。该配置用于管理商品服务三级分类下，一次性查出所有分类与子分类，并以树数据结构组装起来进行管理，并支持append, delete，batch delete和update功能。
 
-该功能预览大致如此：
+<img src="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/raw/e506621a17f5208b5685663765bbde960a9a9305/Static/product_maintenance.png" style="zoom: 50%;" />
 
-<img src="C:\Users\lhjls\AppData\Roaming\Typora\typora-user-images\image-20231220195823018.png" alt="image-20231220195823018" style="zoom: 50%;" />
+#### Brand Management
+
+Brand Management的路由是product/brand。还配置用于管理电商品牌，支持增删改查分页显示。
+
+同时，通过修改brand URL，支持分布式条件下文件上传与读取，文件上传到OSS云服务器进行读写。
+
+实现方式是服务端签名后直传，即上传前向服务器索要名牌与签名，然后向阿里云提交请求。通过这种方式跳过了向自己的服务器发送请求，占用资源。
+
+前端配置bucket外网域名后，即可支持单文件和多文件上传，单文件上传功能是通过输入 logo address 完成的。
+
+<img src="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/raw/722c94adf20cc6e55752cbebe8c1488c4bf7a89c/Static/brand_management2.png" style="zoom:50%;" />
+
+<img src="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/raw/6d891db6976c4e3b62de60f101d999bc41a9cd99/Static/brand_management.png" style="zoom:50%;" />
 
 
 
