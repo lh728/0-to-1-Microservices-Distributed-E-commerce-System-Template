@@ -5,6 +5,9 @@ import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
 import java.util.Date;
+
+import com.ecommercesystemtemplate.common.group.AddGroup;
+import com.ecommercesystemtemplate.common.group.UpdateGroup;
 import lombok.Data;
 import org.hibernate.validator.constraints.URL;
 
@@ -26,6 +29,8 @@ public class BrandEntity implements Serializable {
 	 * brand_id
 	 */
 	@TableId
+	@Null(message = "new Brand ID must be empty", groups = {AddGroup.class})
+	@NotNull(message = "update Brand ID cannot be empty", groups = {UpdateGroup.class})
 	private Long brandId;
 	/**
 	 * name
@@ -35,8 +40,8 @@ public class BrandEntity implements Serializable {
 	/**
 	 * logo address
 	 */
-	@NotEmpty(message = "Brand logo address cannot be empty")
-	@URL(message = "Brand logo address must be a valid URL")
+	@NotEmpty(message = "Brand logo address cannot be empty", groups = {AddGroup.class})
+	@URL(message = "Brand logo address must be a valid URL", groups = {AddGroup.class, UpdateGroup.class})
 	private String logo;
 	/**
 	 * descript
@@ -49,14 +54,14 @@ public class BrandEntity implements Serializable {
 	/**
 	 * Retrieving initials
 	 */
-	@NotEmpty(message = "Brand initials cannot be empty")
-	@Pattern(regexp = "^[a-zA-Z]$", message = "Brand initials must be a letter")
+	@NotEmpty(message = "Brand initials cannot be empty", groups = {AddGroup.class})
+	@Pattern(regexp = "^[a-zA-Z]$", message = "Brand initials must be a letter", groups = {AddGroup.class, UpdateGroup.class})
 	private String firstLetter;
 	/**
 	 * sort
 	 */
-	@NotNull(message = "Brand sort cannot be empty")
-	@Min(value = 0, message = "Brand sort must be greater than or equal to 0")
+	@NotNull(message = "Brand sort cannot be empty", groups = {AddGroup.class})
+	@Min(value = 0, message = "Brand sort must be greater than or equal to 0", groups = {AddGroup.class, UpdateGroup.class})
 	private Integer sort;
 
 }

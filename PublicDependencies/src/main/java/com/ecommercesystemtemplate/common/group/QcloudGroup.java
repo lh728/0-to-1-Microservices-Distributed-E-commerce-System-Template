@@ -9,7 +9,7 @@
 package com.ecommercesystemtemplate.common.group;
 
 /**
- * 腾讯云
+ * tencent cloud
  *
  * @author Mark sunlightcs@gmail.com
  */

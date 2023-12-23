@@ -9,7 +9,7 @@
 package com.ecommercesystemtemplate.common.group;
 
 /**
- * 新增数据 Group
+ * add data Group
  *
  * @author Mark sunlightcs@gmail.com
  */

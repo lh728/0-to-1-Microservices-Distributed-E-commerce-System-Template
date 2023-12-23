@@ -9,7 +9,7 @@
 package com.ecommercesystemtemplate.common.group;
 
 /**
- * 阿里云
+ * aliyun
  *
  * @author Mark sunlightcs@gmail.com
  */

@@ -1,23 +1,17 @@
 package com.ecommercesystemtemplate.product.controller;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.ecommercesystemtemplate.common.group.AddGroup;
+import com.ecommercesystemtemplate.common.group.UpdateGroup;
+import com.ecommercesystemtemplate.common.utils.PageUtils;
+import com.ecommercesystemtemplate.common.utils.R;
 import com.ecommercesystemtemplate.product.entity.BrandEntity;
 import com.ecommercesystemtemplate.product.service.BrandService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
-import com.ecommercesystemtemplate.common.utils.PageUtils;
-import com.ecommercesystemtemplate.common.utils.R;
-
-import javax.validation.Valid;
+import java.util.Arrays;
+import java.util.Map;
 
 
 /**
@@ -58,7 +52,7 @@ public class BrandController {
      * 保存
      */
     @RequestMapping("/save")
-    public R save(@Valid @RequestBody BrandEntity brand){
+    public R save(@Validated({AddGroup.class}) @RequestBody BrandEntity brand){
         brandService.save(brand);
 
         return R.ok();
@@ -68,7 +62,7 @@ public class BrandController {
      * 修改
      */
     @RequestMapping("/update")
-    public R update(@RequestBody BrandEntity brand){
+    public R update(@Validated({UpdateGroup.class}) @RequestBody BrandEntity brand){
 		brandService.updateById(brand);
 
         return R.ok();

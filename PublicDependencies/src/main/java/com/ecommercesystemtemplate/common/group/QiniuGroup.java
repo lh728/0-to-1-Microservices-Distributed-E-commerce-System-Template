@@ -9,7 +9,7 @@
 package com.ecommercesystemtemplate.common.group;
 
 /**
- * 七牛
+ * qiniu cloud
  *
  * @author Mark sunlightcs@gmail.com
  */
