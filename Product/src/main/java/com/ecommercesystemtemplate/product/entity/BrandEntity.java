@@ -6,10 +6,13 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
 import lombok.Data;
+import org.hibernate.validator.constraints.URL;
+
+import javax.validation.constraints.*;
 
 /**
  * brand
- * 
+ *
  * @author thel.lu
  * @email lhjlslw@gmail.com
  * @date 2023-11-18 12:20:53
@@ -27,10 +30,13 @@ public class BrandEntity implements Serializable {
 	/**
 	 * name
 	 */
+	@NotBlank(message = "Brand name cannot be empty")
 	private String name;
 	/**
 	 * logo address
 	 */
+	@NotEmpty(message = "Brand logo address cannot be empty")
+	@URL(message = "Brand logo address must be a valid URL")
 	private String logo;
 	/**
 	 * descript
@@ -43,10 +49,14 @@ public class BrandEntity implements Serializable {
 	/**
 	 * Retrieving initials
 	 */
+	@NotEmpty(message = "Brand initials cannot be empty")
+	@Pattern(regexp = "^[a-zA-Z]$", message = "Brand initials must be a letter")
 	private String firstLetter;
 	/**
 	 * sort
 	 */
+	@NotNull(message = "Brand sort cannot be empty")
+	@Min(value = 0, message = "Brand sort must be greater than or equal to 0")
 	private Integer sort;
 
 }

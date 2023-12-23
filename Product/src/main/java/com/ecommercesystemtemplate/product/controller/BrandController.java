@@ -1,11 +1,13 @@
 package com.ecommercesystemtemplate.product.controller;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.ecommercesystemtemplate.product.entity.BrandEntity;
 import com.ecommercesystemtemplate.product.service.BrandService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.common.utils.R;
 
+import javax.validation.Valid;
 
 
 /**
@@ -55,10 +58,19 @@ public class BrandController {
      * 保存
      */
     @RequestMapping("/save")
-    public R save(@RequestBody BrandEntity brand){
-		brandService.save(brand);
-
-        return R.ok();
+    public R save(@Valid @RequestBody BrandEntity brand, BindingResult result){
+        Map<String,String> map = new HashMap<>();
+        if (result.hasErrors()) {
+            result.getFieldErrors().forEach((item) -> {
+                String message = item.getDefaultMessage();
+                String filed = item.getField();
+                map.put(filed,message);
+            });
+            return R.error(400,"Data validation failed").put("data",map);
+        } else {
+            brandService.save(brand);
+            return R.ok();
+        }
     }
 
     /**
