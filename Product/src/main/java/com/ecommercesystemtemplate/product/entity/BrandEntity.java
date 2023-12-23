@@ -8,6 +8,7 @@ import java.util.Date;
 
 import com.ecommercesystemtemplate.common.group.AddGroup;
 import com.ecommercesystemtemplate.common.group.UpdateGroup;
+import com.ecommercesystemtemplate.common.valid.ListValue;
 import lombok.Data;
 import org.hibernate.validator.constraints.URL;
 
@@ -35,7 +36,7 @@ public class BrandEntity implements Serializable {
 	/**
 	 * name
 	 */
-	@NotBlank(message = "Brand name cannot be empty")
+	@NotBlank(message = "Brand name cannot be empty", groups = {AddGroup.class, UpdateGroup.class})
 	private String name;
 	/**
 	 * logo address
@@ -50,6 +51,7 @@ public class BrandEntity implements Serializable {
 	/**
 	 * show_status[0-no display；1-display]
 	 */
+	@ListValue(value = {0, 1}, message = "Brand display status must be 0 or 1", groups = {AddGroup.class, UpdateGroup.class})
 	private Integer showStatus;
 	/**
 	 * Retrieving initials
