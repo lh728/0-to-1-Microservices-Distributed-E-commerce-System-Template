@@ -58,19 +58,10 @@ public class BrandController {
      * 保存
      */
     @RequestMapping("/save")
-    public R save(@Valid @RequestBody BrandEntity brand, BindingResult result){
-        Map<String,String> map = new HashMap<>();
-        if (result.hasErrors()) {
-            result.getFieldErrors().forEach((item) -> {
-                String message = item.getDefaultMessage();
-                String filed = item.getField();
-                map.put(filed,message);
-            });
-            return R.error(400,"Data validation failed").put("data",map);
-        } else {
-            brandService.save(brand);
-            return R.ok();
-        }
+    public R save(@Valid @RequestBody BrandEntity brand){
+        brandService.save(brand);
+
+        return R.ok();
     }
 
     /**
