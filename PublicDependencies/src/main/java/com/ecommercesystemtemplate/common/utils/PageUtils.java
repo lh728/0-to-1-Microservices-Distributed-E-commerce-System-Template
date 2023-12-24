@@ -14,39 +14,39 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * 分页工具类
+ * page utils
  *
  * @author Mark sunlightcs@gmail.com
  */
 public class PageUtils implements Serializable {
 	private static final long serialVersionUID = 1L;
 	/**
-	 * 总记录数
+	 * totalCount
 	 */
 	private int totalCount;
 	/**
-	 * 每页记录数
+	 * pageSize
 	 */
 	private int pageSize;
 	/**
-	 * 总页数
+	 * totalPage
 	 */
 	private int totalPage;
 	/**
-	 * 当前页数
+	 * current Page
 	 */
 	private int currPage;
 	/**
-	 * 列表数据
+	 * list data
 	 */
 	private List<?> list;
-	
+
 	/**
-	 * 分页
-	 * @param list        列表数据
-	 * @param totalCount  总记录数
-	 * @param pageSize    每页记录数
-	 * @param currPage    当前页数
+	 * page utils
+	 * @param list        list data
+	 * @param totalCount  totalCount
+	 * @param pageSize    pageSize
+	 * @param currPage    currPage
 	 */
 	public PageUtils(List<?> list, int totalCount, int pageSize, int currPage) {
 		this.list = list;
@@ -57,7 +57,7 @@ public class PageUtils implements Serializable {
 	}
 
 	/**
-	 * 分页
+	 * page utils
 	 */
 	public PageUtils(IPage<?> page) {
 		this.list = page.getRecords();
@@ -106,5 +106,5 @@ public class PageUtils implements Serializable {
 	public void setList(List<?> list) {
 		this.list = list;
 	}
-	
+
 }
