@@ -20,7 +20,7 @@ This is an ongoing construction of a microservices-based distributed e-commerce 
 
 <br>
 
-For the Chinese version of this project, click [中文版本](https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/blob/c1e9f9be829f4cffc694bcba5e0209531082ed80/README_ZH.md#brand-management).
+For the Chinese version of this project, click [中文版本](https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/blob/c1e9f9be829f4cffc694bcba5e0209531082ed80/README_ZH.md).
 
 
 
