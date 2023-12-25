@@ -31,7 +31,7 @@ public class BrandController {
     }
 
     /**
-     * 列表
+     * list
      */
     @RequestMapping("/list")
     public R list(@RequestParam Map<String, Object> params){
@@ -42,7 +42,7 @@ public class BrandController {
 
 
     /**
-     * 信息
+     * info
      */
     @RequestMapping("/info/{brandId}")
     public R info(@PathVariable("brandId") Long brandId){
@@ -52,7 +52,7 @@ public class BrandController {
     }
 
     /**
-     * 保存
+     * save
      */
     @RequestMapping("/save")
     public R save(@Validated({AddGroup.class}) @RequestBody BrandEntity brand){
@@ -62,7 +62,7 @@ public class BrandController {
     }
 
     /**
-     * 修改
+     * update
      */
     @RequestMapping("/update")
     public R update(@Validated({UpdateGroup.class}) @RequestBody BrandEntity brand){
@@ -72,7 +72,7 @@ public class BrandController {
     }
 
     /**
-     * 删除
+     * delete
      */
     @RequestMapping("/delete")
     public R delete(@RequestBody Long[] brandIds){
