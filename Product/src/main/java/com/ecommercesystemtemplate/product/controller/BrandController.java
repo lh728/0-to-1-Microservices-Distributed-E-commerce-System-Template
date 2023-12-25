@@ -24,8 +24,11 @@ import java.util.Map;
 @RestController
 @RequestMapping("product/brand")
 public class BrandController {
-    @Autowired
-    private BrandService brandService;
+    private final BrandService brandService;
+
+    public BrandController(BrandService brandService) {
+        this.brandService = brandService;
+    }
 
     /**
      * 列表

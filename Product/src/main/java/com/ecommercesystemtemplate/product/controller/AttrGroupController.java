@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.ecommercesystemtemplate.product.entity.AttrGroupEntity;
 import com.ecommercesystemtemplate.product.service.AttrGroupService;
+import com.ecommercesystemtemplate.product.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,8 +28,14 @@ import com.ecommercesystemtemplate.common.utils.R;
 @RestController
 @RequestMapping("product/attrgroup")
 public class AttrGroupController {
-    @Autowired
-    private AttrGroupService attrGroupService;
+    private final AttrGroupService attrGroupService;
+
+    private final CategoryService categoryService;
+
+    public AttrGroupController(AttrGroupService attrGroupService, CategoryService categoryService) {
+        this.attrGroupService = attrGroupService;
+        this.categoryService = categoryService;
+    }
 
     /**
      * 列表
@@ -49,6 +56,9 @@ public class AttrGroupController {
     @RequestMapping("/info/{attrGroupId}")
     public R info(@PathVariable("attrGroupId") Long attrGroupId){
 		AttrGroupEntity attrGroup = attrGroupService.getById(attrGroupId);
+
+        Long[] path = categoryService.findCatelogPath(attrGroup.getCatelogId());
+        attrGroup.setCatelogPath(path);
 
         return R.ok().put("attrGroup", attrGroup);
     }

@@ -28,8 +28,11 @@ import com.ecommercesystemtemplate.common.utils.R;
 @RestController
 @RequestMapping("product/category")
 public class CategoryController {
-    @Autowired
-    private CategoryService categoryService;
+    private final CategoryService categoryService;
+
+    public CategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
 
     /**
     Retrieve all categories and subcategories, assembling them into a tree data structure.
