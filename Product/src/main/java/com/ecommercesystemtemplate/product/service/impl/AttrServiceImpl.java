@@ -2,14 +2,23 @@ package com.ecommercesystemtemplate.product.service.impl;
 
 import com.ecommercesystemtemplate.product.dao.AttrAttrgroupRelationDao;
 import com.ecommercesystemtemplate.product.dao.AttrDao;
+import com.ecommercesystemtemplate.product.dao.AttrGroupDao;
+import com.ecommercesystemtemplate.product.dao.CategoryDao;
 import com.ecommercesystemtemplate.product.entity.AttrAttrgroupRelationEntity;
 import com.ecommercesystemtemplate.product.entity.AttrEntity;
+import com.ecommercesystemtemplate.product.entity.AttrGroupEntity;
+import com.ecommercesystemtemplate.product.entity.CategoryEntity;
 import com.ecommercesystemtemplate.product.service.AttrService;
+import com.ecommercesystemtemplate.product.vo.AttrResponseVo;
 import com.ecommercesystemtemplate.product.vo.AttrVo;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -23,9 +32,13 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
 
     final
     AttrAttrgroupRelationDao attrAttrgroupRelationDao;
+    final AttrGroupDao attrGroupDao;
+    final CategoryDao categoryDao;
 
-    public AttrServiceImpl(AttrAttrgroupRelationDao attrAttrgroupRelationDao) {
+    public AttrServiceImpl(AttrAttrgroupRelationDao attrAttrgroupRelationDao, AttrGroupDao attrGroupDao, CategoryDao categoryDao) {
         this.attrAttrgroupRelationDao = attrAttrgroupRelationDao;
+        this.attrGroupDao = attrGroupDao;
+        this.categoryDao = categoryDao;
     }
 
     @Override
@@ -51,6 +64,51 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         entity.setAttrId(attrEntity.getAttrId());
         entity.setAttrGroupId(attr.getAttrGroupId());
         attrAttrgroupRelationDao.insert(entity);
+    }
+
+    @Override
+    public PageUtils queryBaseAttr(Map<String, Object> params, Long catelogId) {
+        QueryWrapper<AttrEntity> wrapper = new QueryWrapper<>();
+
+        // 1. query all attributes of the current category
+        if (catelogId != 0) {
+            wrapper.eq("catelog_id", catelogId);
+        }
+        // 2. query all attributes that are not associated with the attribute group
+        String key = (String) params.get("key");
+        if (StringUtils.isNotEmpty(key)) {
+            wrapper.and((w) -> {
+                w.eq("attr_id", key).or().like("attr_name", key);
+            });
+        }
+
+        IPage<AttrEntity> page = this.page(
+                new Query<AttrEntity>().getPage(params),wrapper
+        );
+
+        PageUtils pageUtils = new PageUtils(page);
+        List<AttrEntity> records = page.getRecords();
+        List<AttrResponseVo> result = records.stream().map((attrEntity) -> {
+            AttrResponseVo vo = new AttrResponseVo();
+            BeanUtils.copyProperties(attrEntity, vo);
+            // 2.1 set group name and category name
+            AttrAttrgroupRelationEntity relationEntity =
+                    attrAttrgroupRelationDao.selectOne(new QueryWrapper<AttrAttrgroupRelationEntity>().
+                            eq("attr_id", attrEntity.getAttrId()));
+            if (relationEntity != null && relationEntity.getAttrGroupId() != null) {
+                AttrGroupEntity attrGroupEntity = attrGroupDao.selectById(relationEntity.getAttrGroupId());
+                vo.setGroupName(attrGroupEntity.getAttrGroupName());
+            }
+
+            CategoryEntity categoryEntity = categoryDao.selectById(attrEntity.getCatelogId());
+            if (categoryEntity != null) {
+                vo.setCatelogName(categoryEntity.getName());
+            }
+            return vo;
+        }).toList();
+
+        pageUtils.setList(result);
+        return pageUtils;
     }
 
 }

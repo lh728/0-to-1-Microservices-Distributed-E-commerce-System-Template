@@ -35,6 +35,16 @@ public class AttrController {
     }
 
     /**
+     * base attr list
+     */
+    @RequestMapping("/base/list/{catelogId}")
+    public R baseAttrList(@RequestParam Map<String, Object> params, @PathVariable Long catelogId){
+        PageUtils page = attrService.queryBaseAttr(params, catelogId);
+
+        return R.ok().put("page", page);
+    }
+
+    /**
      * list
      */
     @RequestMapping("/list")
