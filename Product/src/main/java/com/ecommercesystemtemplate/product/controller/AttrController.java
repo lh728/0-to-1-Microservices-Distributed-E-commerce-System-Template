@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.ecommercesystemtemplate.product.entity.AttrEntity;
 import com.ecommercesystemtemplate.product.service.AttrService;
+import com.ecommercesystemtemplate.product.vo.AttrVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,11 +28,14 @@ import com.ecommercesystemtemplate.common.utils.R;
 @RestController
 @RequestMapping("product/attr")
 public class AttrController {
-    @Autowired
-    private AttrService attrService;
+    private final AttrService attrService;
+
+    public AttrController(AttrService attrService) {
+        this.attrService = attrService;
+    }
 
     /**
-     * 列表
+     * list
      */
     @RequestMapping("/list")
     public R list(@RequestParam Map<String, Object> params){
@@ -42,7 +46,7 @@ public class AttrController {
 
 
     /**
-     * 信息
+     * info
      */
     @RequestMapping("/info/{attrId}")
     public R info(@PathVariable("attrId") Long attrId){
@@ -52,17 +56,17 @@ public class AttrController {
     }
 
     /**
-     * 保存
+     * save
      */
     @RequestMapping("/save")
-    public R save(@RequestBody AttrEntity attr){
-		attrService.save(attr);
+    public R save(@RequestBody AttrVo attr){
+		attrService.saveAttr(attr);
 
         return R.ok();
     }
 
     /**
-     * 修改
+     * update
      */
     @RequestMapping("/update")
     public R update(@RequestBody AttrEntity attr){
@@ -72,7 +76,7 @@ public class AttrController {
     }
 
     /**
-     * 删除
+     * delete
      */
     @RequestMapping("/delete")
     public R delete(@RequestBody Long[] attrIds){
