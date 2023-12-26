@@ -3,6 +3,9 @@ package com.ecommercesystemtemplate.product.service.impl;
 import com.ecommercesystemtemplate.product.dao.BrandDao;
 import com.ecommercesystemtemplate.product.entity.BrandEntity;
 import com.ecommercesystemtemplate.product.service.BrandService;
+import com.ecommercesystemtemplate.product.service.CategoryBrandRelationService;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -10,10 +13,18 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.common.utils.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service("brandService")
 public class BrandServiceImpl extends ServiceImpl<BrandDao, BrandEntity> implements BrandService {
+
+    final
+    CategoryBrandRelationService categoryBrandRelationService;
+
+    public BrandServiceImpl(CategoryBrandRelationService categoryBrandRelationService) {
+        this.categoryBrandRelationService = categoryBrandRelationService;
+    }
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -30,6 +41,19 @@ public class BrandServiceImpl extends ServiceImpl<BrandDao, BrandEntity> impleme
         );
 
         return new PageUtils(page);
+    }
+
+    @Override
+    @Transactional
+    public void updateDetail(BrandEntity brand) {
+        this.updateById(brand);
+
+        if (StringUtils.isNotEmpty(brand.getName())){
+            // update other tables
+            categoryBrandRelationService.updateBrand(brand.getBrandId(),brand.getName());
+
+            // TODO: update other tables
+        }
     }
 
 }

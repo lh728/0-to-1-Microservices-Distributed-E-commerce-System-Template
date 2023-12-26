@@ -3,7 +3,6 @@
 
 <mapper namespace="com.ecommercesystemtemplate.product.dao.CategoryBrandRelationDao">
 
-	<!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="com.ecommercesystemtemplate.product.entity.CategoryBrandRelationEntity" id="categoryBrandRelationMap">
         <result property="id" column="id"/>
         <result property="brandId" column="brand_id"/>
@@ -11,6 +10,9 @@
         <result property="brandName" column="brand_name"/>
         <result property="catelogName" column="catelog_name"/>
     </resultMap>
+    <update id="updateCategory">
+        update pms_category_brand_relation set catelog_name = #{name} where catelog_id = #{catId}
+    </update>
 
 
 </mapper>

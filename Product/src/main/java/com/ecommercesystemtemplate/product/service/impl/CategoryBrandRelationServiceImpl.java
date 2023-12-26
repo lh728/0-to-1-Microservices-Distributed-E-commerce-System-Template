@@ -52,4 +52,17 @@ public class CategoryBrandRelationServiceImpl extends ServiceImpl<CategoryBrandR
         this.save(categoryBrandRelation);
     }
 
+    @Override
+    public void updateBrand(Long brandId, String name) {
+        CategoryBrandRelationEntity entity = new CategoryBrandRelationEntity();
+        entity.setBrandId(brandId);
+        entity.setBrandName(name);
+        this.update(entity,new QueryWrapper<CategoryBrandRelationEntity>().eq("brand_id",brandId));
+    }
+
+    @Override
+    public void updateCategory(Long catId, String name) {
+        this.baseMapper.updateCategory(catId,name);
+    }
+
 }
