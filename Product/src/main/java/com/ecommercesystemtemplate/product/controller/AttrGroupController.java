@@ -1,17 +1,16 @@
 package com.ecommercesystemtemplate.product.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import com.ecommercesystemtemplate.product.entity.AttrEntity;
 import com.ecommercesystemtemplate.product.entity.AttrGroupEntity;
 import com.ecommercesystemtemplate.product.service.AttrGroupService;
+import com.ecommercesystemtemplate.product.service.AttrService;
 import com.ecommercesystemtemplate.product.service.CategoryService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import com.ecommercesystemtemplate.product.vo.AttrGroupRelationVo;
+import org.springframework.web.bind.annotation.*;
 
 import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.common.utils.R;
@@ -32,18 +31,37 @@ public class AttrGroupController {
 
     private final CategoryService categoryService;
 
-    public AttrGroupController(AttrGroupService attrGroupService, CategoryService categoryService) {
+    private final AttrService attrService;
+
+    public AttrGroupController(AttrGroupService attrGroupService, CategoryService categoryService, AttrService attrService) {
         this.attrGroupService = attrGroupService;
         this.categoryService = categoryService;
+        this.attrService = attrService;
     }
 
     /**
-     * 列表
+     * list relation data
+     */
+    @GetMapping("/{attrGroupId}/attr/relation")
+    public R attrRelation(@PathVariable("attrGroupId") Long attrGroupId){
+        List<AttrEntity> result = attrService.queryRelationAttr( attrGroupId);
+        return R.ok().put("page", result);
+    }
+
+    /**
+     * delete relation basic attr data
+     */
+    @PostMapping("/attr/relation/delete")
+    public R deleteRelation(@RequestBody AttrGroupRelationVo[] vos){
+        attrService.deleteRelation(vos);
+        return R.ok();
+    }
+
+    /**
+     * list
      */
     @RequestMapping("/list/{catelogId}")
     public R list(@RequestParam Map<String, Object> params, @PathVariable("catelogId") Long catelogId){
-//        PageUtils page = attrGroupService.queryPage(params);
-
         PageUtils page = attrGroupService.queryPage(params, catelogId);
 
         return R.ok().put("page", page);
@@ -51,7 +69,7 @@ public class AttrGroupController {
 
 
     /**
-     * 信息
+     * info
      */
     @RequestMapping("/info/{attrGroupId}")
     public R info(@PathVariable("attrGroupId") Long attrGroupId){
@@ -64,7 +82,7 @@ public class AttrGroupController {
     }
 
     /**
-     * 保存
+     * save
      */
     @RequestMapping("/save")
     public R save(@RequestBody AttrGroupEntity attrGroup){
@@ -74,7 +92,7 @@ public class AttrGroupController {
     }
 
     /**
-     * 修改
+     * update
      */
     @RequestMapping("/update")
     public R update(@RequestBody AttrGroupEntity attrGroup){
@@ -84,7 +102,7 @@ public class AttrGroupController {
     }
 
     /**
-     * 删除
+     * delete
      */
     @RequestMapping("/delete")
     public R delete(@RequestBody Long[] attrGroupIds){

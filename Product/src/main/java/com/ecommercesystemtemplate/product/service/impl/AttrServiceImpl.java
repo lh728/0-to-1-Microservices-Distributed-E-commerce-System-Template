@@ -11,14 +11,18 @@ import com.ecommercesystemtemplate.product.entity.AttrGroupEntity;
 import com.ecommercesystemtemplate.product.entity.CategoryEntity;
 import com.ecommercesystemtemplate.product.service.AttrService;
 import com.ecommercesystemtemplate.product.service.CategoryService;
+import com.ecommercesystemtemplate.product.vo.AttrGroupRelationVo;
 import com.ecommercesystemtemplate.product.vo.AttrResponseVo;
 import com.ecommercesystemtemplate.product.vo.AttrVo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -170,6 +174,28 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
                 attrAttrgroupRelationDao.insert(entity);
             }
         }
+    }
+
+    /**
+     * according to attrGroupId, query all attributes
+     */
+    @Override
+    public List<AttrEntity> queryRelationAttr(Long attrGroupId) {
+        List<AttrAttrgroupRelationEntity> list = attrAttrgroupRelationDao.selectList(new QueryWrapper<AttrAttrgroupRelationEntity>().
+                eq("attr_group_id", attrGroupId));
+        List<Long> attrIds = list.stream().map(AttrAttrgroupRelationEntity::getAttrId).toList();
+        Collection<AttrEntity> attrEntities = this.listByIds(attrIds);
+        return (List<AttrEntity>) attrEntities;
+    }
+
+    @Override
+    public void deleteRelation(AttrGroupRelationVo[] vos) {
+        List<AttrAttrgroupRelationEntity> collect = Arrays.stream(vos).map((vo) -> {
+            AttrAttrgroupRelationEntity entity = new AttrAttrgroupRelationEntity();
+            BeanUtils.copyProperties(vo, entity);
+            return entity;
+        }).collect(Collectors.toList());
+        attrAttrgroupRelationDao.deleteBatchRelation(collect);
     }
 
 }

@@ -3,9 +3,11 @@ package com.ecommercesystemtemplate.product.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ecommercesystemtemplate.product.entity.AttrEntity;
 import com.ecommercesystemtemplate.common.utils.PageUtils;
+import com.ecommercesystemtemplate.product.vo.AttrGroupRelationVo;
 import com.ecommercesystemtemplate.product.vo.AttrResponseVo;
 import com.ecommercesystemtemplate.product.vo.AttrVo;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,5 +28,9 @@ public interface AttrService extends IService<AttrEntity> {
     AttrResponseVo getAttrInfo(Long attrId);
 
     void updateAttr(AttrVo attr);
+
+    List<AttrEntity> queryRelationAttr(Long attrGroupId);
+
+    void deleteRelation(AttrGroupRelationVo[] vos);
 }
 
