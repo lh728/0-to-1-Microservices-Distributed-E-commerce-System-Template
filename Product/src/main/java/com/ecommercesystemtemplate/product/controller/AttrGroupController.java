@@ -49,6 +49,16 @@ public class AttrGroupController {
     }
 
     /**
+     * list other data that are not associated with the current group
+     */
+    @GetMapping("/{attrGroupId}/noattr/relation")
+    public R attrNotRelation(@PathVariable("attrGroupId") Long attrGroupId,
+                             @RequestParam Map<String, Object> params){
+        PageUtils page = attrService.queryNotRelationAttr( attrGroupId, params);
+        return R.ok().put("page", page);
+    }
+
+    /**
      * delete relation basic attr data
      */
     @PostMapping("/attr/relation/delete")

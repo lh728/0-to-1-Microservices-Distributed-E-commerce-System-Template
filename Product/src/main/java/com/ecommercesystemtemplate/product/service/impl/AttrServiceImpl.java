@@ -184,6 +184,10 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         List<AttrAttrgroupRelationEntity> list = attrAttrgroupRelationDao.selectList(new QueryWrapper<AttrAttrgroupRelationEntity>().
                 eq("attr_group_id", attrGroupId));
         List<Long> attrIds = list.stream().map(AttrAttrgroupRelationEntity::getAttrId).toList();
+
+        if (attrIds.isEmpty()) {
+            return null;
+        }
         Collection<AttrEntity> attrEntities = this.listByIds(attrIds);
         return (List<AttrEntity>) attrEntities;
     }
@@ -196,6 +200,38 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
             return entity;
         }).collect(Collectors.toList());
         attrAttrgroupRelationDao.deleteBatchRelation(collect);
+    }
+
+    @Override
+    public PageUtils queryNotRelationAttr(Long attrGroupId, Map<String, Object> params) {
+        // 1. current category only associated with itself group attributes
+        AttrGroupEntity attrGroupEntity = attrGroupDao.selectById(attrGroupId);
+        Long catelogId = attrGroupEntity.getCatelogId();
+
+        // 2. current category only associated with other group attributes that are not associated with the current group
+        // 2.1 get current category other group
+        List<AttrGroupEntity> attrGroupEntities = attrGroupDao.selectList(new QueryWrapper<AttrGroupEntity>().
+                eq("catelog_id", catelogId));
+        List<Long> list = attrGroupEntities.stream().map(AttrGroupEntity::getAttrGroupId).toList();
+
+        // 2.2 get these groups attributes
+        List<AttrAttrgroupRelationEntity> ids = attrAttrgroupRelationDao.selectList(new QueryWrapper<AttrAttrgroupRelationEntity>().
+                in("attr_group_id", list));
+        List<Long> list1 = ids.stream().map(AttrAttrgroupRelationEntity::getAttrId).toList();
+        // 2.3 remove these attributes from the current group
+        QueryWrapper<AttrEntity> wrapper = new QueryWrapper<AttrEntity>().
+                eq("catelog_id", catelogId).eq("attr_type", ProductConstant.AttrEnum.ATTR_TYPE_BASE.getCode());
+        if (!list1.isEmpty()) {
+            wrapper.notIn("attr_id", list1);
+        }
+        if (StringUtils.isNotEmpty((String) params.get("key"))) {
+            wrapper.and((w) -> {
+                w.eq("attr_id", params.get("key")).or().like("attr_name", params.get("key"));
+            });
+        }
+        IPage<AttrEntity> page = this.page(new Query<AttrEntity>().getPage(params), wrapper);
+        PageUtils pageUtils = new PageUtils(page);
+        return pageUtils;
     }
 
 }
