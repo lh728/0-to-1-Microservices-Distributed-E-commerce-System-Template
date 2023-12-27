@@ -39,7 +39,7 @@ create table pms_attr
   `value_type` tinyint(4) DEFAULT NULL COMMENT 'value_type[0-single，1-multiple choice]',
   `icon` varchar(255) DEFAULT NULL COMMENT 'Attribute ICONS',
   `value_select` char(255) DEFAULT NULL COMMENT 'List of possible values [separated by commas]',
-  `attr_type` tinyint(4) DEFAULT NULL COMMENT 'Attribute type [0- sales attribute, 1- basic attribute, 2- both sales attribute and basic attribute]',
+  `attr_type` tinyint(4) DEFAULT NULL COMMENT 'Attribute type [0- sales attribute, 1- basic attribute]',
    enable               bigint comment 'Enabled status [0 - disabled, 1 - enabled]',
    catelog_id           bigint comment 'catelog_id',
    show_desc            tinyint comment 'Quick display [whether to show on the introduction; 0- No 1- yes], can still be adjusted in the sku',

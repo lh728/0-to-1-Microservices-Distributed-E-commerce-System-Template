@@ -1,5 +1,6 @@
 package com.ecommercesystemtemplate.product.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.ecommercesystemtemplate.product.dao.AttrAttrgroupRelationDao;
 import com.ecommercesystemtemplate.product.dao.AttrDao;
 import com.ecommercesystemtemplate.product.dao.AttrGroupDao;
@@ -9,6 +10,7 @@ import com.ecommercesystemtemplate.product.entity.AttrEntity;
 import com.ecommercesystemtemplate.product.entity.AttrGroupEntity;
 import com.ecommercesystemtemplate.product.entity.CategoryEntity;
 import com.ecommercesystemtemplate.product.service.AttrService;
+import com.ecommercesystemtemplate.product.service.CategoryService;
 import com.ecommercesystemtemplate.product.vo.AttrResponseVo;
 import com.ecommercesystemtemplate.product.vo.AttrVo;
 import org.apache.commons.lang.StringUtils;
@@ -17,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -34,11 +35,13 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
     AttrAttrgroupRelationDao attrAttrgroupRelationDao;
     final AttrGroupDao attrGroupDao;
     final CategoryDao categoryDao;
+    final CategoryService categoryService;
 
-    public AttrServiceImpl(AttrAttrgroupRelationDao attrAttrgroupRelationDao, AttrGroupDao attrGroupDao, CategoryDao categoryDao) {
+    public AttrServiceImpl(AttrAttrgroupRelationDao attrAttrgroupRelationDao, AttrGroupDao attrGroupDao, CategoryDao categoryDao, CategoryService categoryService) {
         this.attrAttrgroupRelationDao = attrAttrgroupRelationDao;
         this.attrGroupDao = attrGroupDao;
         this.categoryDao = categoryDao;
+        this.categoryService = categoryService;
     }
 
     @Override
@@ -109,6 +112,54 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
 
         pageUtils.setList(result);
         return pageUtils;
+    }
+
+    @Override
+    public AttrResponseVo getAttrInfo(Long attrId) {
+        AttrEntity attrEntity = this.getById(attrId);
+        AttrResponseVo result = new AttrResponseVo();
+        BeanUtils.copyProperties(attrEntity, result);
+
+        // 1. set group name and id
+        AttrAttrgroupRelationEntity entity = attrAttrgroupRelationDao.selectOne(new QueryWrapper<AttrAttrgroupRelationEntity>().
+                eq("attr_id", attrId));
+        if (entity != null) {
+            result.setAttrGroupId(entity.getAttrGroupId());
+            AttrGroupEntity attrGroupEntity = attrGroupDao.selectById(entity.getAttrGroupId());
+            if (attrGroupEntity != null) {
+                result.setGroupName(attrGroupEntity.getAttrGroupName());
+            }
+        }
+        // 2. set category path
+        Long[] catelogPath = categoryService.findCatelogPath(attrEntity.getCatelogId());
+        result.setCatelogPath(catelogPath);
+        CategoryEntity categoryEntity = categoryDao.selectById(attrEntity.getCatelogId());
+        if (categoryEntity != null) {
+            result.setCatelogName(categoryEntity.getName());
+        }
+        return result;
+    }
+
+    @Override
+    @Transactional
+    public void updateAttr(AttrVo attr) {
+        AttrEntity attrEntity = new AttrEntity();
+        BeanUtils.copyProperties(attr, attrEntity);
+        this.updateById(attrEntity);
+
+        Integer count = attrAttrgroupRelationDao.selectCount(new QueryWrapper<AttrAttrgroupRelationEntity>().
+                eq("attr_id", attr.getAttrId()));
+        AttrAttrgroupRelationEntity entity = new AttrAttrgroupRelationEntity();
+        entity.setAttrGroupId(attr.getAttrGroupId());
+        entity.setAttrId(attr.getAttrId());
+        if (count > 0) {
+            // 1. update relation data
+            attrAttrgroupRelationDao.update(entity, new QueryWrapper<AttrAttrgroupRelationEntity>().
+                    eq("attr_id", attr.getAttrId()));
+        } else {
+            // 2. insert relation data
+            attrAttrgroupRelationDao.insert(entity);
+        }
     }
 
 }

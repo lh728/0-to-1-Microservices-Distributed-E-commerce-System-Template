@@ -15,4 +15,9 @@ public class AttrResponseVo extends AttrVo{
      */
     private String groupName;
 
+    /**
+     * category path
+     */
+    private Long[] catelogPath;
+
 }
