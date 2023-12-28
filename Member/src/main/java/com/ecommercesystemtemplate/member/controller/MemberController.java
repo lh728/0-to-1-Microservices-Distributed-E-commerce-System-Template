@@ -32,7 +32,7 @@ public class MemberController {
     private MemberService memberService;
 
     /**
-     * 列表
+     * list
      */
     @RequestMapping("/list")
     public R list(@RequestParam Map<String, Object> params){
@@ -43,7 +43,7 @@ public class MemberController {
 
 
     /**
-     * 信息
+     * info
      */
     @RequestMapping("/info/{id}")
     public R info(@PathVariable("id") Long id){
@@ -53,7 +53,7 @@ public class MemberController {
     }
 
     /**
-     * 保存
+     * save
      */
     @RequestMapping("/save")
     public R save(@RequestBody MemberEntity member){
@@ -63,7 +63,7 @@ public class MemberController {
     }
 
     /**
-     * 修改
+     * update
      */
     @RequestMapping("/update")
     public R update(@RequestBody MemberEntity member){
@@ -73,7 +73,7 @@ public class MemberController {
     }
 
     /**
-     * 删除
+     * delete
      */
     @RequestMapping("/delete")
     public R delete(@RequestBody Long[] ids){
