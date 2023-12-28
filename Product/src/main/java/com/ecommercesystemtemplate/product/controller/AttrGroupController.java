@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.ecommercesystemtemplate.product.entity.AttrEntity;
 import com.ecommercesystemtemplate.product.entity.AttrGroupEntity;
+import com.ecommercesystemtemplate.product.service.AttrAttrgroupRelationService;
 import com.ecommercesystemtemplate.product.service.AttrGroupService;
 import com.ecommercesystemtemplate.product.service.AttrService;
 import com.ecommercesystemtemplate.product.service.CategoryService;
@@ -33,11 +34,23 @@ public class AttrGroupController {
 
     private final AttrService attrService;
 
-    public AttrGroupController(AttrGroupService attrGroupService, CategoryService categoryService, AttrService attrService) {
+    private final AttrAttrgroupRelationService attrAttrgroupRelationService;
+
+    public AttrGroupController(AttrGroupService attrGroupService, CategoryService categoryService, AttrService attrService, AttrAttrgroupRelationService attrAttrgroupRelationService) {
         this.attrGroupService = attrGroupService;
         this.categoryService = categoryService;
         this.attrService = attrService;
+        this.attrAttrgroupRelationService = attrAttrgroupRelationService;
     }
+    /**
+     * add relation data
+     */
+    @PostMapping("/attr/relation")
+    public R addRelation(@RequestBody List<AttrGroupRelationVo> vos){
+        attrAttrgroupRelationService.saveBatchRelation(vos);
+        return R.ok();
+    }
+
 
     /**
      * list relation data
