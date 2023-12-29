@@ -11,6 +11,7 @@ import com.ecommercesystemtemplate.product.service.AttrGroupService;
 import com.ecommercesystemtemplate.product.service.AttrService;
 import com.ecommercesystemtemplate.product.service.CategoryService;
 import com.ecommercesystemtemplate.product.vo.AttrGroupRelationVo;
+import com.ecommercesystemtemplate.product.vo.AttrGroupWithAttrsVo;
 import org.springframework.web.bind.annotation.*;
 
 import com.ecommercesystemtemplate.common.utils.PageUtils;
@@ -49,6 +50,15 @@ public class AttrGroupController {
     public R addRelation(@RequestBody List<AttrGroupRelationVo> vos){
         attrAttrgroupRelationService.saveBatchRelation(vos);
         return R.ok();
+    }
+
+    /**
+     * get current category's attribute group and attribute
+     */
+    @GetMapping("/{catelogId}/withattr")
+    public R getAttrGroupWithAttrs(@PathVariable("catelogId") Long catelogId){
+        List<AttrGroupWithAttrsVo> result = attrGroupService.getAttrGroupWithAttrsByCatelogId(catelogId);
+        return R.ok().put("page", result);
     }
 
 
