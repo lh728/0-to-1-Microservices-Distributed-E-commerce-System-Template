@@ -5,8 +5,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.ecommercesystemtemplate.product.entity.BrandEntity;
 import com.ecommercesystemtemplate.product.entity.CategoryBrandRelationEntity;
 import com.ecommercesystemtemplate.product.service.CategoryBrandRelationService;
+import com.ecommercesystemtemplate.product.vo.BrandVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,6 +42,22 @@ public class CategoryBrandRelationController {
                 new QueryWrapper<CategoryBrandRelationEntity>().eq("brand_id", brandId));
 
         return R.ok().put("page", data);
+    }
+
+    /**
+     * get all brand category association
+     */
+    @GetMapping("/brands/list")
+    public R relationBrandsList(@RequestParam("catId") Long catId){
+        List<BrandEntity> data = categoryBrandRelationService.getBrandsByCatId(catId);
+        List<BrandVo> list = data.stream().map(brandEntity -> {
+            BrandVo brandVo = new BrandVo();
+            brandVo.setBrandId(brandEntity.getBrandId());
+            brandVo.setBrandName(brandEntity.getName());
+            return brandVo;
+        }).toList();
+
+        return R.ok().put("page", list);
     }
 
 

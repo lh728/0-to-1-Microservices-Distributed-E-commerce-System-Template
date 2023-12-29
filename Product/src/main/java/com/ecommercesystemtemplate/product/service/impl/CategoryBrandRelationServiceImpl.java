@@ -1,5 +1,10 @@
 package com.ecommercesystemtemplate.product.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ecommercesystemtemplate.common.utils.PageUtils;
+import com.ecommercesystemtemplate.common.utils.Query;
 import com.ecommercesystemtemplate.product.dao.BrandDao;
 import com.ecommercesystemtemplate.product.dao.CategoryBrandRelationDao;
 import com.ecommercesystemtemplate.product.dao.CategoryDao;
@@ -8,12 +13,9 @@ import com.ecommercesystemtemplate.product.entity.CategoryBrandRelationEntity;
 import com.ecommercesystemtemplate.product.entity.CategoryEntity;
 import com.ecommercesystemtemplate.product.service.CategoryBrandRelationService;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.ecommercesystemtemplate.common.utils.PageUtils;
-import com.ecommercesystemtemplate.common.utils.Query;
 
 
 @Service("categoryBrandRelationService")
@@ -21,10 +23,12 @@ public class CategoryBrandRelationServiceImpl extends ServiceImpl<CategoryBrandR
 
     final BrandDao brandDao;
     final CategoryDao categoryDao;
+    final CategoryBrandRelationDao categoryBrandRelationDao;
 
-    public CategoryBrandRelationServiceImpl(BrandDao brandDao, CategoryDao categoryDao) {
+    public CategoryBrandRelationServiceImpl(BrandDao brandDao, CategoryDao categoryDao, CategoryBrandRelationDao categoryBrandRelationDao) {
         this.brandDao = brandDao;
         this.categoryDao = categoryDao;
+        this.categoryBrandRelationDao = categoryBrandRelationDao;
     }
 
     @Override
@@ -63,6 +67,17 @@ public class CategoryBrandRelationServiceImpl extends ServiceImpl<CategoryBrandR
     @Override
     public void updateCategory(Long catId, String name) {
         this.baseMapper.updateCategory(catId,name);
+    }
+
+    @Override
+    public List<BrandEntity> getBrandsByCatId(Long catId) {
+        List<CategoryBrandRelationEntity> catelogId = categoryBrandRelationDao.selectList(new QueryWrapper<CategoryBrandRelationEntity>().eq("catelog_id", catId));
+        List<BrandEntity> list = catelogId.stream().map(item -> {
+            Long brandId = item.getBrandId();
+            BrandEntity brandEntity = brandDao.selectById(brandId);
+            return brandEntity;
+        }).toList();
+        return list;
     }
 
 }
