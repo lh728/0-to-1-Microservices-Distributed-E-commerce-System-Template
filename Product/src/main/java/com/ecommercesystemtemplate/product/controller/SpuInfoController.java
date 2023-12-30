@@ -32,7 +32,7 @@ public class SpuInfoController {
     private SpuInfoService spuInfoService;
 
     /**
-     * 列表
+     * list
      */
     @RequestMapping("/list")
     public R list(@RequestParam Map<String, Object> params){
@@ -43,7 +43,7 @@ public class SpuInfoController {
 
 
     /**
-     * 信息
+     * info
      */
     @RequestMapping("/info/{id}")
     public R info(@PathVariable("id") Long id){
@@ -53,16 +53,16 @@ public class SpuInfoController {
     }
 
     /**
-     * 保存
+     * save
      */
     @RequestMapping("/save")
     public R save(@RequestBody SpuSaveVo spuInfo){
-
+        spuInfoService.saveSpuInfo(spuInfo);
         return R.ok();
     }
 
     /**
-     * 修改
+     * update
      */
     @RequestMapping("/update")
     public R update(@RequestBody SpuInfoEntity spuInfo){
@@ -72,7 +72,7 @@ public class SpuInfoController {
     }
 
     /**
-     * 删除
+     * delete
      */
     @RequestMapping("/delete")
     public R delete(@RequestBody Long[] ids){

@@ -4,6 +4,8 @@ import com.ecommercesystemtemplate.product.dao.SpuImagesDao;
 import com.ecommercesystemtemplate.product.entity.SpuImagesEntity;
 import com.ecommercesystemtemplate.product.service.SpuImagesService;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -25,4 +27,17 @@ public class SpuImagesServiceImpl extends ServiceImpl<SpuImagesDao, SpuImagesEnt
         return new PageUtils(page);
     }
 
+    @Override
+    public void saveImages(Long id, List<String> images) {
+        if (images == null || images.isEmpty()) {
+        } else {
+            List<SpuImagesEntity> list = images.stream().map((image) -> {
+                SpuImagesEntity spuImagesEntity = new SpuImagesEntity();
+                spuImagesEntity.setSpuId(id);
+                spuImagesEntity.setImgUrl(image);
+                return spuImagesEntity;
+            }).toList();
+            this.saveBatch(list);
+        }
+    }
 }

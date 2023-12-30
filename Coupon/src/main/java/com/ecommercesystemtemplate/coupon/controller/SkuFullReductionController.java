@@ -3,12 +3,9 @@ package com.ecommercesystemtemplate.coupon.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import com.ecommercesystemtemplate.common.to.SkuReductionTo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.ecommercesystemtemplate.coupon.entity.SkuFullReductionEntity;
 import com.ecommercesystemtemplate.coupon.service.SkuFullReductionService;
@@ -27,11 +24,14 @@ import com.ecommercesystemtemplate.common.utils.R;
 @RestController
 @RequestMapping("coupon/skufullreduction")
 public class SkuFullReductionController {
-    @Autowired
-    private SkuFullReductionService skuFullReductionService;
+    private final SkuFullReductionService skuFullReductionService;
+
+    public SkuFullReductionController(SkuFullReductionService skuFullReductionService) {
+        this.skuFullReductionService = skuFullReductionService;
+    }
 
     /**
-     * 列表
+     * list
      */
     @RequestMapping("/list")
     public R list(@RequestParam Map<String, Object> params){
@@ -40,9 +40,16 @@ public class SkuFullReductionController {
         return R.ok().put("page", page);
     }
 
+    @PostMapping("/saveInfo")
+    public R saveInfo(@RequestBody SkuReductionTo skuReductionTo){
+        skuFullReductionService.saveSkuReduction(skuReductionTo);
+
+        return R.ok();
+    }
+
 
     /**
-     * 信息
+     * info
      */
     @RequestMapping("/info/{id}")
     public R info(@PathVariable("id") Long id){
@@ -52,7 +59,7 @@ public class SkuFullReductionController {
     }
 
     /**
-     * 保存
+     * save
      */
     @RequestMapping("/save")
     public R save(@RequestBody SkuFullReductionEntity skuFullReduction){
@@ -62,7 +69,7 @@ public class SkuFullReductionController {
     }
 
     /**
-     * 修改
+     * update
      */
     @RequestMapping("/update")
     public R update(@RequestBody SkuFullReductionEntity skuFullReduction){
@@ -72,7 +79,7 @@ public class SkuFullReductionController {
     }
 
     /**
-     * 删除
+     * delete
      */
     @RequestMapping("/delete")
     public R delete(@RequestBody Long[] ids){
