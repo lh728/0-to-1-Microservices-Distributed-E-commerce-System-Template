@@ -44,8 +44,7 @@ public class OssController {
 //        String callbackUrl = "https://192.168.0.0:8888";
         // Set the prefix for uploading files to OSS; this field can be left empty.
         // When left empty, files will be uploaded to the root directory of the Bucket.
-        String format = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-        String dir = format + "/";
+        String dir = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 
         Map<String, String> respMap = null;
         try {

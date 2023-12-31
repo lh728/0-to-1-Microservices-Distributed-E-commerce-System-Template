@@ -3,6 +3,7 @@ package com.ecommercesystemtemplate.product.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ecommercesystemtemplate.common.to.MemberPrice;
 import com.ecommercesystemtemplate.common.to.SkuReductionTo;
 import com.ecommercesystemtemplate.common.to.SpuBondTo;
 import com.ecommercesystemtemplate.common.utils.PageUtils;
@@ -123,6 +124,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                     skuImagesEntity.setImgUrl(image.getImgUrl());
                     return skuImagesEntity;
                 }).toList();
+                //TODO if no image, do not need to save
                 skuImagesService.saveBatch(entities);
 
                 // 6.3 save sku sale attribute information pms_sku_sale_attr_value
@@ -138,6 +140,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                 // 6.4 openfeign save sku full reduction information sms_sku_ladder sms_sku_full_reduction sms_member_price
                 SkuReductionTo skuReductionTo = new SkuReductionTo();
                 BeanUtils.copyProperties(sku, skuReductionTo);
+                skuReductionTo.setMemberPrice(sku.getMemberPrice());
                 skuReductionTo.setSkuId(skuId);
                 R r1 = couponFeignService.saveSkuReduction(skuReductionTo);
                 if (r1.getCode() != 0) {
