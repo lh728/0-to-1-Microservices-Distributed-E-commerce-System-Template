@@ -8,6 +8,7 @@ import com.ecommercesystemtemplate.coupon.service.SkuLadderService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -67,7 +68,7 @@ public class SkuFullReductionServiceImpl extends ServiceImpl<SkuFullReductionDao
             memberPriceEntity.setMemberPrice(item.getPrice());
             memberPriceEntity.setAddOther(1);
             return memberPriceEntity;
-        }).toList();
+        }).filter(entity -> entity.getMemberPrice().compareTo(new BigDecimal("0")) > 0).toList();
         memberPriceService.saveBatch(list);
 
     }

@@ -15,10 +15,12 @@ import com.ecommercesystemtemplate.product.feign.CouponFeignService;
 import com.ecommercesystemtemplate.product.service.*;
 import com.ecommercesystemtemplate.product.vo.*;
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -123,8 +125,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                     skuImagesEntity.setDefaultImg(image.getDefaultImg());
                     skuImagesEntity.setImgUrl(image.getImgUrl());
                     return skuImagesEntity;
-                }).toList();
-                //TODO if no image, do not need to save
+                }).filter(item -> !StringUtils.isEmpty(item.getImgUrl())).toList();
                 skuImagesService.saveBatch(entities);
 
                 // 6.3 save sku sale attribute information pms_sku_sale_attr_value
@@ -142,9 +143,11 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                 BeanUtils.copyProperties(sku, skuReductionTo);
                 skuReductionTo.setMemberPrice(sku.getMemberPrice());
                 skuReductionTo.setSkuId(skuId);
-                R r1 = couponFeignService.saveSkuReduction(skuReductionTo);
-                if (r1.getCode() != 0) {
-                    log.error("Failed to remote save sku discount information");
+                if (skuReductionTo.getFullCount() > 0 || skuReductionTo.getFullPrice().compareTo(new BigDecimal("0")) > 0){
+                    R r1 = couponFeignService.saveSkuReduction(skuReductionTo);
+                    if (r1.getCode() != 0) {
+                        log.error("Failed to remote save sku discount information");
+                    }
                 }
 
             });
