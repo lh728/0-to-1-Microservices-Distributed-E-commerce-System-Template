@@ -28,15 +28,18 @@ import com.ecommercesystemtemplate.common.utils.R;
 @RestController
 @RequestMapping("product/spuinfo")
 public class SpuInfoController {
-    @Autowired
-    private SpuInfoService spuInfoService;
+    private final SpuInfoService spuInfoService;
+
+    public SpuInfoController(SpuInfoService spuInfoService) {
+        this.spuInfoService = spuInfoService;
+    }
 
     /**
      * list
      */
     @RequestMapping("/list")
     public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = spuInfoService.queryPage(params);
+        PageUtils page = spuInfoService.queryPageByCondition(params);
 
         return R.ok().put("page", page);
     }
