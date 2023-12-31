@@ -24,7 +24,8 @@
 #      - nacos:nacos-config-example.properties?refresh=true
 #  application:
 #    name: warehouse
-#
+#  jackson:
+#    date-format: yyyy-MM-dd HH:mm:ss
 #mybatis-plus:
 #  mapper-locations: classpath:/mapper/**/*.xml
 #  global-config:
