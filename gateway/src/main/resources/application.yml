@@ -23,6 +23,13 @@
 #          filters:
 #            - RewritePath=/api/?(?<segment>.*), /$\{segment}
 #
+#        - id: warehouse_route
+#          uri: lb://warehouse
+#          predicates:
+#            - Path=/api/warehouse/**
+#          filters:
+#            - RewritePath=/api/?(?<segment>.*), /$\{segment}
+#
 #        - id: admin_route
 #          uri: lb://renren-fast
 #          predicates:
