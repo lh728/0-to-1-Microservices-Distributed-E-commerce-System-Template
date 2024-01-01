@@ -18,5 +18,7 @@ public interface SkuInfoService extends IService<SkuInfoEntity> {
     PageUtils queryPage(Map<String, Object> params);
 
     void saveSkuInfo(SkuInfoEntity entity);
+
+    PageUtils queryPageByCondition(Map<String, Object> params);
 }
 

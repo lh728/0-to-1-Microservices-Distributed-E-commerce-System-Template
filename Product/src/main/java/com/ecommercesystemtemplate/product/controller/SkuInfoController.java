@@ -27,22 +27,25 @@ import com.ecommercesystemtemplate.common.utils.R;
 @RestController
 @RequestMapping("product/skuinfo")
 public class SkuInfoController {
-    @Autowired
-    private SkuInfoService skuInfoService;
+    private final SkuInfoService skuInfoService;
+
+    public SkuInfoController(SkuInfoService skuInfoService) {
+        this.skuInfoService = skuInfoService;
+    }
 
     /**
-     * 列表
+     * list
      */
     @RequestMapping("/list")
     public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = skuInfoService.queryPage(params);
+        PageUtils page = skuInfoService.queryPageByCondition(params);
 
         return R.ok().put("page", page);
     }
 
 
     /**
-     * 信息
+     * info
      */
     @RequestMapping("/info/{skuId}")
     public R info(@PathVariable("skuId") Long skuId){
@@ -52,7 +55,7 @@ public class SkuInfoController {
     }
 
     /**
-     * 保存
+     * save
      */
     @RequestMapping("/save")
     public R save(@RequestBody SkuInfoEntity skuInfo){
@@ -62,7 +65,7 @@ public class SkuInfoController {
     }
 
     /**
-     * 修改
+     * update
      */
     @RequestMapping("/update")
     public R update(@RequestBody SkuInfoEntity skuInfo){
@@ -72,7 +75,7 @@ public class SkuInfoController {
     }
 
     /**
-     * 删除
+     * delete
      */
     @RequestMapping("/delete")
     public R delete(@RequestBody Long[] skuIds){
