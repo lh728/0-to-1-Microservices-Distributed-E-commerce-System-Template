@@ -27,8 +27,11 @@ import com.ecommercesystemtemplate.common.utils.R;
 @RestController
 @RequestMapping("warehouse/waresku")
 public class WareSkuController {
-    @Autowired
-    private WareSkuService wareSkuService;
+    private final WareSkuService wareSkuService;
+
+    public WareSkuController(WareSkuService wareSkuService) {
+        this.wareSkuService = wareSkuService;
+    }
 
     /**
      * list

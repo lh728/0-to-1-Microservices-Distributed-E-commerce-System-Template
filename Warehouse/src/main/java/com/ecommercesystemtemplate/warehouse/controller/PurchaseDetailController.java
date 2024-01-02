@@ -27,11 +27,14 @@ import com.ecommercesystemtemplate.common.utils.R;
 @RestController
 @RequestMapping("warehouse/purchasedetail")
 public class PurchaseDetailController {
-    @Autowired
-    private PurchaseDetailService purchaseDetailService;
+    private final PurchaseDetailService purchaseDetailService;
+
+    public PurchaseDetailController(PurchaseDetailService purchaseDetailService) {
+        this.purchaseDetailService = purchaseDetailService;
+    }
 
     /**
-     * 列表
+     * list
      */
     @RequestMapping("/list")
     public R list(@RequestParam Map<String, Object> params){
@@ -42,7 +45,7 @@ public class PurchaseDetailController {
 
 
     /**
-     * 信息
+     * info
      */
     @RequestMapping("/info/{id}")
     public R info(@PathVariable("id") Long id){
@@ -52,7 +55,7 @@ public class PurchaseDetailController {
     }
 
     /**
-     * 保存
+     * save
      */
     @RequestMapping("/save")
     public R save(@RequestBody PurchaseDetailEntity purchaseDetail){
@@ -62,7 +65,7 @@ public class PurchaseDetailController {
     }
 
     /**
-     * 修改
+     * update
      */
     @RequestMapping("/update")
     public R update(@RequestBody PurchaseDetailEntity purchaseDetail){
@@ -72,7 +75,7 @@ public class PurchaseDetailController {
     }
 
     /**
-     * 删除
+     * delete
      */
     @RequestMapping("/delete")
     public R delete(@RequestBody Long[] ids){
