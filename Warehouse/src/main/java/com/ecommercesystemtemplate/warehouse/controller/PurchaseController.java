@@ -1,14 +1,12 @@
 package com.ecommercesystemtemplate.warehouse.controller;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Map;
 
+import com.ecommercesystemtemplate.warehouse.vo.MergeVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.ecommercesystemtemplate.warehouse.entity.PurchaseEntity;
 import com.ecommercesystemtemplate.warehouse.service.PurchaseService;
@@ -27,11 +25,34 @@ import com.ecommercesystemtemplate.common.utils.R;
 @RestController
 @RequestMapping("warehouse/purchase")
 public class PurchaseController {
-    @Autowired
-    private PurchaseService purchaseService;
+    private final PurchaseService purchaseService;
+
+    public PurchaseController(PurchaseService purchaseService) {
+        this.purchaseService = purchaseService;
+    }
 
     /**
-     * 列表
+     * merge purchase order
+     */
+    @PostMapping("/merge")
+    public R merge(@RequestBody MergeVo mergeVo){
+        purchaseService.mergePurchaseOrder(mergeVo);
+
+        return R.ok();
+    }
+
+    /**
+     * merge purchase order list
+     */
+    @RequestMapping("/unreceive/list")
+    public R unreceiveList(@RequestParam Map<String, Object> params){
+        PageUtils page = purchaseService.queryPageUnreceive(params);
+
+        return R.ok().put("page", page);
+    }
+
+    /**
+     * list
      */
     @RequestMapping("/list")
     public R list(@RequestParam Map<String, Object> params){
@@ -42,7 +63,7 @@ public class PurchaseController {
 
 
     /**
-     * 信息
+     * info
      */
     @RequestMapping("/info/{id}")
     public R info(@PathVariable("id") Long id){
@@ -52,17 +73,19 @@ public class PurchaseController {
     }
 
     /**
-     * 保存
+     * save
      */
     @RequestMapping("/save")
     public R save(@RequestBody PurchaseEntity purchase){
+        purchase.setCreateTime(new Date());
+        purchase.setUpdateTime(new Date());
 		purchaseService.save(purchase);
 
         return R.ok();
     }
 
     /**
-     * 修改
+     * update
      */
     @RequestMapping("/update")
     public R update(@RequestBody PurchaseEntity purchase){
@@ -72,7 +95,7 @@ public class PurchaseController {
     }
 
     /**
-     * 删除
+     * delete
      */
     @RequestMapping("/delete")
     public R delete(@RequestBody Long[] ids){

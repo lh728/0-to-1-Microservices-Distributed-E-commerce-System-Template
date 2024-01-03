@@ -3,6 +3,7 @@ package com.ecommercesystemtemplate.warehouse.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.warehouse.entity.PurchaseEntity;
+import com.ecommercesystemtemplate.warehouse.vo.MergeVo;
 
 import java.util.Map;
 
@@ -16,5 +17,9 @@ import java.util.Map;
 public interface PurchaseService extends IService<PurchaseEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    PageUtils queryPageUnreceive(Map<String, Object> params);
+
+    void mergePurchaseOrder(MergeVo mergeVo);
 }
 
