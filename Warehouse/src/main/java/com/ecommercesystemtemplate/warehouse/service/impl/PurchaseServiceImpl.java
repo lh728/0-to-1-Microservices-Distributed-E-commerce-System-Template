@@ -66,6 +66,15 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
             this.save(purchaseEntity);
             purchaseId = purchaseEntity.getId();
         }
+        // Make sure the purchase order status is 0 and 1 before merging it
+        List<PurchaseDetailEntity> entities = purchaseDetailService.listDetailByPurchaseId(purchaseId);
+        for (PurchaseDetailEntity entity : entities) {
+            if (entity.getStatus() == WareHouseConstant.PurchaseDetailStatusEnum.CREATED.getCode() ||
+                    entity.getStatus() == WareHouseConstant.PurchaseDetailStatusEnum.ASSIGNED.getCode()) {
+                throw new RuntimeException("The purchase order must be in the 0 or 1 status before merging");
+            }
+        }
+
         List<Long> items = mergeVo.getItems();
         Long finalPurchaseId = purchaseId;
         List<PurchaseDetailEntity> list = items.stream().map((item) -> {
@@ -82,6 +91,28 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
         purchaseEntity.setUpdateTime(new Date());
         this.updateById(purchaseEntity);
 
+    }
+
+    @Override
+    @Transactional
+    public void received(List<Long> ids) {
+        // 1. determine the status of the purchase order is 0 or 1
+        List<PurchaseEntity> list = ids.stream().map(this::getById).
+                filter(item -> item.getStatus() == WareHouseConstant.PurchaseStatusEnum.CREATED.getCode() || item.getStatus() == WareHouseConstant.PurchaseStatusEnum.ASSIGNED.getCode()).
+                peek(item -> {
+                    item.setStatus(WareHouseConstant.PurchaseStatusEnum.RECEIVED.getCode());
+                    item.setUpdateTime(new Date());
+                }).toList();
+        // 2. change the status of the purchase order
+        this.updateBatchById(list);
+
+        // 3. change the status of the purchase order detail
+        list.forEach(item -> {
+            List<PurchaseDetailEntity> entities = purchaseDetailService.listDetailByPurchaseId(item.getId());
+            List<PurchaseDetailEntity> collect = entities.stream().peek(entity ->
+                    entity.setStatus(WareHouseConstant.PurchaseDetailStatusEnum.PURCHASING.getCode())).toList();
+            purchaseDetailService.updateBatchById(collect);
+        });
     }
 
 }

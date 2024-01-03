@@ -2,6 +2,7 @@ package com.ecommercesystemtemplate.warehouse.controller;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import com.ecommercesystemtemplate.warehouse.vo.MergeVo;
@@ -29,6 +30,16 @@ public class PurchaseController {
 
     public PurchaseController(PurchaseService purchaseService) {
         this.purchaseService = purchaseService;
+    }
+
+    /**
+     * get purchase order
+     */
+    @PostMapping("/received")
+    public R received(@RequestBody List<Long> ids){
+        purchaseService.received(ids);
+
+        return R.ok();
     }
 
     /**

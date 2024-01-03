@@ -21,8 +21,8 @@ public class WareHouseConstant {
 
     @Getter
     public enum PurchaseDetailStatusEnum {
-        CREATED(0, "NEW"), ASSIGNED(1, "ASSIGNED"), RECEIVED(2, "PURCHASING"),
-        COMPLETED(3, "COMPLETED"), ERROR(4, "FAILED");
+        CREATED(0, "NEW"), ASSIGNED(1, "ASSIGNED"), PURCHASING(2, "PURCHASING"),
+        COMPLETED(3, "COMPLETED"), FAILED(4, "FAILED");
 
         private int code;
         private String msg;

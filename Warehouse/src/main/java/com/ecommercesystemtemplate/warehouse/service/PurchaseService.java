@@ -5,6 +5,7 @@ import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.warehouse.entity.PurchaseEntity;
 import com.ecommercesystemtemplate.warehouse.vo.MergeVo;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,5 +22,7 @@ public interface PurchaseService extends IService<PurchaseEntity> {
     PageUtils queryPageUnreceive(Map<String, Object> params);
 
     void mergePurchaseOrder(MergeVo mergeVo);
+
+    void received(List<Long> ids);
 }
 
