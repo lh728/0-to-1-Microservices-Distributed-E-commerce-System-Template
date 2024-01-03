@@ -6,11 +6,13 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.math.BigDecimal;
 import java.io.Serializable;
 import java.util.Date;
+
+import lombok.Builder;
 import lombok.Data;
 
 /**
  * Purchasing Information
- * 
+ *
  * @author thel.lu
  * @email lhjlslw@gmail.com
  * @date 2023-11-21 20:01:18

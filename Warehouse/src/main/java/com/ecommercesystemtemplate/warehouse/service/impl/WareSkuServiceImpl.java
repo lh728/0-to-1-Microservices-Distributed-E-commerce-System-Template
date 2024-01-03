@@ -1,8 +1,13 @@
 package com.ecommercesystemtemplate.warehouse.service.impl;
 
+import com.ecommercesystemtemplate.common.utils.R;
+import com.ecommercesystemtemplate.warehouse.feign.ProductFeignService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -17,6 +22,15 @@ import com.ecommercesystemtemplate.warehouse.service.WareSkuService;
 @Service("wareSkuService")
 public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> implements WareSkuService {
 
+    final
+    WareSkuDao wareSkuDao;
+    final ProductFeignService productFeignService;
+
+    public WareSkuServiceImpl(WareSkuDao wareSkuDao, ProductFeignService productFeignService) {
+        this.wareSkuDao = wareSkuDao;
+        this.productFeignService = productFeignService;
+    }
+
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         QueryWrapper<WareSkuEntity> wrapper = new QueryWrapper<>();
@@ -30,10 +44,36 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
         }
 
         IPage<WareSkuEntity> page = this.page(
-                new Query<WareSkuEntity>().getPage(params),wrapper
+                new Query<WareSkuEntity>().getPage(params), wrapper
         );
 
         return new PageUtils(page);
+    }
+
+    @Override
+    public void addStock(Long skuId, Long wareId, Integer skuNum) {
+        List<WareSkuEntity> entities =
+                wareSkuDao.selectList(new QueryWrapper<WareSkuEntity>().eq("sku_id", skuId).eq("ware_id", wareId));
+        if (entities.isEmpty()) {
+            WareSkuEntity entity = new WareSkuEntity();
+            entity.setSkuId(skuId);
+            entity.setWareId(wareId);
+            entity.setStock(skuNum);
+            entity.setStockLocked(0);
+            // remote call to get sku info
+            try {
+                R info = productFeignService.info(skuId);
+                if (info.getCode() == 0) {
+                    Map<String, Object> data = (Map<String, Object>) info.get("skuInfo");
+                    entity.setSkuName((String) data.get("skuName"));
+                }
+            } catch (Exception e) {
+                log.error("Remote call to get sku info failed");
+            }
+            wareSkuDao.insert(entity);
+        } else {
+            wareSkuDao.addStock(skuId, wareId, skuNum);
+        }
     }
 
 }

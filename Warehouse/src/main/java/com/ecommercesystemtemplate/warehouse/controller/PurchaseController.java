@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.ecommercesystemtemplate.warehouse.vo.MergeVo;
+import com.ecommercesystemtemplate.warehouse.vo.PurchaseCompletedVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,6 +39,16 @@ public class PurchaseController {
     @PostMapping("/received")
     public R received(@RequestBody List<Long> ids){
         purchaseService.received(ids);
+
+        return R.ok();
+    }
+
+    /**
+     * purchase order completed
+     */
+    @PostMapping("/done")
+    public R completed(@RequestBody PurchaseCompletedVo purchaseCompletedVo){
+        purchaseService.completed(purchaseCompletedVo);
 
         return R.ok();
     }

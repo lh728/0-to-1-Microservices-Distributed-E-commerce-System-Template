@@ -3,10 +3,13 @@ package com.ecommercesystemtemplate.warehouse.service.impl;
 import com.ecommercesystemtemplate.common.constant.WareHouseConstant;
 import com.ecommercesystemtemplate.warehouse.entity.PurchaseDetailEntity;
 import com.ecommercesystemtemplate.warehouse.service.PurchaseDetailService;
+import com.ecommercesystemtemplate.warehouse.service.WareSkuService;
 import com.ecommercesystemtemplate.warehouse.vo.MergeVo;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.ecommercesystemtemplate.warehouse.vo.PurchaseCompletedVo;
+import com.ecommercesystemtemplate.warehouse.vo.PurchaseItemVo;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -26,9 +29,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity> implements PurchaseService {
     final
     PurchaseDetailService purchaseDetailService;
+    final WareSkuService wareSkuService;
 
-    public PurchaseServiceImpl(PurchaseDetailService purchaseDetailService) {
+    public PurchaseServiceImpl(PurchaseDetailService purchaseDetailService, WareSkuService wareSkuService) {
         this.purchaseDetailService = purchaseDetailService;
+        this.wareSkuService = wareSkuService;
     }
 
     @Override
@@ -113,6 +118,45 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
                     entity.setStatus(WareHouseConstant.PurchaseDetailStatusEnum.PURCHASING.getCode())).toList();
             purchaseDetailService.updateBatchById(collect);
         });
+    }
+
+    @Override
+    @Transactional
+    public void completed(PurchaseCompletedVo purchaseCompletedVo) {
+        // 1. change the status of the purchase order
+        Long id = purchaseCompletedVo.getId();
+
+        // 2. change the status of the purchase order detail
+        Boolean flag = true;
+        List<PurchaseItemVo> entities = purchaseCompletedVo.getItems();
+        List<PurchaseDetailEntity> updates = new ArrayList<>();
+        for (PurchaseItemVo entity : entities) {
+            PurchaseDetailEntity purchaseDetailEntity = new PurchaseDetailEntity();
+            if (entity.getStatus() == WareHouseConstant.PurchaseDetailStatusEnum.FAILED.getCode()) {
+                flag = false;
+                purchaseDetailEntity.setId(entity.getItemId());
+                purchaseDetailEntity.setStatus(WareHouseConstant.PurchaseDetailStatusEnum.FAILED.getCode());
+            } else {
+                purchaseDetailEntity.setId(entity.getItemId());
+                purchaseDetailEntity.setStatus(WareHouseConstant.PurchaseDetailStatusEnum.COMPLETED.getCode());
+                // 3. purchase success and update the inventory
+                PurchaseDetailEntity byId = purchaseDetailService.getById(entity.getItemId());
+                wareSkuService.addStock(byId.getSkuId(), byId.getWareId(), byId.getSkuNum());
+            }
+            updates.add(purchaseDetailEntity);
+        }
+
+        purchaseDetailService.updateBatchById(updates);
+        PurchaseEntity purchaseEntity = new PurchaseEntity();
+        purchaseEntity.setId(id);
+        purchaseEntity.setStatus(flag ?
+                WareHouseConstant.PurchaseStatusEnum.COMPLETED.getCode() : WareHouseConstant.PurchaseStatusEnum.ERROR.getCode());
+        purchaseEntity.setUpdateTime(new Date());
+        this.updateById(purchaseEntity);
+
+
+
+
     }
 
 }
