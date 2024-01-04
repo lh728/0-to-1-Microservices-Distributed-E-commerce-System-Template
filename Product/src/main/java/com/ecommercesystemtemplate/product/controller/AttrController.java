@@ -1,18 +1,15 @@
 package com.ecommercesystemtemplate.product.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
-import com.ecommercesystemtemplate.product.entity.AttrEntity;
+import com.ecommercesystemtemplate.product.entity.ProductAttrValueEntity;
 import com.ecommercesystemtemplate.product.service.AttrService;
+import com.ecommercesystemtemplate.product.service.ProductAttrValueService;
 import com.ecommercesystemtemplate.product.vo.AttrResponseVo;
 import com.ecommercesystemtemplate.product.vo.AttrVo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.common.utils.R;
@@ -30,9 +27,21 @@ import com.ecommercesystemtemplate.common.utils.R;
 @RequestMapping("product/attr")
 public class AttrController {
     private final AttrService attrService;
+    private final ProductAttrValueService productAttrValueService;
 
-    public AttrController(AttrService attrService) {
+    public AttrController(AttrService attrService, ProductAttrValueService productAttrValueService) {
         this.attrService = attrService;
+        this.productAttrValueService = productAttrValueService;
+    }
+
+    /**
+     * listforspu
+     */
+    @RequestMapping("/base/listforspu/{spuId}")
+    public R baseAttrListForSpu(@PathVariable("spuId") Long spuId){
+        List<ProductAttrValueEntity> result = productAttrValueService.baseAttrListForSpu(spuId);
+
+        return R.ok().put("page", result);
     }
 
     /**
@@ -82,6 +91,16 @@ public class AttrController {
     @RequestMapping("/update")
     public R update(@RequestBody AttrVo attr){
 		attrService.updateAttr(attr);
+
+        return R.ok();
+    }
+
+    /**
+     * update spu attr
+     */
+    @PostMapping("/update/{spuId}")
+    public R updateSpuAttr(@PathVariable Long spuId, @RequestBody List<ProductAttrValueEntity> entities){
+        productAttrValueService.updateSpuAttr(spuId,entities);
 
         return R.ok();
     }

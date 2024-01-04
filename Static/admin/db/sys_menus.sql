@@ -89,4 +89,5 @@ values (1, 0, 'system management', NULL, NULL, 0, 'system', 0),
        (72, 70, 'Purchase Order', 'ware/purchase', '', 1, 'menu', 0),
        (73, 41, 'product management', 'product/manager', '', 1, 'zonghe', 0),
        (74, 42, 'member price', 'coupon/memberprice', '', 1, 'admin', 0),
-       (75, 42, 'Daily Flash Kill', 'coupon/seckillsession', '', 1, 'job', 0);
+       (75, 42, 'Daily Flash Kill', 'coupon/seckillsession', '', 1, 'job', 0),
+       (76, 37, 'Specification', 'product/attrupdate', '', 1, 'menu', 0);
