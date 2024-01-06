@@ -46,6 +46,10 @@ ES 6
 
 Vue 2
 
+ElasticSearch 7.4.2
+
+Kibana 7.4.2
+
 <br>
 
 ### Dependency
@@ -201,9 +205,44 @@ docker exec -it redis redis-cli
 
 <br>
 
-<br/>
+#### Install Elasticsearch和Kibana
 
+```bash
+# Pull the Elasticsearch image
+docker pull elasticsearch:7.4.2
 
+# Run the Elasticsearch container
+docker run -d -p 9200:9200 -p 9300:9300 --name elasticsearch docker.elastic.co/elasticsearch/elasticsearch:7.4.2
+
+# Pull the Kibana image
+docker pull kibana:7.4.2
+
+# Verify if the Elasticsearch container is running
+docker ps
+
+#test Elasticsearch
+curl -X GET "localhost:9200/"
+
+#create dir
+mkdir -p /mydata/elasticsearch/config
+mkdir -p /mydata/elasticsearch/data
+echo "http.host: 0.0.0.0" >> /mydata/elasticsearch/config/elasticsearch.yml
+chmod -R 777 /mydata/elasticsearch/
+
+# run Elasticsearch, attention S_JAVA_OPTS="-Xms64m -Xmx128m" only for test
+docker run --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" -e ES_JAVA_OPTS="-Xms64m -Xmx128m" -v /mydata/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml -v /mydata/elasticsearch/data:/usr/share/elasticsearch/data -v /mydata/elasticsearch/plugins:/usr/share/elasti
+csearch/plugins -d elasticsearch:7.4.2
+
+# run kibana
+docker run --name kibana -e ELASTICSEARCH_HOSTS=http://<your own vm address>:9200 -p 5601:5601 -d kibana:7.4.2
+
+# check Elasticsearch and kibana
+docker ps
+```
+
+Continuing with instructions, you can access Elasticsearch by using your virtual machine's IP address or hostname along with port 9200. Please be aware that Elasticsearch might take some time to start, so patience is key during this process.
+
+<br>
 
 ## Administraion System
 
@@ -221,7 +260,7 @@ For the front-end pages, we use "renren-fast-vue" to achieve rapid development: 
 
 <br>
 
-To start the administration service, a database named "ADMIN" needs to be created. The table creation statements for this database can also be found in the following location: <a href = "https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/blob/777679015934b1f745a7cd55b6e66a884eace26e/renren-fast/db/mysql.sql" >Github</a>
+To start the administration service, a database named "ADMIN" needs to be created. The table creation statements for this database and the corresponding data generation can be found in the "Static/admin/db" folder of the project.
 
 <br>
 
@@ -810,11 +849,11 @@ Please be aware that in the Gateway configuration YAML file, when setting up loa
 
 The product system added a new "Product System" directory through the backend management system.
 
-#### Product maintenance
+#### Category maintenance
 
-The configuration for `product/category` is designed for managing the three-level classification of the product maintenance service. It aims to retrieve all categories and subcategories in a single query, organize them into a tree data structure for efficient management, and support functionalities such as `append`, `delete`, `batch delete`, and `update`.
+The configuration for `product/category` is designed for managing the three-level classification of the category maintenance service. It aims to retrieve all categories and subcategories in a single query, organize them into a tree data structure for efficient management, and support functionalities such as `append`, `delete`, `batch delete`, and `update`.
 
-A preview of this functionality is as follows:
+该页主要信息存储在pms_category表中
 
 <img src="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/raw/e506621a17f5208b5685663765bbde960a9a9305/Static/product_maintenance.png" style="zoom: 50%;" />
 
@@ -828,13 +867,33 @@ To achieve this, the brand URL is modified to support file upload and retrieval 
 
 By configuring the external network domain of the bucket on the frontend, support for both single and multiple file uploads is enabled. Single file upload functionality is achieved through entering the logo address.
 
+The main information for this page is stored in the "pms_brand" table.
+
 <img src="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/raw/722c94adf20cc6e55752cbebe8c1488c4bf7a89c/Static/brand_management2.png" style="zoom:50%;" />
 
 <img src="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/raw/6d891db6976c4e3b62de60f101d999bc41a9cd99/Static/brand_management.png" style="zoom:50%;" />
 
 <br>
 
-### Storage
+
+
+
+
+<br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+### WareHouse
 
 <br>
 
