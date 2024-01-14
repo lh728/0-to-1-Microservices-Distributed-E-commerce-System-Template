@@ -3,6 +3,8 @@ SpringBoot + Vue2 + Maven3 + Java17 + Spring Cloud + Redis + Docker + OSS + Mysq
 
 This is an ongoing construction of a microservices-based distributed e-commerce system template, aimed at leveraging various advanced management tools and practices from 0 to 1, to achieve distributed solutions such as application monitoring, network limiting, gateways, circuit breaker degradation, etc.; distributed transactions, distributed locks; high concurrency, thread pools, asynchronous orchestration; stress testing and performance optimization; cluster technology; and CI/CD
 
+<img src="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/raw/369600d596bca82050201cbebbc9395aee96a699/Static/microservice%20architecture.png" style="zoom: 50%;" />
+
 <br>
 
 **I will strive to use various high-version programming languages and dependencies.**
