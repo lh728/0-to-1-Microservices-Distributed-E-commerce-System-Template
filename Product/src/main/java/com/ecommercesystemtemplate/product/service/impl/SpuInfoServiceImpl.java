@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ecommercesystemtemplate.common.to.MemberPrice;
 import com.ecommercesystemtemplate.common.to.SkuReductionTo;
 import com.ecommercesystemtemplate.common.to.SpuBondTo;
+import com.ecommercesystemtemplate.common.to.es.SkuEsModel;
 import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.common.utils.Query;
 import com.ecommercesystemtemplate.common.utils.R;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +43,8 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     private final SkuImagesService skuImagesService;
     private final SkuSaleAttrValueService skuSaleAttrValueService;
     private final CouponFeignService couponFeignService;
+    private final BrandService brandService;
+    private final CategoryService categoryService;
 
 
     @Override
@@ -186,6 +190,31 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                 wrapper
         );
         return new PageUtils(page);
+    }
+
+    @Override
+    public void up(Long spuId) {
+        // build data
+        // get basic information of spu
+        List<SkuInfoEntity> skus = skuInfoService.getSkusBySpuId(spuId);
+        List<SkuEsModel> list = skus.stream().map(sku -> {
+            SkuEsModel skuEsModel = new SkuEsModel();
+            BeanUtils.copyProperties(sku, skuEsModel);
+            skuEsModel.setSkuImg(sku.getSkuDefaultImg());
+            skuEsModel.setSkuPrice(sku.getPrice());
+            // remote search if there is stock
+
+            // brand and category information
+            BrandEntity brandEntity = brandService.getById(sku.getBrandId());
+            skuEsModel.setBrandName(brandEntity.getName());
+            skuEsModel.setBrandImg(brandEntity.getLogo());
+            CategoryEntity entity = categoryService.getById(sku.getCatalogId());
+            skuEsModel.setCatalogName(entity.getName());
+            return skuEsModel;
+        }).toList();
+        // save to es
+
+
 
 
     }

@@ -7,11 +7,7 @@ import com.ecommercesystemtemplate.product.entity.SpuInfoEntity;
 import com.ecommercesystemtemplate.product.service.SpuInfoService;
 import com.ecommercesystemtemplate.product.vo.SpuSaveVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.common.utils.R;
@@ -32,6 +28,15 @@ public class SpuInfoController {
 
     public SpuInfoController(SpuInfoService spuInfoService) {
         this.spuInfoService = spuInfoService;
+    }
+
+    /**
+     * spuToList
+     */
+    @PostMapping("/{spuId}/up")
+    public R spuToList(@PathVariable("spuId") Long spuId){
+        spuInfoService.up(spuId);
+        return R.ok();
     }
 
     /**
