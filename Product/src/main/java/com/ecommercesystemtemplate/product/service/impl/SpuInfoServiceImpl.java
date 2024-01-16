@@ -22,10 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -147,7 +144,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                 BeanUtils.copyProperties(sku, skuReductionTo);
                 skuReductionTo.setMemberPrice(sku.getMemberPrice());
                 skuReductionTo.setSkuId(skuId);
-                if (skuReductionTo.getFullCount() > 0 || skuReductionTo.getFullPrice().compareTo(new BigDecimal("0")) > 0){
+                if (skuReductionTo.getFullCount() > 0 || skuReductionTo.getFullPrice().compareTo(new BigDecimal("0")) > 0) {
                     R r1 = couponFeignService.saveSkuReduction(skuReductionTo);
                     if (r1.getCode() != 0) {
                         log.error("Failed to remote save sku discount information");
@@ -197,6 +194,23 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         // build data
         // get basic information of spu
         List<SkuInfoEntity> skus = skuInfoService.getSkusBySpuId(spuId);
+
+        // get all attribute information of spu
+        List<ProductAttrValueEntity> entities = productAttrValueService.baseAttrListForSpu(spuId);
+        List<Long> attrIds = entities.stream().map(ProductAttrValueEntity::getAttrId).toList();
+
+        List<Long> searchAttrs = attrService.selectSearchAttrs(attrIds);
+
+        Set<Long> idSet = new HashSet<>(searchAttrs);
+        List<SkuEsModel.Attrs> attrsList = entities.stream().filter(item -> {
+            return idSet.contains(item.getAttrId());
+        }).map(item -> {
+            SkuEsModel.Attrs attrs1 = new SkuEsModel.Attrs();
+            BeanUtils.copyProperties(item, attrs1);
+            return attrs1;
+        }).toList();
+
+
         List<SkuEsModel> list = skus.stream().map(sku -> {
             SkuEsModel skuEsModel = new SkuEsModel();
             BeanUtils.copyProperties(sku, skuEsModel);
@@ -204,17 +218,22 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             skuEsModel.setSkuPrice(sku.getPrice());
             // remote search if there is stock
 
+            // set hot score
+            skuEsModel.setHotScore(0L);
+
             // brand and category information
             BrandEntity brandEntity = brandService.getById(sku.getBrandId());
             skuEsModel.setBrandName(brandEntity.getName());
             skuEsModel.setBrandImg(brandEntity.getLogo());
             CategoryEntity entity = categoryService.getById(sku.getCatalogId());
             skuEsModel.setCatalogName(entity.getName());
+
+            // set search attribute information
+            skuEsModel.setAttrs(attrsList);
+
             return skuEsModel;
         }).toList();
         // save to es
-
-
 
 
     }
