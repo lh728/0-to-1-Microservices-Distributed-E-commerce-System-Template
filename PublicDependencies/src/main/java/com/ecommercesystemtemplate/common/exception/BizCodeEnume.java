@@ -16,8 +16,9 @@ package com.ecommercesystemtemplate.common.exception;
  */
 public enum BizCodeEnume {
 
-    unknownException(10000, "Unknown exception"),
-    validException(10001, "Validation exception");
+    UNKNOWN_EXCEPTION(10000, "Unknown exception"),
+    VALID_EXCEPTION(10001, "Validation exception"),
+    PRODUCT_TO_LIST_FAILED(11000, "Commodity data to list failed");
 
     private Integer code;
     private String message;

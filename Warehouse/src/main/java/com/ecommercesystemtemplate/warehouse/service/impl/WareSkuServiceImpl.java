@@ -2,6 +2,7 @@ package com.ecommercesystemtemplate.warehouse.service.impl;
 
 import com.ecommercesystemtemplate.common.utils.R;
 import com.ecommercesystemtemplate.warehouse.feign.ProductFeignService;
+import com.ecommercesystemtemplate.warehouse.vo.SkuHasStockVo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -74,6 +75,19 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
         } else {
             wareSkuDao.addStock(skuId, wareId, skuNum);
         }
+    }
+
+    @Override
+    public List<SkuHasStockVo> getSkusHaveStock(List<Long> skuIds) {
+
+        List<SkuHasStockVo> list = skuIds.stream().map(skuId -> {
+            SkuHasStockVo skuHasStockVo = new SkuHasStockVo();
+            Long count = baseMapper.getSkuHasStock(skuId);
+            skuHasStockVo.setSkuId(skuId);
+            skuHasStockVo.setHasStock(count != null && count > 0);
+            return skuHasStockVo;
+        }).toList();
+        return list;
     }
 
 }

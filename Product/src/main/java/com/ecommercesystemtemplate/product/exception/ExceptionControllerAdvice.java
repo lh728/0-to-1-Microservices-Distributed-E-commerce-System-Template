@@ -19,7 +19,7 @@ public class ExceptionControllerAdvice {
         e.getBindingResult().getFieldErrors().forEach((fieldError) -> {
             errorMap.put(fieldError.getField(), fieldError.getDefaultMessage());
         });
-        return R.error(BizCodeEnume.validException.getCode(), BizCodeEnume.validException.getMessage()).put("data", errorMap);
+        return R.error(BizCodeEnume.VALID_EXCEPTION.getCode(), BizCodeEnume.VALID_EXCEPTION.getMessage()).put("data", errorMap);
     }
 
     /**
@@ -28,7 +28,7 @@ public class ExceptionControllerAdvice {
     @ExceptionHandler(value = Throwable.class)
     public R exceptionHandler(Throwable e) {
         log.error("Exception: ", e);
-        return R.error(BizCodeEnume.unknownException.getCode(), BizCodeEnume.unknownException.getMessage());
+        return R.error(BizCodeEnume.UNKNOWN_EXCEPTION.getCode(), BizCodeEnume.UNKNOWN_EXCEPTION.getMessage());
     }
 
 

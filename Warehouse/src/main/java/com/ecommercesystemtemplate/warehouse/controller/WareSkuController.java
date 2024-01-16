@@ -1,14 +1,12 @@
 package com.ecommercesystemtemplate.warehouse.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import com.ecommercesystemtemplate.warehouse.vo.SkuHasStockVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.ecommercesystemtemplate.warehouse.entity.WareSkuEntity;
 import com.ecommercesystemtemplate.warehouse.service.WareSkuService;
@@ -31,6 +29,17 @@ public class WareSkuController {
 
     public WareSkuController(WareSkuService wareSkuService) {
         this.wareSkuService = wareSkuService;
+    }
+
+    /**
+     * if there is stock
+     */
+    @PostMapping("/hasStock")
+    public R<List<SkuHasStockVo>> getSkusHaveStock(@RequestBody List<Long> skuIds){
+        List<SkuHasStockVo> vos = wareSkuService.getSkusHaveStock(skuIds);
+        R ok = R.ok();
+        ok.setData(vos);
+        return ok;
     }
 
     /**

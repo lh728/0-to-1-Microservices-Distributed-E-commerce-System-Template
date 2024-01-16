@@ -3,6 +3,7 @@ package com.ecommercesystemtemplate.product.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ecommercesystemtemplate.common.constant.ProductConstant;
 import com.ecommercesystemtemplate.common.to.MemberPrice;
 import com.ecommercesystemtemplate.common.to.SkuReductionTo;
 import com.ecommercesystemtemplate.common.to.SpuBondTo;
@@ -13,6 +14,8 @@ import com.ecommercesystemtemplate.common.utils.R;
 import com.ecommercesystemtemplate.product.dao.SpuInfoDao;
 import com.ecommercesystemtemplate.product.entity.*;
 import com.ecommercesystemtemplate.product.feign.CouponFeignService;
+import com.ecommercesystemtemplate.product.feign.SearchFeignService;
+import com.ecommercesystemtemplate.product.feign.WareFeignService;
 import com.ecommercesystemtemplate.product.service.*;
 import com.ecommercesystemtemplate.product.vo.*;
 import lombok.AllArgsConstructor;
@@ -23,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -42,6 +46,8 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     private final CouponFeignService couponFeignService;
     private final BrandService brandService;
     private final CategoryService categoryService;
+    private final WareFeignService wareFeignService;
+    private final SearchFeignService searchFeignService;
 
 
     @Override
@@ -194,6 +200,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         // build data
         // get basic information of spu
         List<SkuInfoEntity> skus = skuInfoService.getSkusBySpuId(spuId);
+        List<Long> ids = skus.stream().map(SkuInfoEntity::getSkuId).toList();
 
         // get all attribute information of spu
         List<ProductAttrValueEntity> entities = productAttrValueService.baseAttrListForSpu(spuId);
@@ -210,14 +217,28 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             return attrs1;
         }).toList();
 
+        // remote feign if there is stock
+        Map<Long, Boolean> stockMap = null;
+        try {
+            R<List<SkuHasStockVo>> skusHaveStock = wareFeignService.getSkusHaveStock(ids);
+            List<SkuHasStockVo> data = skusHaveStock.getData();
+            stockMap = data.stream().collect(Collectors.toMap(SkuHasStockVo::getSkuId, SkuHasStockVo::getHasStock));
+        }catch (Exception e){
+            log.error("Failed to remote get sku stock information, reason: {}", e);
+        }
 
+        Map<Long, Boolean> finalStockMap = stockMap;
         List<SkuEsModel> list = skus.stream().map(sku -> {
             SkuEsModel skuEsModel = new SkuEsModel();
             BeanUtils.copyProperties(sku, skuEsModel);
             skuEsModel.setSkuImg(sku.getSkuDefaultImg());
             skuEsModel.setSkuPrice(sku.getPrice());
-            // remote search if there is stock
-
+            // if there is stock
+            if (finalStockMap == null) {
+                skuEsModel.setHasStock(true);
+            } else {
+                skuEsModel.setHasStock(finalStockMap.get(sku.getSkuId()));
+            }
             // set hot score
             skuEsModel.setHotScore(0L);
 
@@ -234,7 +255,14 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             return skuEsModel;
         }).toList();
         // save to es
-
+        R r = searchFeignService.productToList(list);
+        if (r.getCode() == 0) {
+            // change spu status
+            this.baseMapper.updateSpuStatus(spuId, ProductConstant.StatusEnum.SPU_UP.getCode());
+        } else {
+            // fail
+            // TODO retry later
+        }
 
     }
 
