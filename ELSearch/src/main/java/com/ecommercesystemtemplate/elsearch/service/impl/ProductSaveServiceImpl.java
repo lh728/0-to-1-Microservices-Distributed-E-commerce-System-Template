@@ -30,9 +30,7 @@ public class ProductSaveServiceImpl implements ProductSaveService {
     @Override
     public boolean productToList(List<SkuEsModel> skuEsModels) throws IOException {
         // 1. build index, data type
-
         // 2. build mapping
-
         // 3. save data
         BulkRequest bulkRequest = new BulkRequest();
         for (SkuEsModel skuEsModel : skuEsModels) {

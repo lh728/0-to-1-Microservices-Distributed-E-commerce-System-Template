@@ -35,11 +35,10 @@ public class WareSkuController {
      * if there is stock
      */
     @PostMapping("/hasStock")
-    public R<List<SkuHasStockVo>> getSkusHaveStock(@RequestBody List<Long> skuIds){
+    public R getSkusHaveStock(@RequestBody List<Long> skuIds){
         List<SkuHasStockVo> vos = wareSkuService.getSkusHaveStock(skuIds);
-        R ok = R.ok();
-        ok.setData(vos);
-        return ok;
+
+        return R.ok().setData(vos);
     }
 
     /**

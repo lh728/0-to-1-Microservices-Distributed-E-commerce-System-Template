@@ -1,5 +1,6 @@
 package com.ecommercesystemtemplate.product.service.impl;
 
+import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -220,8 +221,10 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         // remote feign if there is stock
         Map<Long, Boolean> stockMap = null;
         try {
-            R<List<SkuHasStockVo>> skusHaveStock = wareFeignService.getSkusHaveStock(ids);
-            List<SkuHasStockVo> data = skusHaveStock.getData();
+            R r = wareFeignService.getSkusHaveStock(ids);
+            TypeReference<List<SkuHasStockVo>> typeReference = new TypeReference<>() {
+            };
+            List<SkuHasStockVo> data = r.getData(typeReference);
             stockMap = data.stream().collect(Collectors.toMap(SkuHasStockVo::getSkuId, SkuHasStockVo::getHasStock));
         }catch (Exception e){
             log.error("Failed to remote get sku stock information, reason: {}", e);
