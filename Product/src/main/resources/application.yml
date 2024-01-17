@@ -26,6 +26,10 @@
 #    name: product
 #  jackson:
 #    date-format: yyyy-MM-dd HH:mm:ss
+#  thymeleaf:
+#    cache: false
+#  mvc:
+#    static-path-pattern: /static/**
 #
 #mybatis-plus:
 #  mapper-locations: classpath:/mapper/**/*.xml
@@ -39,6 +43,4 @@
 #server:
 #  port: 10000
 #
-#
-#
-#
+
