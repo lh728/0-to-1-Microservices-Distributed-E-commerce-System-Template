@@ -13,10 +13,10 @@
         <result property="stockLocked" column="stock_locked"/>
     </resultMap>
     <update id="addStock">
-        update ware_ware_sku set stock = stock + #{skuNum} where ware_id = #{wareId} and sku_id = #{skuId}
+        update wms_ware_sku set stock = stock + #{skuNum} where ware_id = #{wareId} and sku_id = #{skuId}
     </update>
     <select id="getSkuHasStock" resultType="java.lang.Long">
-        select sum(stock - stock_locked) from ware_ware_sku where sku_id = #{skuId})
+        select sum(stock - stock_locked) from wms_ware_sku where sku_id = #{skuId}
     </select>
 
 
