@@ -102,17 +102,20 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Override
     public Map<String, List<Catalog2Vo>> getCategoryJson() {
+
+        List<CategoryEntity> categoryEntities = baseMapper.selectList(null);
+
         // getAllFirstLevelCategories
-        List<CategoryEntity> allFirstLevelCategories = getAllFirstLevelCategories();
+        List<CategoryEntity> allFirstLevelCategories = getParentCid(categoryEntities,0L);
         Map<String, List<Catalog2Vo>> parentCid = allFirstLevelCategories.stream().collect(Collectors.toMap(k -> k.getCatId().toString(), v -> {
             // get second level category
-            List<CategoryEntity> entities = baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", v.getCatId()));
+            List<CategoryEntity> entities = getParentCid(categoryEntities,v.getCatId());
             List<Catalog2Vo> list = null;
             if (entities != null) {
                 list = entities.stream().map(item -> {
                     Catalog2Vo catalog2vo = new Catalog2Vo(v.getCatId().toString(), null, item.getName(), item.getCatId().toString());
                     // get third level category
-                    List<CategoryEntity> level3 = baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", item.getCatId()));
+                    List<CategoryEntity> level3 = getParentCid(categoryEntities,item.getCatId());
                     if (level3 != null) {
                         List<Catalog2Vo.Catalog3Vo> voList = level3.stream().map(level3item -> {
                             Catalog2Vo.Catalog3Vo catalog3vo = new Catalog2Vo.Catalog3Vo(item.getCatId().toString(),
@@ -127,6 +130,13 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             return list;
         }));
         return parentCid;
+    }
+
+    private List<CategoryEntity> getParentCid(List<CategoryEntity> categoryEntities, Long parentCid) {
+        List<CategoryEntity> list = categoryEntities.stream().filter(item -> {
+            return item.getParentCid().equals(parentCid);
+        }).toList();
+        return list;
     }
 
     private List<Long> findParentPath(Long catelogId, List<Long> paths) {
