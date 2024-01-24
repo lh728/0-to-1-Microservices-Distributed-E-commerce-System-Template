@@ -30,6 +30,9 @@
 #    cache: false
 #  mvc:
 #    static-path-pattern: /static/**
+#  redis:
+#    host: 192.168.56.10
+#    port: 6379
 #
 #mybatis-plus:
 #  mapper-locations: classpath:/mapper/**/*.xml
@@ -43,4 +46,3 @@
 #server:
 #  port: 10000
 #
-
