@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.StringRedisTemplate;
+
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -19,6 +21,9 @@ class ProductApplicationTests {
 
     @Autowired
     CategoryService categoryService;
+
+    @Autowired
+    StringRedisTemplate stringRedisTemplate;
 
     @Test
     void contextLoads() {
@@ -34,6 +39,12 @@ class ProductApplicationTests {
         Long[] path = categoryService.findCatelogPath(225L);
         log.info("path: {}", Arrays.asList(path));
         assertArrayEquals(new Long[]{2L, 34L, 225L}, path);
+    }
+
+    @Test
+    void testRedis() {
+        stringRedisTemplate.opsForValue().set("hello", "world");
+        System.out.println(stringRedisTemplate.opsForValue().get("hello"));
     }
 
 
