@@ -12,6 +12,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -116,7 +117,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             Map<String, List<Catalog2Vo>> categoryJsonFromDb = getCategoryJsonFromDb();
             // 3. put data into redis
             String jsonString = JSON.toJSONString(categoryJsonFromDb);
-            redisTemplate.opsForValue().set("categoryJson", jsonString);
+            redisTemplate.opsForValue().set("categoryJson", jsonString, 1, TimeUnit.DAYS);
             return categoryJsonFromDb;
         }
         // convert to defined object
@@ -125,34 +126,42 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     }
 
     public Map<String, List<Catalog2Vo>> getCategoryJsonFromDb() {
-
-        List<CategoryEntity> categoryEntities = baseMapper.selectList(null);
-
-        // getAllFirstLevelCategories
-        List<CategoryEntity> allFirstLevelCategories = getParentCid(categoryEntities,0L);
-        Map<String, List<Catalog2Vo>> parentCid = allFirstLevelCategories.stream().collect(Collectors.toMap(k -> k.getCatId().toString(), v -> {
-            // get second level category
-            List<CategoryEntity> entities = getParentCid(categoryEntities,v.getCatId());
-            List<Catalog2Vo> list = null;
-            if (entities != null) {
-                list = entities.stream().map(item -> {
-                    Catalog2Vo catalog2vo = new Catalog2Vo(v.getCatId().toString(), null, item.getName(), item.getCatId().toString());
-                    // get third level category
-                    List<CategoryEntity> level3 = getParentCid(categoryEntities,item.getCatId());
-                    if (level3 != null) {
-                        List<Catalog2Vo.Catalog3Vo> voList = level3.stream().map(level3item -> {
-                            Catalog2Vo.Catalog3Vo catalog3vo = new Catalog2Vo.Catalog3Vo(item.getCatId().toString(),
-                                    level3item.getCatId().toString(), level3item.getName());
-                            return catalog3vo;
-                        }).toList();
-                        catalog2vo.setCatalog3List(voList);
-                    }
-                    return catalog2vo;
-                }).toList();
+        synchronized (this){
+            // Concurrency, get lock and check if redis cache is empty
+            String categoryJson = redisTemplate.opsForValue().get("categoryJson");
+            if(StringUtils.isNotEmpty(categoryJson)) {
+                return JSON.parseObject(categoryJson, new TypeReference<>() {});
             }
-            return list;
-        }));
-        return parentCid;
+
+            List<CategoryEntity> categoryEntities = baseMapper.selectList(null);
+
+            // getAllFirstLevelCategories
+            List<CategoryEntity> allFirstLevelCategories = getParentCid(categoryEntities,0L);
+            Map<String, List<Catalog2Vo>> parentCid = allFirstLevelCategories.stream().collect(Collectors.toMap(k -> k.getCatId().toString(), v -> {
+                // get second level category
+                List<CategoryEntity> entities = getParentCid(categoryEntities,v.getCatId());
+                List<Catalog2Vo> list = null;
+                if (entities != null) {
+                    list = entities.stream().map(item -> {
+                        Catalog2Vo catalog2vo = new Catalog2Vo(v.getCatId().toString(), null, item.getName(), item.getCatId().toString());
+                        // get third level category
+                        List<CategoryEntity> level3 = getParentCid(categoryEntities,item.getCatId());
+                        if (level3 != null) {
+                            List<Catalog2Vo.Catalog3Vo> voList = level3.stream().map(level3item -> {
+                                Catalog2Vo.Catalog3Vo catalog3vo = new Catalog2Vo.Catalog3Vo(item.getCatId().toString(),
+                                        level3item.getCatId().toString(), level3item.getName());
+                                return catalog3vo;
+                            }).toList();
+                            catalog2vo.setCatalog3List(voList);
+                        }
+                        return catalog2vo;
+                    }).toList();
+                }
+                return list;
+            }));
+            return parentCid;
+        }
+
     }
 
     private List<CategoryEntity> getParentCid(List<CategoryEntity> categoryEntities, Long parentCid) {
