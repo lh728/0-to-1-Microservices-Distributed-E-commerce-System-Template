@@ -159,6 +159,10 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
                 }
                 return list;
             }));
+
+            // 3. put data into redis
+            String jsonString = JSON.toJSONString(parentCid);
+            redisTemplate.opsForValue().set("categoryJson", jsonString, 1, TimeUnit.DAYS);
             return parentCid;
         }
 
