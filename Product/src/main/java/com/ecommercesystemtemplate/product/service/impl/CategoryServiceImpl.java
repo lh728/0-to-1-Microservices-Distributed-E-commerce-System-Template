@@ -1,10 +1,14 @@
 package com.ecommercesystemtemplate.product.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.ecommercesystemtemplate.product.dao.CategoryDao;
 import com.ecommercesystemtemplate.product.entity.CategoryEntity;
 import com.ecommercesystemtemplate.product.service.CategoryBrandRelationService;
 import com.ecommercesystemtemplate.product.service.CategoryService;
 import com.ecommercesystemtemplate.product.vo.Catalog2Vo;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -24,8 +28,11 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     final
     CategoryBrandRelationService categoryBrandRelationService;
 
-    public CategoryServiceImpl(CategoryBrandRelationService categoryBrandRelationService) {
+    final StringRedisTemplate redisTemplate;
+
+    public CategoryServiceImpl(CategoryBrandRelationService categoryBrandRelationService, StringRedisTemplate redisTemplate) {
         this.categoryBrandRelationService = categoryBrandRelationService;
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
@@ -102,6 +109,22 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Override
     public Map<String, List<Catalog2Vo>> getCategoryJson() {
+        // 1. add redis cache logic
+        String categoryJson = redisTemplate.opsForValue().get("categoryJson");
+        if(StringUtils.isEmpty(categoryJson)) {
+            // 2. if redis cache is empty, query from database
+            Map<String, List<Catalog2Vo>> categoryJsonFromDb = getCategoryJsonFromDb();
+            // 3. put data into redis
+            String jsonString = JSON.toJSONString(categoryJsonFromDb);
+            redisTemplate.opsForValue().set("categoryJson", jsonString);
+            return categoryJsonFromDb;
+        }
+        // convert to defined object
+        Map<String, List<Catalog2Vo>> result = JSON.parseObject(categoryJson, new TypeReference<>() {});
+        return result;
+    }
+
+    public Map<String, List<Catalog2Vo>> getCategoryJsonFromDb() {
 
         List<CategoryEntity> categoryEntities = baseMapper.selectList(null);
 
