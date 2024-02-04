@@ -112,60 +112,78 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     public Map<String, List<Catalog2Vo>> getCategoryJson() {
         // 1. add redis cache logic
         String categoryJson = redisTemplate.opsForValue().get("categoryJson");
-        if(StringUtils.isEmpty(categoryJson)) {
+        if (StringUtils.isEmpty(categoryJson)) {
             // 2. if redis cache is empty, query from database
-            Map<String, List<Catalog2Vo>> categoryJsonFromDb = getCategoryJsonFromDb();
+            Map<String, List<Catalog2Vo>> categoryJsonFromDb = getCategoryJsonFromDbWithRedisLock();
             // 3. put data into redis
             String jsonString = JSON.toJSONString(categoryJsonFromDb);
             redisTemplate.opsForValue().set("categoryJson", jsonString, 1, TimeUnit.DAYS);
             return categoryJsonFromDb;
         }
         // convert to defined object
-        Map<String, List<Catalog2Vo>> result = JSON.parseObject(categoryJson, new TypeReference<>() {});
+        Map<String, List<Catalog2Vo>> result = JSON.parseObject(categoryJson, new TypeReference<>() {
+        });
         return result;
     }
 
-    public Map<String, List<Catalog2Vo>> getCategoryJsonFromDb() {
-        synchronized (this){
-            // Concurrency, get lock and check if redis cache is empty
-            String categoryJson = redisTemplate.opsForValue().get("categoryJson");
-            if(StringUtils.isNotEmpty(categoryJson)) {
-                return JSON.parseObject(categoryJson, new TypeReference<>() {});
+
+    public Map<String, List<Catalog2Vo>> getCategoryJsonFromDbWithRedisLock() {
+        // distributed lock
+        redisTemplate.opsForValue().setIfAbsent("lock", "lock", 100, TimeUnit.SECONDS);
+        if (StringUtils.isEmpty(redisTemplate.opsForValue().get("lock"))) {
+            // if lock is empty, wait and try again
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+            return getCategoryJsonFromDbWithRedisLock();
+        }else {
+            Map<String, List<Catalog2Vo>> categoryJsonFromDB = getCategoryJsonFromDB();
+            redisTemplate.delete("lock");
+            return categoryJsonFromDB;
+        }
+    }
 
-            List<CategoryEntity> categoryEntities = baseMapper.selectList(null);
-
-            // getAllFirstLevelCategories
-            List<CategoryEntity> allFirstLevelCategories = getParentCid(categoryEntities,0L);
-            Map<String, List<Catalog2Vo>> parentCid = allFirstLevelCategories.stream().collect(Collectors.toMap(k -> k.getCatId().toString(), v -> {
-                // get second level category
-                List<CategoryEntity> entities = getParentCid(categoryEntities,v.getCatId());
-                List<Catalog2Vo> list = null;
-                if (entities != null) {
-                    list = entities.stream().map(item -> {
-                        Catalog2Vo catalog2vo = new Catalog2Vo(v.getCatId().toString(), null, item.getName(), item.getCatId().toString());
-                        // get third level category
-                        List<CategoryEntity> level3 = getParentCid(categoryEntities,item.getCatId());
-                        if (level3 != null) {
-                            List<Catalog2Vo.Catalog3Vo> voList = level3.stream().map(level3item -> {
-                                Catalog2Vo.Catalog3Vo catalog3vo = new Catalog2Vo.Catalog3Vo(item.getCatId().toString(),
-                                        level3item.getCatId().toString(), level3item.getName());
-                                return catalog3vo;
-                            }).toList();
-                            catalog2vo.setCatalog3List(voList);
-                        }
-                        return catalog2vo;
-                    }).toList();
-                }
-                return list;
-            }));
-
-            // 3. put data into redis
-            String jsonString = JSON.toJSONString(parentCid);
-            redisTemplate.opsForValue().set("categoryJson", jsonString, 1, TimeUnit.DAYS);
-            return parentCid;
+    private Map<String, List<Catalog2Vo>> getCategoryJsonFromDB() {
+        // Concurrency, get lock and check if redis cache is empty
+        String categoryJson = redisTemplate.opsForValue().get("categoryJson");
+        if (StringUtils.isNotEmpty(categoryJson)) {
+            return JSON.parseObject(categoryJson, new TypeReference<>() {
+            });
         }
 
+        List<CategoryEntity> categoryEntities = baseMapper.selectList(null);
+
+        // getAllFirstLevelCategories
+        List<CategoryEntity> allFirstLevelCategories = getParentCid(categoryEntities, 0L);
+        Map<String, List<Catalog2Vo>> parentCid = allFirstLevelCategories.stream().collect(Collectors.toMap(k -> k.getCatId().toString(), v -> {
+            // get second level category
+            List<CategoryEntity> entities = getParentCid(categoryEntities, v.getCatId());
+            List<Catalog2Vo> list = null;
+            if (entities != null) {
+                list = entities.stream().map(item -> {
+                    Catalog2Vo catalog2vo = new Catalog2Vo(v.getCatId().toString(), null, item.getName(), item.getCatId().toString());
+                    // get third level category
+                    List<CategoryEntity> level3 = getParentCid(categoryEntities, item.getCatId());
+                    if (level3 != null) {
+                        List<Catalog2Vo.Catalog3Vo> voList = level3.stream().map(level3item -> {
+                            Catalog2Vo.Catalog3Vo catalog3vo = new Catalog2Vo.Catalog3Vo(item.getCatId().toString(),
+                                    level3item.getCatId().toString(), level3item.getName());
+                            return catalog3vo;
+                        }).toList();
+                        catalog2vo.setCatalog3List(voList);
+                    }
+                    return catalog2vo;
+                }).toList();
+            }
+            return list;
+        }));
+
+        // 3. put data into redis
+        String jsonString = JSON.toJSONString(parentCid);
+        redisTemplate.opsForValue().set("categoryJson", jsonString, 1, TimeUnit.DAYS);
+        return parentCid;
     }
 
     private List<CategoryEntity> getParentCid(List<CategoryEntity> categoryEntities, Long parentCid) {
