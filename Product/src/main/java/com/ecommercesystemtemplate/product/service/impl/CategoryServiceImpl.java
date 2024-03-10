@@ -8,6 +8,8 @@ import com.ecommercesystemtemplate.product.service.CategoryBrandRelationService;
 import com.ecommercesystemtemplate.product.service.CategoryService;
 import com.ecommercesystemtemplate.product.vo.Catalog2Vo;
 import org.apache.commons.lang.StringUtils;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
@@ -27,14 +29,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("categoryService")
 public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity> implements CategoryService {
 
-    final
-    CategoryBrandRelationService categoryBrandRelationService;
-
+    final CategoryBrandRelationService categoryBrandRelationService;
     final StringRedisTemplate redisTemplate;
+    final RedissonClient redissonClient;
 
-    public CategoryServiceImpl(CategoryBrandRelationService categoryBrandRelationService, StringRedisTemplate redisTemplate) {
+    public CategoryServiceImpl(CategoryBrandRelationService categoryBrandRelationService, StringRedisTemplate redisTemplate,
+                               RedissonClient redissonClient) {
         this.categoryBrandRelationService = categoryBrandRelationService;
         this.redisTemplate = redisTemplate;
+        this.redissonClient = redissonClient;
     }
 
     @Override
@@ -102,6 +105,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     public void updateCascade(CategoryEntity category) {
         this.updateById(category);
         categoryBrandRelationService.updateCategory(category.getCatId(), category.getName());
+
+        // update redis cache
+
     }
 
     @Override
@@ -115,7 +121,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         String categoryJson = redisTemplate.opsForValue().get("categoryJson");
         if (StringUtils.isEmpty(categoryJson)) {
             // 2. if redis cache is empty, query from database
-            Map<String, List<Catalog2Vo>> categoryJsonFromDb = getCategoryJsonFromDbWithRedisLock();
+            Map<String, List<Catalog2Vo>> categoryJsonFromDb = getCategoryJsonFromDbWithRedissonLock();
             // 3. put data into redis
             String jsonString = JSON.toJSONString(categoryJsonFromDb);
             redisTemplate.opsForValue().set("categoryJson", jsonString, 1, TimeUnit.DAYS);
@@ -127,31 +133,43 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return result;
     }
 
-
-    public Map<String, List<Catalog2Vo>> getCategoryJsonFromDbWithRedisLock() {
+    public Map<String, List<Catalog2Vo>> getCategoryJsonFromDbWithRedissonLock() {
         // distributed lock
-        String uuid = UUID.randomUUID().toString();
-        redisTemplate.opsForValue().setIfAbsent("lock", uuid, 100, TimeUnit.SECONDS);
-        if (StringUtils.isEmpty(redisTemplate.opsForValue().get("lock"))) {
-            // if lock is empty, wait and try again
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            return getCategoryJsonFromDbWithRedisLock();
-        }else {
-            Map<String, List<Catalog2Vo>> categoryJsonFromDB;
-            try{
-                categoryJsonFromDB = getCategoryJsonFromDB();
-            } finally {
-                // lua script, release lock
-                String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
-                Long lock = redisTemplate.execute(new DefaultRedisScript<>(script, Long.class), List.of("lock"), uuid);
-            }
-            return categoryJsonFromDB;
+        RLock lock = redissonClient.getLock("CategoryJson-lock");
+        lock.lock(10, TimeUnit.SECONDS);
+        Map<String, List<Catalog2Vo>> categoryJsonFromDB;
+        try{
+            categoryJsonFromDB = getCategoryJsonFromDB();
+        } finally {
+            lock.unlock();
         }
+        return categoryJsonFromDB;
     }
+
+//    public Map<String, List<Catalog2Vo>> getCtegoryJsonFromDbWithRedisLock() {
+//        // distributed lock
+//        String uuid = UUID.randomUUID().toString();
+//        redisTemplate.opsForValue().setIfAbsent("lock", uuid, 100, TimeUnit.SECONDS);
+//        if (StringUtils.isEmpty(redisTemplate.opsForValue().get("lock"))) {
+//            // if lock is empty, wait and try again
+//            try {
+//                Thread.sleep(100);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//            return getCategoryJsonFromDbWithRedisLock();
+//        }else {
+//            Map<String, List<Catalog2Vo>> categoryJsonFromDB;
+//            try{
+//                categoryJsonFromDB = getCategoryJsonFromDB();
+//            } finally {
+//                // lua script, release lock
+//                String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
+//                Long lock = redisTemplate.execute(new DefaultRedisScript<>(script, Long.class), List.of("lock"), uuid);
+//            }
+//            return categoryJsonFromDB;
+//        }
+//    }
 
     private Map<String, List<Catalog2Vo>> getCategoryJsonFromDB() {
         // Concurrency, get lock and check if redis cache is empty
