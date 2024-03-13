@@ -37,7 +37,6 @@
 #    type: redis
 #    redis:
 #      time-to-live: 60000
-#      key-prefix: cache_product_
 #      use-key-prefix: true
 #      cache-null-values: true
 #
