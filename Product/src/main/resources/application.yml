@@ -37,7 +37,9 @@
 #    type: redis
 #    redis:
 #      time-to-live: 60000
-#      key-prefix: product
+#      key-prefix: cache_product_
+#      use-key-prefix: true
+#      cache-null-values: true
 #
 #mybatis-plus:
 #  mapper-locations: classpath:/mapper/**/*.xml

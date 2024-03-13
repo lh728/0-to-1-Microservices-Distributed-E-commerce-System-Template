@@ -9,7 +9,6 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-@EnableCaching
 @EnableFeignClients(basePackages = "com.ecommercesystemtemplate.product.feign")
 public class ProductApplication {
 
