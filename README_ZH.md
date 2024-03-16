@@ -1,8 +1,12 @@
 # 从0到1的微服务分布式电子商务系统模板
 
-SpringBoot + Vue2 + Maven3 + Java17 + Spring Cloud + Redis + Docker + OSS + Mysql + MybatisPlus + Nginx + Git + Unit Testing
+SpringBoot + Vue2 + Maven3 + Java17 + Spring Cloud + Redis + Redisson + Docker + OSS + Mysql + MybatisPlus + Nginx + Git + Unit Testing
 
 这是一个正在构建中的基于微服务的分布式电子商务系统模板，旨在利用各种先进的管理工具和实践，从零到一实现应用监控、限流、网关、熔断降级等分布式方案；分布式事务、分布式锁；高并发、线程池、异步编排；压力测试与性能优化；集群技术；CI/CD。
+
+详细架构图如下所示：
+
+<img src="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/raw/369600d596bca82050201cbebbc9395aee96a699/Static/microservice%20architecture.png" style="zoom: 50%;" />
 
 **我将尽可能使用高版本的编程语言和依赖环境。**
 
@@ -14,6 +18,7 @@ SpringBoot + Vue2 + Maven3 + Java17 + Spring Cloud + Redis + Docker + OSS + Mysq
   - 订单服务，处理订单操作；
   - 检索服务，集成Elasticsearch进行商品检索；
   - 集中认证服务，包括登录、注册、单点登录、社交登录等。
+- 性能优化：中间件网络交互优化、DB Mysql优化、模板渲染速度优化（缓存）、业务逻辑优化
 
 <br>
 
@@ -35,6 +40,10 @@ ES 6
 
 Vue 2
 
+ElasticSearch 7.4.2
+
+Kibana 7.4.2
+
 <br>
 
 
@@ -48,6 +57,8 @@ Springboot 2.7.17
 Spring Web
 
 Spring loadbalancer
+
+Elasticsearch Clients
 
 <br>
 
@@ -101,7 +112,7 @@ Spring Cloud Alibaba - **OSS** （云存储）
 
 #### 安装 Git
 
-```bash
+```shell
 sudo yum install git
 
 # verify that git is working properly
@@ -113,7 +124,7 @@ git --version
 
 #### 安装 Docker
 
-```bash
+```shell
 # Update the software packages
 sudo yum update -y
 
@@ -142,7 +153,7 @@ sudo docker run hello-world
 
 #### 安装 mysql 8.0.17
 
-```bash
+```shell
 # Pull the MySQL 8.0.17 image
 docker pull mysql:8.0.17
 
@@ -169,7 +180,7 @@ default-character-set=utf8
 
 #### 安装 Redis
 
-```bash
+```shell
 # Pull the Redis image
 docker pull redis
 
@@ -190,7 +201,160 @@ docker exec -it redis redis-cli
 
 <br>
 
+#### 安装Elasticsearch和Kibana
 
+```shell
+# Pull the Elasticsearch image
+docker pull elasticsearch:7.4.2
+
+# Run the Elasticsearch container
+docker run -d -p 9200:9200 -p 9300:9300 --name elasticsearch docker.elastic.co/elasticsearch/elasticsearch:7.4.2
+
+# Pull the Kibana image
+docker pull kibana:7.4.2
+
+# Verify if the Elasticsearch container is running
+docker ps
+
+#test Elasticsearch
+curl -X GET "localhost:9200/"
+
+#create dir
+mkdir -p /mydata/elasticsearch/config
+mkdir -p /mydata/elasticsearch/data
+echo "http.host: 0.0.0.0" >> /mydata/elasticsearch/config/elasticsearch.yml
+chmod -R 777 /mydata/elasticsearch/
+
+# run Elasticsearch, attention S_JAVA_OPTS="-Xms64m -Xmx128m" only for test
+docker run --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" -e ES_JAVA_OPTS="-Xms64m -Xmx512m" -v /mydata/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml -v /mydata/elasticsearch/data:/usr/share/elasticsearch/data -v /mydata/elasticsearch/plugins:/usr/share/elasti
+csearch/plugins -d elasticsearch:7.4.2
+
+# run kibana
+docker run --name kibana -e ELASTICSEARCH_HOSTS=http://<your own vm address>:9200 -p 5601:5601 -d kibana:7.4.2
+
+# check Elasticsearch and kibana
+docker ps
+```
+
+接着你可以通过你的虚拟机端口号+9200访问Elasticsearch，注意启动很慢，需要耐心等待
+
+<br>
+
+#### 安装Nginx
+
+```shell
+# run nginx container
+docker run -d -p 80:80 --name nginx -v /mydata/nginx/html:/usr/share/nginx/html -v /mydata/nginx/logs:/var/log/nginx -v /mydata/nginx/conf:/etc/nginx nginx
+
+# check nginx 
+docker ps
+```
+
+nginx会用于后续反向代理和负载均衡。如果需要模拟域名搭建，可以修改C:\Windows\System32\drivers\etc 下的hosts文件，在底部增加一行即可： `192.168.56.10  thellumall.com`左边是你的虚拟机地址，右边是你设置的域名。
+
+如果后续需要继续添加，往下面继续添加即可，例如：`192.168.56.10  search.thellumall.com`
+
+后续会通过反向代理，将指向thellumall.com的服务转向微服务中的网关。配置如下：
+
+```shell
+cd mydata/nginx/conf/conf.d
+# copy default configuration
+cp default.conf thellumall.conf
+vi thellumall.conf
+
+cd ../
+vi nginx.conf
+```
+
+进入thellumall.conf，修改server_name为thellumall.com等等需要的域名，删除location大括号中的内容，改为 如下所示：
+
+```shell
+server {
+    listen       80;
+    listen  [::]:80;
+    server_name  thellumall.com search.thellumall.com;
+
+    #access_log  /var/log/nginx/host.access.log  main;
+
+    location / {
+        proxy_set_header Host $host;
+        proxy_pass http://thellumall;
+    }
+
+    ...
+}
+
+```
+
+然后进入nginx.conf，增加上游服务器，即修改http内容为如下：
+
+```shell
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log  /var/log/nginx/access.log  main;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    keepalive_timeout  65;
+
+    #gzip  on;
+    upstream thellumall{
+      server 192.168.56.1:88;
+    }
+
+    include /etc/nginx/conf.d/*.conf;
+}
+
+```
+
+通过这种方式，可以反向代理到网关，网关配置后再指向微服务。 
+
+同时，为了实现动静分离，因此将所有项目的静态资源都储存在Nginx中，优化服务器吞吐量；（指定路径下/static/**的请求直接返回静态资源)：
+
+```shell
+cd /mydata/nginx/html
+# create static folder to save all static resource
+mkdir static
+```
+
+接着把各个微服务/static/**下的静态资源放入该文件夹。
+
+```shell
+cd /mydata/nginx/conf/conf.d
+vi thellumall.conf
+```
+
+进入thellumall.conf，新增location /static/如下：
+
+```shell
+    listen       80;
+    listen  [::]:80;
+    server_name  thellumall.com;
+
+    #access_log  /var/log/nginx/host.access.log  main;
+    location /static/{
+       root /usr/share/nginx/html;
+    }
+
+    location / {
+        proxy_set_header Host $host;
+        proxy_pass http://thellumall;
+    }
+
+```
+
+
+
+
+
+<br>
 
 ## 管理系统
 
@@ -200,7 +364,7 @@ docker exec -it redis redis-cli
 
 对于前端页面，我们使用 "renren-fast-vue" 来实现快速开发：https://github.com/renrenio/renren-fast-vue.git。该项目的前端代码在这里：<a href="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template-front-end">0-to-1-Microservices-Distributed-E-commerce-System-Template-front-end </a>。
 
-要启动管理服务，需要创建一个名为 "ADMIN" 的数据库。该数据库的表创建语句也可以在以下位置找到：<a href="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/blob/777679015934b1f745a7cd55b6e66a884eace26e/renren-fast/db/mysql.sql">GitHub</a>
+要启动管理服务，需要创建一个名为 "ADMIN" 的数据库。该数据库的表创建语句和对应的数据生成可以在项目的Static/admin/db文件夹找到。
 
 在修改数据库文件后，后端将会启动。对于前端，在下载 Node.js 后，执行 `npm install` 命令，然后运行 `npm run dev`。
 
@@ -486,7 +650,7 @@ public interface CouponFeignService {
 
  
 
-#### GateWay
+### GateWay
 
 网关的常用功能包括路由转发、权限校验、限流控制、API管理等。这里使用的是Spring Cloud Gateway作为网关，取代Zuul网关。
 
@@ -589,7 +753,7 @@ public class CorsConfig implements WebMvcConfigurer {
 
 <br>
 
-#### OSS
+### OSS
 
 由于地域问题，目前选择使用阿里云开通OSS对象存储，将作为分布式系统的云文件存储器使用，存储图片等信息。（也可以使用AWS S3)
 
@@ -597,7 +761,7 @@ public class CorsConfig implements WebMvcConfigurer {
 
 你可以参考下图：
 
-<img src="D:\0-to-1-Microservices-Distributed-E-commerce-System-Template\Static\oss.png" alt="image-20231221165409092" style="zoom:50%;" />
+<img src="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/raw/c1e9f9be829f4cffc694bcba5e0209531082ed80/Static/oss.png" style="zoom:50%;" />
 
 完成后，就可以通过OSS进行文件读写了。
 
@@ -728,6 +892,16 @@ public class OssController {
 
 
 
+
+
+### ELSearch
+
+这里除了elasticSearch相关的配置与远程调用之外，还有关于商城搜索页的前端代码，和Product
+
+
+
+
+
 <br>
 
 ### Order
@@ -736,21 +910,39 @@ public class OssController {
 
 ### Member
 
+#### Membership Level
+
+Membership Level的路由是member/level。该功能用于管理会员等级，可以在这里设置不同会员等级和特权等信息。
+
+该页主要信息存储同Product微服务一样，采取动静分离策略，把静态资源放在nginx中，对应的前端内容放置在Static文件夹下，使用thymelaef作为模板引擎，已经注释掉仅供展示。
+
+搜索页如下所示：
+
+
+
+
+
 <br>
 
-### Product System
+### Product
 
 商品系统通过后台管理系统新增Product System目录
 
-#### Product maintenance
+#### Category maintenance
 
-Product maintenance的路由是product/category。该配置用于管理商品服务三级分类下，一次性查出所有分类与子分类，并以树数据结构组装起来进行管理，并支持append, delete，batch delete和update功能。
+Category maintenance的路由是product/category。该配置用于管理商品服务三级分类下，一次性查出所有分类与子分类，并以树数据结构组装起来进行管理，并支持append, delete，batch delete和update功能。
+
+该处功能通过Spring cache缓存优化，并解决了缓存穿透、击穿和雪崩问题。
+
+该页主要信息存储在pms_category表中
 
 <img src="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/raw/e506621a17f5208b5685663765bbde960a9a9305/Static/product_maintenance.png" style="zoom: 50%;" />
 
+<br>
+
 #### Brand Management
 
-Brand Management的路由是product/brand。还配置用于管理电商品牌，支持增删改查分页显示。
+Brand Management的路由是product/brand。还配置用于管理电商品牌，支持增删改查分页显示，并且与分类信息做关联（即品牌与分类有关联，关联信息保存在pms_category_brand_relation 表中）
 
 同时，通过修改brand URL，支持分布式条件下文件上传与读取，文件上传到OSS云服务器进行读写。
 
@@ -758,15 +950,119 @@ Brand Management的路由是product/brand。还配置用于管理电商品牌，
 
 前端配置bucket外网域名后，即可支持单文件和多文件上传，单文件上传功能是通过输入 logo address 完成的。
 
-<img src="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/raw/722c94adf20cc6e55752cbebe8c1488c4bf7a89c/Static/brand_management2.png" style="zoom:50%;" />
+该页主要信息存储在pms_brand表中
 
 <img src="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/raw/6d891db6976c4e3b62de60f101d999bc41a9cd99/Static/brand_management.png" style="zoom:50%;" />
 
+<br>
 
+#### Platform Properties
+
+平台属性用于维护SPU（Standard Product Unit）和SPK（Stock Keeping Unit）属性，内含子菜单属性分组、规格参数和销售属性三个类别。
+
+- 属性分组
+
+属性分组的路由是product/attrgroup。属性分组主要记录某个类别属于哪个分组。每个属性分组都会关联多个规格参数。
+
+该页需要根据分类树的信息，点击后动态展示对应分类的分组信息，新增时也支持级联选择器选择所属分组。
+
+该页主要信息存储在pms_attr_group表中
+
+- 规格参数
+
+规格参数的路由是product/baseattr。规格参数主要用于记录电商产品的一些基本信息（例如出产年份、核心配置等，这些信息在不同的销售属性下是不变的）。与属性分组一样，根据分类树的信息，点击后动态展示对应分类的基本属性信息。
+
+该页主要信息存储在pms_attr表中。
+
+- 销售属性
+
+销售属性的路由是product/saleattr。销售属性和规格参数都属于 attrType的一种，销售属性主要用于记录电商产品的部分销售属性（例如可以选择手机的白色款、黑色款等）。与属性分组一样，根据分类树的信息，点击后动态展示对应分类的销售属性信息，但是销售属性不需要分组保存。
+
+该页主要信息也存储在pms_attr表中。
+
+
+
+#### Product Maintenance
+
+产品维护用于维护产品信息并维护发布的生命周期，内含子菜单SPU管理、发布产品和产品管理三个类别。
+
+- SPU管理
+
+SPU管理的路由是product/spu。SPU管理是管理发布的产品SPU的地方，默认情况下新建的产品状态是NEW，可以执行上架下架操作，还可以查看设置spu详细规格。在详细规格中，可以对spu信息进行更新和确认。
+
+上架功能关联ES数据库，需要存储需要上架的商品信息至ES数据库以供检索。
+
+该页主要信息存储在pms_spu_info中
+
+- 发布产品
+
+发布产品的路由是product/spuadd。发布产品需要先填写基本信息，再填写规格参数和销售属性，然后确认与完善根据销售属性对应生成的笛卡尔积SKU信息，最后才能成功保存。同时，该功能也需要会员和优惠券微服务的支持，因为需要获取到会员的等级信息，以及相关产品信息会保存到优惠券数据库中。
+
+该功能涉及多个表保存以及跨数据库保存信息，例如pms_sku_images, pms_sku_info, sms_sku_full_reduction等等。
+
+- 产品管理
+
+产品管理的路由是product/manager。产品管理是用于管理SKU信息的地方，支持跳转预览、评论、上传图片、参与秒杀、满减设置、折扣设置和会员价格设置等页面，还可以进行检索和展开详情。
+
+该页主要信息存储在sku_info中。
 
 <br>
 
-### Storage
+#### 前端
+
+采取动静分离策略，把静态资源放在nginx中，这样每次请求静态资源，网关就不需要在把[请求转发](https://so.csdn.net/so/search?q=请求转发&spm=1001.2101.3001.7020)到微服务中了，分担了微服务的压力。同时，后期可以直接转为静态资源。
+
+微服务对应的前端内容放置在Static文件夹下，使用thymelaef作为模板引擎。注意这里的内容全都注释掉了，仅用于展示，实际使用只需要解除注释，按照安装Nginx的指示，把静态资源放在nginx中即可（不包括index.html)。
+
+这里存放商城首页，如下图所示：
+
+
+
+
+
+### WareHouse
+
+#### Warehouse Maintenance
+
+仓储维护的路由是ware/wareinfo。仓储维护主要用于管理仓储相关的信息，并支持对应CRUD操作。
+
+该页主要信息存储在wms_ware_info表中。
+
+
+
+#### Product Inventory
+
+产品仓储的路由是ware/sku。产品仓储主要用于管理每个仓库下面的仓储信息。该功能关联采购功能，库存由采购完成后自动显示。
+
+该页主要信息存储在wms_ware_sku表中。
+
+
+
+#### Purchase Order Management
+
+- 采购需求
+
+采购需求的路由是ware/purchaseitem。采购需求主要用于管理采购SKU相关信息，确定采购商品ID、数量等信息，同时支持采购单合并操作。
+
+该页主要信息存储在wms_purchase_detail表中。
+
+- 库存工作单
+
+库存工作单的路由是ware/task。
+
+
+
+- 采购单
+
+采购单的路由是ware/purchase。用于生成采购单并管理，支持CRUD操作，并且关联采购需求页面。
+
+该页主要信息存储在wms_purchase表中。
+
+- 领取采购单
+
+该功能不属于后台管理系统，可以配置给采购人员，通过手机或其他方式对该接口发起请求，请求发送给`/api/warehouse/purchase/received`，可以用postman模拟请求发送。用于给采购人员领取采购单。
+
+
 
 <br>
 
@@ -813,7 +1109,6 @@ Brand Management的路由是product/brand。还配置用于管理电商品牌，
   - pms_spu_images - spu图片
   - pms_spu_info - spu信息
   - pms_spu_info_desc - spu信息介绍
-
 
 <br>
 
