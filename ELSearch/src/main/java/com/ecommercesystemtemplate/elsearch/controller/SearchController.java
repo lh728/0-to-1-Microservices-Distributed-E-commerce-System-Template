@@ -2,8 +2,9 @@ package com.ecommercesystemtemplate.elsearch.controller;
 
 import com.ecommercesystemtemplate.elsearch.service.MallSearchService;
 import com.ecommercesystemtemplate.elsearch.vo.SearchParam;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.ecommercesystemtemplate.elsearch.vo.SearchResult;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
@@ -17,9 +18,10 @@ public class SearchController {
     }
 
     @GetMapping("/list.html")
-    public String listPage(SearchParam searchParam) {
+    public String listPage(SearchParam searchParam, Model model) {
 
-        Object result = mallSearchService.search(searchParam);
+        SearchResult result = mallSearchService.search(searchParam);
+        model.addAttribute("result", result);
 
 
         return "list";
