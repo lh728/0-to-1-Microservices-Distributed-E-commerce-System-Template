@@ -14,6 +14,7 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -109,8 +110,24 @@ public class MallSearchServiceImpl implements MallSearchService {
 
         searchSourceBuilder.query(queryBuilder);
         // 2. order, pagination, highlight
+        // 2.1 sort order
+        if (StringUtils.isNotEmpty(searchParam.getSort())) {
+            String[] s = searchParam.getSort().split(":");
+            searchSourceBuilder.sort(s[0], "asc".equalsIgnoreCase(s[1]) ?
+                    org.elasticsearch.search.sort.SortOrder.ASC : org.elasticsearch.search.sort.SortOrder.DESC);
+        }
+        // 2.2 pagination
+        searchSourceBuilder.from((searchParam.getPageNum() - 1) * EsConstant.PRODUCT_PAGE_SIZE);
+        searchSourceBuilder.size(EsConstant.PRODUCT_PAGE_SIZE);
 
+        // 2.3 highlight
+        if (StringUtils.isNotEmpty(searchParam.getKeyword())) {
+            HighlightBuilder highlightBuilder = new HighlightBuilder();
+            highlightBuilder.field("skuTitle").preTags("<b style='color:red'>").postTags("</b>");
+            searchSourceBuilder.highlighter(highlightBuilder);
+        }
         // 3. aggregation
+
 
 
 
