@@ -13,6 +13,9 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.nested.NestedAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.springframework.stereotype.Service;
@@ -127,8 +130,27 @@ public class MallSearchServiceImpl implements MallSearchService {
             searchSourceBuilder.highlighter(highlightBuilder);
         }
         // 3. aggregation
+        // 3.1 brand aggregation
+        // 3.1.1 brand sub-aggregation
+        TermsAggregationBuilder brandAgg = AggregationBuilders.terms("brand_agg");
+        brandAgg.field("brandId").size(50);
+        brandAgg.subAggregation(AggregationBuilders.terms("brand_name_agg").field("brandName").size(1));
+        brandAgg.subAggregation(AggregationBuilders.terms("brand_img_agg").field("brandImg").size(1));
+        searchSourceBuilder.aggregation(brandAgg);
 
+        // 3.2 catalog aggregation
+        TermsAggregationBuilder catalogAgg = AggregationBuilders.terms("catalog_agg");
+        catalogAgg.field("catalogId").size(20);
+        catalogAgg.subAggregation(AggregationBuilders.terms("catalog_name_agg").field("catalogName").size(1));
+        searchSourceBuilder.aggregation(catalogAgg);
 
+        // 3.3 attrs aggregation
+        // nested aggregation
+        NestedAggregationBuilder nestedAggregationBuilder = AggregationBuilders.nested("attrs_agg", "attrs")
+                .subAggregation(AggregationBuilders.terms("attr_id_agg").field("attrs.attrId").size(50)
+                        .subAggregation(AggregationBuilders.terms("attr_name_agg").field("attrs.attrName").size(1))
+                        .subAggregation(AggregationBuilders.terms("attr_value_agg").field("attrs.attrValue").size(50)));
+        searchSourceBuilder.aggregation(nestedAggregationBuilder);
 
 
         SearchRequest searchRequest = new SearchRequest(new String[]{EsConstant.PRODUCT_INDEX}, searchSourceBuilder);
