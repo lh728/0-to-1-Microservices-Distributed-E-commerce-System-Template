@@ -28,6 +28,7 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -73,8 +74,12 @@ public class MallSearchServiceImpl implements MallSearchService {
             for (SearchHit hit : hits.getHits()) {
                 String string = hit.getSourceAsString();
                 SkuEsModel sku = new SkuEsModel();
-                JSON.parseObject(string, sku.getClass());
-                list.add(sku);
+                SkuEsModel skuEsModel = JSON.parseObject(string, sku.getClass());
+                if (!StringUtils.isEmpty(params.getKeyword())) {
+                    HighlightField skuTitle = hit.getHighlightFields().get("skuTitle");
+                    skuEsModel.setSkuTitle(skuTitle.getFragments()[0].string());
+                }
+                list.add(skuEsModel);
             }
         }
         searchResult.setProducts(list);
