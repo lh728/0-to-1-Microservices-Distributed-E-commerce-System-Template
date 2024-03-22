@@ -31,6 +31,7 @@ import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.springframework.stereotype.Service;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +58,7 @@ public class MallSearchServiceImpl implements MallSearchService {
             e.printStackTrace();
         }
 
-        return null;
+        return result;
     }
 
     /**
@@ -203,7 +204,9 @@ public class MallSearchServiceImpl implements MallSearchService {
             }
         }
         // 1.2 filter - stock
-        queryBuilder.filter(QueryBuilders.termQuery("hasStock", searchParam.getHasStock() == 1));
+        if (searchParam.getHasStock() != null){
+            queryBuilder.filter(QueryBuilders.termQuery("hasStock", searchParam.getHasStock() == 1));
+        }
 
         searchSourceBuilder.query(queryBuilder);
         // 2. order, pagination, highlight
@@ -248,6 +251,7 @@ public class MallSearchServiceImpl implements MallSearchService {
 
 
         SearchRequest searchRequest = new SearchRequest(new String[]{EsConstant.PRODUCT_INDEX}, searchSourceBuilder);
+        System.out.println("DSL: " + searchSourceBuilder.toString());
         return searchRequest;
     }
 }
