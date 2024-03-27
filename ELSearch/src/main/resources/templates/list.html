@@ -402,8 +402,8 @@
         <a href="http://thellumall.com"><img src="/static/search/./image/logo1.jpg" alt=""></a>
     </div>
     <div class="header_form">
-        <input type="text" placeholder="手机"/>
-        <a href="/static/search/#">搜索</a>
+        <input id="keyword_input" type="text" placeholder="Mobile Phone"/>
+        <a href="javascript:searchByKeyword();">SEARCH</a>
     </div>
     <div class="header_ico">
         <div class="header_gw">
@@ -2048,6 +2048,16 @@
             location.href = location.href + "?" + name + "=" + value;
         }
     }
+
+    function searchByKeyword(){
+        var keyword = $("#keyword_input").val();
+        if (keyword == null || keyword === ""){
+            alert("please enter keyword");
+            return;
+        }
+        searchProducts("keyword",keyword);
+    }
+
 </script>
 </body>
 </html>
