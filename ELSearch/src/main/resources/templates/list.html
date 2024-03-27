@@ -1058,15 +1058,15 @@
                     </div>
                 </div>
             </div>
-            <!--综合排序-->
+            <!--SORT-->
             <div class="JD_con_right">
                 <div class="filter">
-                    <!--综合排序-->
+                    <!--SORT-->
                     <div class="filter_top">
                         <div class="filter_top_left">
-                            <a href="/static/search/#">综合排序</a>
-                            <a href="/static/search/#">销量</a>
-                            <a href="/static/search/#">价格</a>
+                            <a class="sort_a" sort="hotScore"  href="/static/search/#">SuggestedRank</a>
+                            <a class="sort_a" sort="saleCount"  href="/static/search/#">SaleCount</a>
+                            <a class="sort_a" sort="skuPrice" href="/static/search/#">Price</a>
                             <a href="/static/search/#">评论分</a>
                             <a href="/static/search/#">上架时间</a>
                         </div>
@@ -2061,18 +2061,59 @@
         var href = location.href;
         if (href.indexOf("pageNum") !== -1){
             // replace pageNum
-            location.href = replaceParamVal(href,"pageNum",pn)
+            location.href = replaceAndAddParamVal(href,"pageNum",pn)
         }else{
             location.href = location.href + "&pageNum=" + pn;
         }
         return false;
     });
 
-    function replaceParamVal(url,paramName,replaceVal){
+    function replaceAndAddParamVal(url,paramName,replaceVal){
         var oUrl = url;
-        var re=eval('/('+ paramName+'=)([^&]*)/gi');
-        var nUrl = oUrl.replace(re,paramName+'='+replaceVal);
-        return nUrl;
+        if (oUrl.indexOf(paramName) !== -1){
+            var re=eval('/('+ paramName+'=)([^&]*)/gi');
+            var nUrl = oUrl.replace(re,paramName+'='+replaceVal);
+            console.log(nUrl);
+            return nUrl;
+        }else {
+            var nUrl = "";
+            if (oUrl.indexOf("?") !== -1){
+                nUrl = oUrl + "&" + paramName + "=" + replaceVal;
+            } else {
+                nUrl = oUrl + "?" + paramName + "=" + replaceVal;
+            }
+            return nUrl;
+        }
+    }
+
+    $(".sort_a").click(function(){
+        changeStyle(this);
+        // sort = skuPrice_asc/desc
+        var sort = $(this).attr("sort");
+        sort = $(this).hasClass("desc") ?  sort + "_desc" :  sort + "_asc";
+        location.href = replaceAndAddParamVal(location.href,"sort",sort);
+        return false;
+    });
+
+    function changeStyle(element){
+        // change current clicked element style
+        $(".sort_a").css({"color":"#333","border-color":"#ccc","background":"#FFF"});
+        $(".sort_a").each(function (){
+            var text = $(this).text().replace("↓","").replace("↑","");
+            $(this).text(text);
+        });
+        $(element).css({"color":"#FFF","border-color":"#e4393c","background":"#e4393c"});
+        // add sort field
+        $(element).toggleClass("desc"); // add means desc, remove means asc
+        if ($(element).hasClass("desc")) {
+            var text = $(element).text().replace("↓","").replace("↑","");
+            text = text + "↓";
+            $(element).text(text);
+        } else {
+            var text = $(element).text().replace("↓","").replace("↑","");
+            text = text + "↑";
+            $(element).text(text);
+        }
     }
 
 </script>

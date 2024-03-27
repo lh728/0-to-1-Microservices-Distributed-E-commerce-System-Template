@@ -219,7 +219,7 @@ public class MallSearchServiceImpl implements MallSearchService {
         // 2. order, pagination, highlight
         // 2.1 sort order
         if (StringUtils.isNotEmpty(searchParam.getSort())) {
-            String[] s = searchParam.getSort().split(":");
+            String[] s = searchParam.getSort().split("_");
             searchSourceBuilder.sort(s[0], "asc".equalsIgnoreCase(s[1]) ?
                     org.elasticsearch.search.sort.SortOrder.ASC : org.elasticsearch.search.sort.SortOrder.DESC);
         }
