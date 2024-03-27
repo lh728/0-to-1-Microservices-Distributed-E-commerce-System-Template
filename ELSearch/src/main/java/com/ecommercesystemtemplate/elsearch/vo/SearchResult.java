@@ -16,6 +16,8 @@ public class SearchResult {
 
     private Integer totalPages;
 
+    private List<Integer> pageNavs;
+
     private List<BrandVo> brands;
 
     @Data
