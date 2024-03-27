@@ -251,7 +251,7 @@ public class MallSearchServiceImpl implements MallSearchService {
 
 
         SearchRequest searchRequest = new SearchRequest(new String[]{EsConstant.PRODUCT_INDEX}, searchSourceBuilder);
-        System.out.println("DSL: " + searchSourceBuilder.toString());
+//        System.out.println("DSL: " + searchSourceBuilder.toString());
         return searchRequest;
     }
 }
