@@ -1,10 +1,14 @@
 package com.ecommercesystemtemplate.elsearch.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.ecommercesystemtemplate.common.to.es.SkuEsModel;
+import com.ecommercesystemtemplate.common.utils.R;
 import com.ecommercesystemtemplate.elsearch.config.ElasticConfig;
 import com.ecommercesystemtemplate.elsearch.constant.EsConstant;
+import com.ecommercesystemtemplate.elsearch.feign.ProductFeignService;
 import com.ecommercesystemtemplate.elsearch.service.MallSearchService;
+import com.ecommercesystemtemplate.elsearch.vo.AttrResponseVo;
 import com.ecommercesystemtemplate.elsearch.vo.SearchParam;
 import com.ecommercesystemtemplate.elsearch.vo.SearchResult;
 import org.apache.commons.lang.StringUtils;
@@ -29,6 +33,7 @@ import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilde
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.swing.*;
@@ -40,8 +45,11 @@ import java.util.List;
 public class MallSearchServiceImpl implements MallSearchService {
     private final RestHighLevelClient restHighLevelClient;
 
-    public MallSearchServiceImpl(RestHighLevelClient restHighLevelClient) {
+    final
+    ProductFeignService productFeignService;
+    public MallSearchServiceImpl(RestHighLevelClient restHighLevelClient, ProductFeignService productFeignService) {
         this.restHighLevelClient = restHighLevelClient;
+        this.productFeignService = productFeignService;
     }
 
     @Override
@@ -158,6 +166,23 @@ public class MallSearchServiceImpl implements MallSearchService {
             pageNavs.add(i);
         }
         searchResult.setPageNavs(pageNavs);
+
+        // 6. build breadcrumb
+        params.getAttrs().stream().map(attr -> {
+            SearchResult.NavVo navVo = new SearchResult.NavVo();
+            String[] s = attr.split("_");
+            navVo.setNavValue(s[1]);
+            R r = productFeignService.attrInfo(Long.parseLong(s[0]));
+            if (r.getCode() == 0) {
+                AttrResponseVo data = r.getData("attr", new TypeReference<AttrResponseVo>() {
+                });
+                navVo.setNavName(data.getAttrName());
+            }else {
+                navVo.setNavName(s[0]); // id as name
+            }
+            return navVo;
+        }).toList();
+
 
         return searchResult;
     }

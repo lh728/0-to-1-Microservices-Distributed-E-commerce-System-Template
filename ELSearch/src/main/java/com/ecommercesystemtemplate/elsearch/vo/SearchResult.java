@@ -42,4 +42,16 @@ public class SearchResult {
         private String attrName;
         private List<String> attrValue;
     }
+
+    /**
+     * Breadcrumb
+     */
+    private List<NavVo> navs;
+
+    @Data
+    public static class NavVo{
+        private String navName;
+        private String navValue;
+        private String link;
+    }
 }
