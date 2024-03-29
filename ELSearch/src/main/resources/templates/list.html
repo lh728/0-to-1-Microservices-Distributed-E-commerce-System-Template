@@ -1063,12 +1063,24 @@
                 <div class="filter">
                     <!--SORT-->
                     <div class="filter_top">
-                        <div class="filter_top_left">
-                            <a class="sort_a" sort="hotScore"  href="/static/search/#">SuggestedRank</a>
-                            <a class="sort_a" sort="saleCount"  href="/static/search/#">SaleCount</a>
-                            <a class="sort_a" sort="skuPrice" href="/static/search/#">Price</a>
-                            <a href="/static/search/#">评论分</a>
-                            <a href="/static/search/#">上架时间</a>
+                        <div class="filter_top_left" th:with="p = ${param.sort}">
+                            <a th:class="${(!#strings.isEmpty(p) && #strings.endsWith(p,'desc') && #strings.startsWith(p,'hotScore')) ? 'sort_a desc' : 'sort_a'}"
+                               th:attr="style=${(#strings.isEmpty(p) || #strings.startsWith(p,'hotScore'))?
+                            'border-color: #e4393c;color:#FFF;background: #e4393c':'border-color: #CCC;color:#333;background: #fff'}"
+                               sort="hotScore"  href="/static/search/#">
+                                SuggestedRank [[${(!#strings.isEmpty(p) && #strings.endsWith(p,'desc') && #strings.startsWith(p,'hotScore'))?'↓':'↑'}]]</a>
+                            <a th:class="${(!#strings.isEmpty(p) && #strings.endsWith(p,'desc') && #strings.startsWith(p,'saleCount')) ? 'sort_a desc' : 'sort_a'}"
+                               th:attr="style=${(!#strings.isEmpty(p) && #strings.startsWith(p,'saleCount'))?
+                            'border-color: #e4393c;color:#FFF;background: #e4393c':'border-color: #CCC;color:#333;background: #fff'}"
+                               sort="saleCount"  href="/static/search/#">
+                                SaleCount [[${(!#strings.isEmpty(p) && #strings.endsWith(p,'desc') && #strings.startsWith(p,'saleCount'))?'↓':'↑'}]]</a>
+                            <a th:class="${(!#strings.isEmpty(p) && #strings.endsWith(p,'desc') && #strings.startsWith(p,'skuPrice')) ? 'sort_a desc' : 'sort_a'}"
+                               th:attr="style=${(!#strings.isEmpty(p) && #strings.startsWith(p,'skuPrice'))?
+                            'border-color: #e4393c;color:#FFF;background: #e4393c':'border-color: #CCC;color:#333;background: #fff'}"
+                               sort="skuPrice" href="/static/search/#">
+                                Price [[${(!#strings.isEmpty(p) && #strings.endsWith(p,'desc') && #strings.startsWith(p,'skuPrice'))?'↓':'↑'}]]</a>
+                            <a href="/static/search/#">ReviewScore</a>
+                            <a href="/static/search/#">ListingDate</a>
                         </div>
                         <div class="filter_top_right">
                             <span class="fp-text">
@@ -2087,7 +2099,9 @@
     }
 
     $(".sort_a").click(function(){
-        changeStyle(this);
+        // change class style
+        // changeStyle(this);
+        $(this).toggleClass("desc");
         // sort = skuPrice_asc/desc
         var sort = $(this).attr("sort");
         sort = $(this).hasClass("desc") ?  sort + "_desc" :  sort + "_asc";
