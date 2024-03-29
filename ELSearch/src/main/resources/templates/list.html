@@ -1063,7 +1063,7 @@
                 <div class="filter">
                     <!--SORT-->
                     <div class="filter_top">
-                        <div class="filter_top_left" th:with="p = ${param.sort}">
+                        <div class="filter_top_left" th:with="p = ${param.sort},priceRange = ${param.skuPrice}">
                             <a th:class="${(!#strings.isEmpty(p) && #strings.endsWith(p,'desc') && #strings.startsWith(p,'hotScore')) ? 'sort_a desc' : 'sort_a'}"
                                th:attr="style=${(#strings.isEmpty(p) || #strings.startsWith(p,'hotScore'))?
                             'border-color: #e4393c;color:#FFF;background: #e4393c':'border-color: #CCC;color:#333;background: #fff'}"
@@ -1079,8 +1079,13 @@
                             'border-color: #e4393c;color:#FFF;background: #e4393c':'border-color: #CCC;color:#333;background: #fff'}"
                                sort="skuPrice" href="/static/search/#">
                                 Price [[${(!#strings.isEmpty(p) && #strings.endsWith(p,'desc') && #strings.startsWith(p,'skuPrice'))?'↓':'↑'}]]</a>
-                            <a href="/static/search/#">ReviewScore</a>
-                            <a href="/static/search/#">ListingDate</a>
+<!--                            <a href="/static/search/#">ReviewScore</a>-->
+<!--                            <a href="/static/search/#">ListingDate</a>-->
+                            <input id="skuPriceFrom" type="number" style="width: 100px;margin-left: 30px;"
+                                   th:value="${#strings.isEmpty(priceRange)?'':#strings.substringBefore(priceRange,'_')}"> -
+                            <input id="skuPriceTo" type="number" style="width: 100px;"
+                                   th:value="${#strings.isEmpty(priceRange)?'':#strings.substringAfter(priceRange,'_')}">
+                            <button id="skuPriceSearchBtn">GO</button>
                         </div>
                         <div class="filter_top_right">
                             <span class="fp-text">
@@ -1176,30 +1181,31 @@
                                 <li>
                                     <a href="/static/search/#">
                                         <i></i>
-                                        谷粒商城配送
+                                        Delivery
                                     </a>
                                 </li>
                                 <li>
                                     <a href="/static/search/#">
                                         <i></i>
-                                        京尊达 </a>
+                                        Premium Delivery </a>
                                 </li>
                                 <li>
                                     <a href="/static/search/#">
                                         <i></i>
-                                        货到付款
+                                        Cash on Delivery
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" th:with="check=${param.hasStock}">
+                                        <input id="showHasStock" type="checkbox"
+                                               th:checked="${#strings.equals(check,'1')}">
+                                        Only Show Products with Stock
                                     </a>
                                 </li>
                                 <li>
                                     <a href="/static/search/#">
                                         <i></i>
-                                        仅显示有货
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="/static/search/#">
-                                        <i></i>
-                                        可配送全球
+                                        Global Delivery
                                     </a>
                                 </li>
                             </ul>
@@ -2051,12 +2057,7 @@
     })
 
     function searchProducts(name,value){
-        var href = location.href + "";
-        if (href.indexOf("?") !== -1){
-            location.href = location.href + "&" + name + "=" + value;
-        } else {
-            location.href = location.href + "?" + name + "=" + value;
-        }
+        location.href = replaceAndAddParamVal(location.href,"keyword",value)
     }
 
     function searchByKeyword(){
@@ -2129,6 +2130,24 @@
             $(element).text(text);
         }
     }
+
+    $("#skuPriceSearchBtn").click(function (){
+        // sku price range search
+        let from = $("#skuPriceFrom").val();
+        let to = $("#skuPriceTo").val();
+        var query = from + "_" + to;
+        location.href = replaceAndAddParamVal(location.href,"skuPrice",query);
+    })
+
+    $("#showHasStock").change(function (){
+        if($(this).prop("checked")){
+            location.href = replaceAndAddParamVal(location.href,"hasStock",1);
+        }else{
+            var re=eval('/([&|?]hasStock=)([^[&|?]]*)/gi');
+            location.href = (location.href+"").replace(re,'');
+        }
+        return false
+    })
 
 </script>
 </body>
