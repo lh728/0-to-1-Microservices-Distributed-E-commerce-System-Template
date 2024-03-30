@@ -9,6 +9,7 @@ import com.ecommercesystemtemplate.elsearch.constant.EsConstant;
 import com.ecommercesystemtemplate.elsearch.feign.ProductFeignService;
 import com.ecommercesystemtemplate.elsearch.service.MallSearchService;
 import com.ecommercesystemtemplate.elsearch.vo.AttrResponseVo;
+import com.ecommercesystemtemplate.elsearch.vo.BrandVo;
 import com.ecommercesystemtemplate.elsearch.vo.SearchParam;
 import com.ecommercesystemtemplate.elsearch.vo.SearchResult;
 import org.apache.commons.lang.StringUtils;
@@ -171,11 +172,14 @@ public class MallSearchServiceImpl implements MallSearchService {
 
         // 6. build breadcrumb
         if (params.getAttrs() != null && !params.getAttrs().isEmpty()){
+            // breadcrumb with attributes
             List<SearchResult.NavVo> navVos = params.getAttrs().stream().map(attr -> {
                 SearchResult.NavVo navVo = new SearchResult.NavVo();
                 String[] s = attr.split("_");
                 navVo.setNavValue(s[1]);
                 R r = productFeignService.attrInfo(Long.parseLong(s[0]));
+                // add ids to list to check if the attribute is selected in breadcrumb
+                searchResult.getAttrIds().add(Long.parseLong(s[0]));
                 if (r.getCode() == 0) {
                     AttrResponseVo data = r.getData("attr", new TypeReference<AttrResponseVo>() {
                     });
@@ -183,18 +187,48 @@ public class MallSearchServiceImpl implements MallSearchService {
                 } else {
                     navVo.setNavName(s[0]); // id as name
                 }
-                // deal with cancel breadcrumb logic
-                // encode
-                String encode = URLEncoder.encode(attr, StandardCharsets.UTF_8);
-                // deal with space
-                encode.replace("+","%20");
-                String replace = params.get_queryString().replace("&attrs=" + encode, "");
+                String replace = replaceQueryString(params, attr, "attrs");
                 navVo.setLink("http://search.thellumall.com/list.html?" + replace);
                 return navVo;
             }).toList();
+
+
             searchResult.setNavs(navVos);
         }
+
+        // breadcrumb with brand
+        if (params.getBrandId() != null && !params.getBrandId().isEmpty()){
+            SearchResult.NavVo navVo = new SearchResult.NavVo();
+            List<SearchResult.NavVo> navs = searchResult.getNavs();
+
+            navVo.setNavName("Brand");
+            R r = productFeignService.brandsInfo(params.getBrandId());
+            if (r.getCode() == 0) {
+                List<BrandVo> brand = r.getData("brand", new TypeReference<List<BrandVo>>() {
+                });
+                StringBuilder stringBuffer = new StringBuilder();
+                String replace = "";
+                for (BrandVo brandVo : brand) {
+                    stringBuffer.append(brandVo.getName()).append(";");
+                    replace = replaceQueryString(params, brandVo.getBrandId().toString(), "brandId");
+                }
+                navVo.setNavValue(stringBuffer.toString());
+                navVo.setLink("http://search.thellumall.com/list.html?" + replace);
+            }
+            navs.add(navVo);
+        }
+
         return searchResult;
+    }
+
+    private static String replaceQueryString(SearchParam params, String attr, String key) {
+        // deal with cancel breadcrumb logic
+        // encode
+        String encode = URLEncoder.encode(attr, StandardCharsets.UTF_8);
+        // deal with space
+        encode.replace("+","%20");
+        String replace = params.get_queryString().replace("&" + key + "=" + encode, "");
+        return replace;
     }
 
     /**

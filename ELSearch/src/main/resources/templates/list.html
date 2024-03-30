@@ -792,12 +792,12 @@
         <div class="JD_selector">
             <!--手机商品筛选-->
             <div class="title">
-                <h3><b>手机</b><em>商品筛选</em></h3>
-                <div class="st-ext">共&nbsp;<span>10135</span>个商品</div>
+                <h3><b>Mobile Phone</b><em>FILTER</em></h3>
+                <div class="st-ext">TOTAL&nbsp;<span>10135</span>   </div>
             </div>
-            <div class="JD_nav_logo">
+            <div class="JD_nav_logo" th:with="brandId = ${param.brandId}">
                 <!--brand-->
-                <div class="JD_nav_wrap">
+                <div class="JD_nav_wrap" th:if="${#strings.isEmpty(brandId)}">
                     <div class="sl_key">
                         <span><b>Brand：</b></span>
                     </div>
@@ -822,7 +822,7 @@
                             <b style='background: url("image/search.ele.png")no-repeat 3px -44px'></b>
                         </a>
                         <a href="/static/search/#">
-                            多选
+                            Multiple Choice
                             <i>+</i>
                             <span>+</span>
                         </a>
@@ -849,7 +849,7 @@
                             <b style='background: url("image/search.ele.png")no-repeat 3px -44px'></b>
                         </a>
                         <a href="/static/search/#">
-                            多选
+                            Multiple Choice
                             <i>+</i>
                             <span>+</span>
                         </a>
@@ -857,7 +857,7 @@
                 </div>
 
                 <!--all attributes-->
-                <div class="JD_pre" th:each="attr:${result.attrs}">
+                <div class="JD_pre" th:each="attr:${result.attrs}" th:if="${!#lists.contains(result.attrIds,attr.attrId)}">
                     <div class="sl_key">
                         <span th:text="${attr.attrName}">NULL</span>
                     </div>

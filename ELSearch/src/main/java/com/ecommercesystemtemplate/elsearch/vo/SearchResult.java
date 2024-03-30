@@ -3,6 +3,7 @@ package com.ecommercesystemtemplate.elsearch.vo;
 import com.ecommercesystemtemplate.common.to.es.SkuEsModel;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -46,7 +47,8 @@ public class SearchResult {
     /**
      * Breadcrumb
      */
-    private List<NavVo> navs;
+    private List<NavVo> navs = new ArrayList<>();
+    private List<Long> attrIds = new ArrayList<>();
 
     @Data
     public static class NavVo{
