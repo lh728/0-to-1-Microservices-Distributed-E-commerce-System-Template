@@ -38,4 +38,9 @@ public class SearchParam {
     private List<String> attrs;
     private Integer pageNum = 1;
 
+    /**
+     * raw query string
+     */
+    private String _queryString;
+
 }

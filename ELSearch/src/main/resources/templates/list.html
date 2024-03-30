@@ -742,11 +742,11 @@
     </div>
 </div>
 
-<!--手机-->
+<!--Mobile Phone-->
 <div class="JD_ipone">
     <div class="JD_ipone_bar">
         <div class="JD_ipone_one a">
-            <a href="/static/search/#">手机</a>
+            <a href="/static/search/#">Mobile Phone</a>
         </div>
         <i><img src="/static/search/image/right-@1x.png" alt=""></i>
         <div class="JD_ipone_one b">
@@ -772,6 +772,16 @@
                 <a href="/static/search/#">游戏手机</a>
             </div>
         </div>
+        <!--            breadcrumb-->
+        <div class="JD_ipone_one c">
+            <a th:each="nav:${result.navs}" th:href="${nav.link}">
+                <span th:text="${nav.navName}"></span> :
+                <span th:text="${nav.navValue}"></span> ×
+            </a>
+
+
+        </div>
+
         <i><img src="/static/search/image/right-@1x.png" alt=""></i>
     </div>
 </div>
@@ -2057,7 +2067,7 @@
     })
 
     function searchProducts(name,value){
-        location.href = replaceAndAddParamVal(location.href,"keyword",value)
+        location.href = replaceAndAddParamVal(location.href,name,value,true)
     }
 
     function searchByKeyword(){
@@ -2081,13 +2091,24 @@
         return false;
     });
 
-    function replaceAndAddParamVal(url,paramName,replaceVal){
+    function replaceAndAddParamVal(url,paramName,replaceVal,forceAdd){
         var oUrl = url;
+        // if already exists, replace it
         if (oUrl.indexOf(paramName) !== -1){
-            var re=eval('/('+ paramName+'=)([^&]*)/gi');
-            var nUrl = oUrl.replace(re,paramName+'='+replaceVal);
-            console.log(nUrl);
-            return nUrl;
+            if (forceAdd){
+                var nUrl = "";
+                if (oUrl.indexOf("?") !== -1){
+                    nUrl = oUrl + "&" + paramName + "=" + replaceVal;
+                } else {
+                    nUrl = oUrl + "?" + paramName + "=" + replaceVal;
+                }
+                return nUrl;
+            }else{
+                var re=eval('/('+ paramName+'=)([^&]*)/gi');
+                var nUrl = oUrl.replace(re,paramName+'='+replaceVal);
+                console.log(nUrl);
+                return nUrl;
+            }
         }else {
             var nUrl = "";
             if (oUrl.indexOf("?") !== -1){

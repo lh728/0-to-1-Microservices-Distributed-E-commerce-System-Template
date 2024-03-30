@@ -38,6 +38,9 @@ import org.springframework.stereotype.Service;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,8 +48,7 @@ import java.util.List;
 public class MallSearchServiceImpl implements MallSearchService {
     private final RestHighLevelClient restHighLevelClient;
 
-    final
-    ProductFeignService productFeignService;
+    private final ProductFeignService productFeignService;
     public MallSearchServiceImpl(RestHighLevelClient restHighLevelClient, ProductFeignService productFeignService) {
         this.restHighLevelClient = restHighLevelClient;
         this.productFeignService = productFeignService;
@@ -168,22 +170,30 @@ public class MallSearchServiceImpl implements MallSearchService {
         searchResult.setPageNavs(pageNavs);
 
         // 6. build breadcrumb
-        params.getAttrs().stream().map(attr -> {
-            SearchResult.NavVo navVo = new SearchResult.NavVo();
-            String[] s = attr.split("_");
-            navVo.setNavValue(s[1]);
-            R r = productFeignService.attrInfo(Long.parseLong(s[0]));
-            if (r.getCode() == 0) {
-                AttrResponseVo data = r.getData("attr", new TypeReference<AttrResponseVo>() {
-                });
-                navVo.setNavName(data.getAttrName());
-            }else {
-                navVo.setNavName(s[0]); // id as name
-            }
-            return navVo;
-        }).toList();
-
-
+        if (params.getAttrs() != null && !params.getAttrs().isEmpty()){
+            List<SearchResult.NavVo> navVos = params.getAttrs().stream().map(attr -> {
+                SearchResult.NavVo navVo = new SearchResult.NavVo();
+                String[] s = attr.split("_");
+                navVo.setNavValue(s[1]);
+                R r = productFeignService.attrInfo(Long.parseLong(s[0]));
+                if (r.getCode() == 0) {
+                    AttrResponseVo data = r.getData("attr", new TypeReference<AttrResponseVo>() {
+                    });
+                    navVo.setNavName(data.getAttrName());
+                } else {
+                    navVo.setNavName(s[0]); // id as name
+                }
+                // deal with cancel breadcrumb logic
+                // encode
+                String encode = URLEncoder.encode(attr, StandardCharsets.UTF_8);
+                // deal with space
+                encode.replace("+","%20");
+                String replace = params.get_queryString().replace("&attrs=" + encode, "");
+                navVo.setLink("http://search.thellumall.com/list.html?" + replace);
+                return navVo;
+            }).toList();
+            searchResult.setNavs(navVos);
+        }
         return searchResult;
     }
 
