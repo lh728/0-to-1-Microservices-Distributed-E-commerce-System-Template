@@ -16,6 +16,7 @@ import com.ecommercesystemtemplate.product.vo.AttrResponseVo;
 import com.ecommercesystemtemplate.product.vo.AttrVo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -124,6 +125,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         return pageUtils;
     }
 
+    @Cacheable(value = "attr", key = "'attrInfo:'+#root.args[0]")
     @Override
     public AttrResponseVo getAttrInfo(Long attrId) {
         AttrEntity attrEntity = this.getById(attrId);
