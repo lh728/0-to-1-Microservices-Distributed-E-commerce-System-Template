@@ -43,7 +43,7 @@
 #            - Host=thellumall.com, item.thellumall.com
 #
 #        - id: thellumall_search_route
-#          uri: lb://elsearch
+#          uri: lb://search
 #          predicates:
 #            - Host=search.thellumall.com
 #
