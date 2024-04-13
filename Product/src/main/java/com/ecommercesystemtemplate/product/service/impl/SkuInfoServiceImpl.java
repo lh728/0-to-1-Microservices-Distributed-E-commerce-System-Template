@@ -3,6 +3,7 @@ package com.ecommercesystemtemplate.product.service.impl;
 import com.ecommercesystemtemplate.product.dao.SkuInfoDao;
 import com.ecommercesystemtemplate.product.entity.SkuInfoEntity;
 import com.ecommercesystemtemplate.product.service.SkuInfoService;
+import com.ecommercesystemtemplate.product.vo.SkuItemVo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -76,6 +77,23 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
     public List<SkuInfoEntity> getSkusBySpuId(Long spuId) {
 
         return this.list(new QueryWrapper<SkuInfoEntity>().eq("spu_id", spuId));
+
+    }
+
+    @Override
+    public SkuItemVo item(Long skuId) {
+        SkuItemVo skuItemVo = new SkuItemVo();
+        // 1. get sku base info
+
+        // 2. get sku pic info
+
+        // 3. get spu sale attr info
+
+        // 4. get spu desc info
+
+        // 5. get spu spec attr info
+
+        return null;
 
     }
 
