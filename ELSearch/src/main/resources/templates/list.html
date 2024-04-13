@@ -1222,15 +1222,14 @@
                         </div>
 
                     </div>
-                    <!--排序内容,商品每四个一组-->
                     <div class="rig_tab">
                         <div th:each="product:${result.getProducts()}">
                             <div class="ico">
                                 <i class="iconfont icon-weiguanzhu"></i>
-                                <a href="/static/search/#">关注</a>
+                                <a href="/static/search/#">FOLLOW</a>
                             </div>
                             <p class="da">
-                                <a href="/static/search/#">
+                                <a th:href="|http://item.thellumall.com/${product.skuId}.html|">
                                     <img th:src="${product.skuImg}" class="dim">
                                 </a>
                             </p>
@@ -1245,7 +1244,7 @@
                             </p>
                             <p class="tab_JE">
                                 <a href="/static/search/#" th:utext="${product.skuTitle}">
-                                    出错了
+                                    ERROR
                                 </a>
                             <p class="tab_PI">已有<span>11万+</span>热门评价
                                 <a href="/static/search/#">二手有售</a>
