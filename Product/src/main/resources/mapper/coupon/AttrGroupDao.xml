@@ -3,7 +3,6 @@
 
 <mapper namespace="com.ecommercesystemtemplate.product.dao.AttrGroupDao">
 
-	<!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="com.ecommercesystemtemplate.product.entity.AttrGroupEntity" id="attrGroupMap">
         <result property="attrGroupId" column="attr_group_id"/>
         <result property="attrGroupName" column="attr_group_name"/>

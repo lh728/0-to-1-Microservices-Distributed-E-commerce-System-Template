@@ -3,7 +3,10 @@ package com.ecommercesystemtemplate.product.service.impl;
 import com.ecommercesystemtemplate.product.dao.SkuSaleAttrValueDao;
 import com.ecommercesystemtemplate.product.entity.SkuSaleAttrValueEntity;
 import com.ecommercesystemtemplate.product.service.SkuSaleAttrValueService;
+import com.ecommercesystemtemplate.product.vo.SkuItemSaleAttrVo;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -23,6 +26,15 @@ public class SkuSaleAttrValueServiceImpl extends ServiceImpl<SkuSaleAttrValueDao
         );
 
         return new PageUtils(page);
+    }
+
+    @Override
+    public List<SkuItemSaleAttrVo> getSaleAttrsBySpuId(Long spuId) {
+
+        List<SkuItemSaleAttrVo> saleAttrVos =  this.baseMapper.getSaleAttrsBySpuId(spuId);
+
+        return saleAttrVos;
+
     }
 
 }

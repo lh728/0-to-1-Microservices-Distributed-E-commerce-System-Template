@@ -1,10 +1,13 @@
 package com.ecommercesystemtemplate.product;
 
 import com.ecommercesystemtemplate.product.dao.AttrGroupDao;
+import com.ecommercesystemtemplate.product.dao.SkuSaleAttrValueDao;
 import com.ecommercesystemtemplate.product.entity.BrandEntity;
 import com.ecommercesystemtemplate.product.service.AttrGroupService;
 import com.ecommercesystemtemplate.product.service.BrandService;
 import com.ecommercesystemtemplate.product.service.CategoryService;
+import com.ecommercesystemtemplate.product.service.SkuSaleAttrValueService;
+import com.ecommercesystemtemplate.product.vo.SkuItemSaleAttrVo;
 import com.ecommercesystemtemplate.product.vo.SpuItemAttrGroupVo;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -36,11 +39,16 @@ class ProductApplicationTests {
     @Autowired
     AttrGroupDao attrGroupDao;
 
+    @Autowired
+    SkuSaleAttrValueDao skuSaleAttrValueDao;
+
     @Test
     void testAttrGroupDao() {
-        List<SpuItemAttrGroupVo> attrGroupWithAttrsBySpuId =
-                attrGroupDao.getAttrGroupWithAttrsBySpuId(13L, 225L);
-        System.out.println(attrGroupWithAttrsBySpuId);
+//        List<SpuItemAttrGroupVo> attrGroupWithAttrsBySpuId =
+//                attrGroupDao.getAttrGroupWithAttrsBySpuId(13L, 225L);
+//        System.out.println(attrGroupWithAttrsBySpuId);
+        List<SkuItemSaleAttrVo> saleAttrsBySpuId = skuSaleAttrValueDao.getSaleAttrsBySpuId(13L);
+        System.out.println(saleAttrsBySpuId);
     }
 
     @Test

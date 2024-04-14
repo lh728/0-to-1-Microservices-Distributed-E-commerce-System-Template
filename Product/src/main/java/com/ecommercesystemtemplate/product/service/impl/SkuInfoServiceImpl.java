@@ -5,6 +5,7 @@ import com.ecommercesystemtemplate.product.entity.SkuImagesEntity;
 import com.ecommercesystemtemplate.product.entity.SkuInfoEntity;
 import com.ecommercesystemtemplate.product.entity.SpuInfoDescEntity;
 import com.ecommercesystemtemplate.product.service.*;
+import com.ecommercesystemtemplate.product.vo.SkuItemSaleAttrVo;
 import com.ecommercesystemtemplate.product.vo.SkuItemVo;
 import com.ecommercesystemtemplate.product.vo.SpuItemAttrGroupVo;
 import org.apache.commons.lang.StringUtils;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -27,11 +29,13 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
     final
     SpuInfoDescService spuInfoDescService;
     final AttrGroupService attrGroupService;
+    final SkuSaleAttrValueService skuSaleAttrValueService;
 
-    public SkuInfoServiceImpl(SkuImagesService skuImagesService, SpuInfoDescService spuInfoDescService, AttrGroupService attrGroupService) {
+    public SkuInfoServiceImpl(SkuImagesService skuImagesService, SpuInfoDescService spuInfoDescService, AttrGroupService attrGroupService, SkuSaleAttrValueService skuSaleAttrValueService) {
         this.skuImagesService = skuImagesService;
         this.spuInfoDescService = spuInfoDescService;
         this.attrGroupService = attrGroupService;
+        this.skuSaleAttrValueService = skuSaleAttrValueService;
     }
 
     @Override
@@ -81,7 +85,7 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
             }
         }
         IPage<SkuInfoEntity> page = this.page(
-                new Query<SkuInfoEntity>().getPage(params),wrapper
+                new Query<SkuInfoEntity>().getPage(params), wrapper
         );
 
         return new PageUtils(page);
@@ -103,12 +107,13 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
         Long catalogId = infoEntity.getCatalogId();
         Long spuId = infoEntity.getSpuId();
 
-
         // 2. get sku pic info
         List<SkuImagesEntity> images = skuImagesService.getImagesBySkuId(skuId);
         skuItemVo.setImages(images);
 
         // 3. get spu sale attr info
+        List<SkuItemSaleAttrVo> saleAttr = skuSaleAttrValueService.getSaleAttrsBySpuId(spuId);
+        skuItemVo.setSaleAttr(saleAttr);
 
         // 4. get spu desc info
         SpuInfoDescEntity desc = spuInfoDescService.getById(spuId);
@@ -118,7 +123,7 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
         List<SpuItemAttrGroupVo> groupAttrs = attrGroupService.getAttrGroupWithAttrsBySpuId(spuId, catalogId);
         skuItemVo.setGroupAttrs(groupAttrs);
 
-        return null;
+        return skuItemVo;
 
     }
 

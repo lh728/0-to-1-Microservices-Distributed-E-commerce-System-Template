@@ -3,7 +3,6 @@
 
 <mapper namespace="com.ecommercesystemtemplate.product.dao.SkuSaleAttrValueDao">
 
-	<!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="com.ecommercesystemtemplate.product.entity.SkuSaleAttrValueEntity" id="skuSaleAttrValueMap">
         <result property="id" column="id"/>
         <result property="skuId" column="sku_id"/>
@@ -12,6 +11,14 @@
         <result property="attrValue" column="attr_value"/>
         <result property="attrSort" column="attr_sort"/>
     </resultMap>
+    <select id="getSaleAttrsBySpuId" resultType="com.ecommercesystemtemplate.product.vo.SkuItemSaleAttrVo">
+        select ssav.`sku_id` attr_id, ssav.`attr_name` attr_name, GROUP_CONCAT(distinct ssav.`attr_value`) attr_values
+        from pms_sku_info info
+        left join pms_sku_sale_attr_value ssav on info.`sku_id` = ssav.`sku_id`
+        where info.`spu_id` = #{spuId}
+        group by ssav.`sku_id`, ssav.`attr_name`
+
+    </select>
 
 
 </mapper>
