@@ -6,9 +6,10 @@ import com.ecommercesystemtemplate.product.entity.AttrGroupEntity;
 import com.ecommercesystemtemplate.product.service.AttrGroupService;
 import com.ecommercesystemtemplate.product.service.AttrService;
 import com.ecommercesystemtemplate.product.vo.AttrGroupWithAttrsVo;
+import com.ecommercesystemtemplate.product.vo.SkuItemVo;
+import com.ecommercesystemtemplate.product.vo.SpuItemAttrGroupVo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -80,6 +81,14 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
             return attrGroupWithAttrsVo;
         }).toList();
         return result;
+
+    }
+
+    @Override
+    public List<SpuItemAttrGroupVo> getAttrGroupWithAttrsBySpuId(Long spuId, Long catalogId) {
+        // 1. get curr spu all artibute groups info and its attributes
+        List<SpuItemAttrGroupVo> vos = this.baseMapper.getAttrGroupWithAttrsBySpuId(spuId, catalogId);
+        return vos;
 
     }
 

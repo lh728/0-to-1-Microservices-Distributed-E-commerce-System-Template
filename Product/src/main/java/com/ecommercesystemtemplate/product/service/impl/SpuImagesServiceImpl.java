@@ -1,6 +1,7 @@
 package com.ecommercesystemtemplate.product.service.impl;
 
 import com.ecommercesystemtemplate.product.dao.SpuImagesDao;
+import com.ecommercesystemtemplate.product.entity.SkuImagesEntity;
 import com.ecommercesystemtemplate.product.entity.SpuImagesEntity;
 import com.ecommercesystemtemplate.product.service.SpuImagesService;
 import org.springframework.stereotype.Service;

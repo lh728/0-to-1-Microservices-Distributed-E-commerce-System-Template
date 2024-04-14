@@ -1,9 +1,12 @@
 package com.ecommercesystemtemplate.product.service.impl;
 
 import com.ecommercesystemtemplate.product.dao.SkuInfoDao;
+import com.ecommercesystemtemplate.product.entity.SkuImagesEntity;
 import com.ecommercesystemtemplate.product.entity.SkuInfoEntity;
-import com.ecommercesystemtemplate.product.service.SkuInfoService;
+import com.ecommercesystemtemplate.product.entity.SpuInfoDescEntity;
+import com.ecommercesystemtemplate.product.service.*;
 import com.ecommercesystemtemplate.product.vo.SkuItemVo;
+import com.ecommercesystemtemplate.product.vo.SpuItemAttrGroupVo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +22,17 @@ import com.ecommercesystemtemplate.common.utils.Query;
 
 @Service("skuInfoService")
 public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> implements SkuInfoService {
+    final
+    SkuImagesService skuImagesService;
+    final
+    SpuInfoDescService spuInfoDescService;
+    final AttrGroupService attrGroupService;
+
+    public SkuInfoServiceImpl(SkuImagesService skuImagesService, SpuInfoDescService spuInfoDescService, AttrGroupService attrGroupService) {
+        this.skuImagesService = skuImagesService;
+        this.spuInfoDescService = spuInfoDescService;
+        this.attrGroupService = attrGroupService;
+    }
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -84,14 +98,25 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
     public SkuItemVo item(Long skuId) {
         SkuItemVo skuItemVo = new SkuItemVo();
         // 1. get sku base info
+        SkuInfoEntity infoEntity = getById(skuId);
+        skuItemVo.setInfo(infoEntity);
+        Long catalogId = infoEntity.getCatalogId();
+        Long spuId = infoEntity.getSpuId();
+
 
         // 2. get sku pic info
+        List<SkuImagesEntity> images = skuImagesService.getImagesBySkuId(skuId);
+        skuItemVo.setImages(images);
 
         // 3. get spu sale attr info
 
         // 4. get spu desc info
+        SpuInfoDescEntity desc = spuInfoDescService.getById(spuId);
+        skuItemVo.setDescription(desc);
 
         // 5. get spu spec attr info
+        List<SpuItemAttrGroupVo> groupAttrs = attrGroupService.getAttrGroupWithAttrsBySpuId(spuId, catalogId);
+        skuItemVo.setGroupAttrs(groupAttrs);
 
         return null;
 

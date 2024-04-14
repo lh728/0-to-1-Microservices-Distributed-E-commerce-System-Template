@@ -2,6 +2,7 @@ package com.ecommercesystemtemplate.product.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ecommercesystemtemplate.common.utils.PageUtils;
+import com.ecommercesystemtemplate.product.entity.SkuImagesEntity;
 import com.ecommercesystemtemplate.product.entity.SpuImagesEntity;
 
 import java.util.List;

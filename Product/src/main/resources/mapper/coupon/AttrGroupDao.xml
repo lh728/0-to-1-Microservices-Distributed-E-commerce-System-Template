@@ -12,6 +12,22 @@
         <result property="icon" column="icon"/>
         <result property="catelogId" column="catelog_id"/>
     </resultMap>
+    <resultMap id="SpuItemAttrGroupVo" type="com.ecommercesystemtemplate.product.vo.SpuItemAttrGroupVo">
+        <result column="attr_group_name" property="groupName"/>
+        <collection property="attrs" ofType="com.ecommercesystemtemplate.product.vo.Attr" >
+            <result column="attr_name" property="attrName"/>
+            <result column="attr_value" property="attrValue"/>
+        </collection>
+    </resultMap>
+    <select id="getAttrGroupWithAttrsBySpuId"
+            resultMap="SpuItemAttrGroupVo">
+        select pav.`spu_id`, ag.`attr_group_id`, ag.`attr_group_name`, aar.`attr_id`, attr.`attr_name`, pav.`attr_value`
+        from pms_attr_group ag
+        left join pms_attr_attrgroup_relation aar on ag.`attr_group_id` = aar.`attr_group_id`
+        left join pms_attr attr on aar.`attr_id` = attr.`attr_id`
+        left join pms_product_attr_value pav on aar.`attr_id` = pav.`attr_id` and pav.`spu_id` = #{spuId}
+        where ag.`catelog_id` = #{catalogId}
+    </select>
 
 
 </mapper>
