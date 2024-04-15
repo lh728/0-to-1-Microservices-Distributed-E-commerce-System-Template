@@ -14,6 +14,8 @@ public class SkuItemVo {
     // 1. get sku base info
     SkuInfoEntity info;
 
+    Boolean hasStock = true;
+
     // 2. get sku pic info
     List<SkuImagesEntity> images;
 

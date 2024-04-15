@@ -12,11 +12,11 @@
         <result property="attrSort" column="attr_sort"/>
     </resultMap>
     <select id="getSaleAttrsBySpuId" resultType="com.ecommercesystemtemplate.product.vo.SkuItemSaleAttrVo">
-        select ssav.`sku_id` attr_id, ssav.`attr_name` attr_name, GROUP_CONCAT(distinct ssav.`attr_value`) attr_values
+        select ssav.`attr_id` attr_id, ssav.`attr_name` attr_name, GROUP_CONCAT(distinct ssav.`attr_value`) attr_values
         from pms_sku_info info
-        left join pms_sku_sale_attr_value ssav on info.`sku_id` = ssav.`sku_id`
+                 left join pms_sku_sale_attr_value ssav on info.`sku_id` = ssav.`sku_id`
         where info.`spu_id` = #{spuId}
-        group by ssav.`sku_id`, ssav.`attr_name`
+        group by ssav.`attr_id`, ssav.`attr_name`
 
     </select>
 
