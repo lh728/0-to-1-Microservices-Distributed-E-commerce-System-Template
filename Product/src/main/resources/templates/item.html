@@ -1276,9 +1276,25 @@
 	</script>
 	<script>
 		$(".sku_attr_value").click(function (){
-			// 1. get all checked tag attribute
+			// 1. add customer attribute to clicked tag
+			var skus = new Array();
+			$(this).addClass("clicked");
+			var curr = $(this).attr("skus").split(",");
+			skus.push(curr);
+			// 1.1 Remove all checked in the same line
+			$(this).parent().parent().find(".sku_attr_value").removeClass("checked");
+			$("a[class='sku_attr_value checked']").each(function (){
+				skus.push($(this).attr("skus").split(","));
+			})
 
 			// 2. Take intersection
+			var filterElement = skus[0];
+			for (var i = 1; i < skus.length; i ++){
+				filterElement = $(filterElement).filter(skus[i]);
+			}
+
+			location.href = "http://item.thellumall.com/" + filterElement[0] + ".html" ;
+
 		});
 		$(function (){
 			$(".sku_attr_value").parent().css({"border":"1px solid","color":"#ccc"});
