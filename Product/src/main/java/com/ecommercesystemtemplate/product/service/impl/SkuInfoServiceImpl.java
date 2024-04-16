@@ -1,5 +1,10 @@
 package com.ecommercesystemtemplate.product.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ecommercesystemtemplate.common.utils.PageUtils;
+import com.ecommercesystemtemplate.common.utils.Query;
 import com.ecommercesystemtemplate.product.dao.SkuInfoDao;
 import com.ecommercesystemtemplate.product.entity.SkuImagesEntity;
 import com.ecommercesystemtemplate.product.entity.SkuInfoEntity;
@@ -8,21 +13,20 @@ import com.ecommercesystemtemplate.product.service.*;
 import com.ecommercesystemtemplate.product.vo.SkuItemSaleAttrVo;
 import com.ecommercesystemtemplate.product.vo.SkuItemVo;
 import com.ecommercesystemtemplate.product.vo.SpuItemAttrGroupVo;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.ecommercesystemtemplate.common.utils.PageUtils;
-import com.ecommercesystemtemplate.common.utils.Query;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
 
 
 @Service("skuInfoService")
+@AllArgsConstructor
 public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> implements SkuInfoService {
     final
     SkuImagesService skuImagesService;
@@ -30,13 +34,8 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
     SpuInfoDescService spuInfoDescService;
     final AttrGroupService attrGroupService;
     final SkuSaleAttrValueService skuSaleAttrValueService;
+    final ThreadPoolExecutor executor;
 
-    public SkuInfoServiceImpl(SkuImagesService skuImagesService, SpuInfoDescService spuInfoDescService, AttrGroupService attrGroupService, SkuSaleAttrValueService skuSaleAttrValueService) {
-        this.skuImagesService = skuImagesService;
-        this.spuInfoDescService = spuInfoDescService;
-        this.attrGroupService = attrGroupService;
-        this.skuSaleAttrValueService = skuSaleAttrValueService;
-    }
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -99,29 +98,42 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
     }
 
     @Override
-    public SkuItemVo item(Long skuId) {
+    public SkuItemVo item(Long skuId) throws ExecutionException, InterruptedException {
         SkuItemVo skuItemVo = new SkuItemVo();
-        // 1. get sku base info
-        SkuInfoEntity infoEntity = getById(skuId);
-        skuItemVo.setInfo(infoEntity);
-        Long catalogId = infoEntity.getCatalogId();
-        Long spuId = infoEntity.getSpuId();
+
+        CompletableFuture<SkuInfoEntity> infoFuture = CompletableFuture.supplyAsync(() -> {
+            // 1. get sku base info
+            SkuInfoEntity infoEntity = getById(skuId);
+            skuItemVo.setInfo(infoEntity);
+            return infoEntity;
+        },executor);
+
+        CompletableFuture<Void> saleAttrFuture = infoFuture.thenAcceptAsync((res) -> {
+            // 3. get spu sale attr info
+            List<SkuItemSaleAttrVo> saleAttr = skuSaleAttrValueService.getSaleAttrsBySpuId(res.getSpuId());
+            skuItemVo.setSaleAttr(saleAttr);
+        }, executor);
+
+        CompletableFuture<Void> descrFuture = infoFuture.thenAcceptAsync((res) -> {
+            // 4. get spu desc info
+            SpuInfoDescEntity desc = spuInfoDescService.getById(res.getSpuId());
+            skuItemVo.setDescription(desc);
+        }, executor);
+
+        CompletableFuture<Void> specificationAttrFuture = infoFuture.thenAcceptAsync((res) -> {
+            // 5. get spu spec attr info
+            List<SpuItemAttrGroupVo> groupAttrs = attrGroupService.getAttrGroupWithAttrsBySpuId(res.getSpuId(), res.getCatalogId());
+            skuItemVo.setGroupAttrs(groupAttrs);
+        }, executor);
 
         // 2. get sku pic info
-        List<SkuImagesEntity> images = skuImagesService.getImagesBySkuId(skuId);
-        skuItemVo.setImages(images);
+        CompletableFuture<Void> imageFuture = CompletableFuture.runAsync(() -> {
+            List<SkuImagesEntity> images = skuImagesService.getImagesBySkuId(skuId);
+            skuItemVo.setImages(images);
+        }, executor);
 
-        // 3. get spu sale attr info
-        List<SkuItemSaleAttrVo> saleAttr = skuSaleAttrValueService.getSaleAttrsBySpuId(spuId);
-        skuItemVo.setSaleAttr(saleAttr);
-
-        // 4. get spu desc info
-        SpuInfoDescEntity desc = spuInfoDescService.getById(spuId);
-        skuItemVo.setDescription(desc);
-
-        // 5. get spu spec attr info
-        List<SpuItemAttrGroupVo> groupAttrs = attrGroupService.getAttrGroupWithAttrsBySpuId(spuId, catalogId);
-        skuItemVo.setGroupAttrs(groupAttrs);
+        // wait until all tasks are completed
+        CompletableFuture.allOf( saleAttrFuture, descrFuture, specificationAttrFuture, imageFuture).get();
 
         return skuItemVo;
 
