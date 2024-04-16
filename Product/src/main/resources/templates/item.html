@@ -596,10 +596,12 @@
 							<div class="box-attr clear" th:each="attr:${item.saleAttr}">
 								<dl>
 									<dt>Choose [[${attr.attrName}]]</dt>
-									<dd th:each="val:${#strings.listSplit(attr.attrValues,',')}">
-										<a href="/static/item/#">
+									<dd th:each="vals:${attr.attrValues}">
+										<a class="sku_attr_value"
+										   th:attr="skus=${vals.skuIds}, class = ${#lists.contains(#strings.listSplit(vals.skuIds,','),item.info.skuId.toString()) ?
+										    'sku_attr_value checked' : 'sku_attr_value'}">
 <!--											<img src="/static/item/img/59ddfcb1Nc3edb8f1.jpg" /> -->
-											[[${val}]]
+											[[${vals.attrValue}]]
 										</a>
 									</dd>
 								</dl>
@@ -814,7 +816,7 @@
 						</li>
 					</ul>
 
-					<!--商品详情-->
+					<!--Product Detail-->
 					<div class="huawei">
 						<ul class="xuanxiangka">
 							<li class="jieshoa actives" id="li1">
@@ -1271,6 +1273,17 @@
 	<script src="/static/item/js/jquery1.9.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/static/item/js/js.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
+	</script>
+	<script>
+		$(".sku_attr_value").click(function (){
+			// 1. get all checked tag attribute
+
+			// 2. Take intersection
+		});
+		$(function (){
+			$(".sku_attr_value").parent().css({"border":"1px solid","color":"#ccc"});
+			$("a[class='sku_attr_value checked']").parent().css({"border":"1px solid","color":"#e4393c"});
+		})
 	</script>
 
 </html>
