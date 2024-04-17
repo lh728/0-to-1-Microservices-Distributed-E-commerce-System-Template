@@ -47,6 +47,11 @@
 #          predicates:
 #            - Host=search.thellumall.com
 #
+#        - id: thellumall_auth_route
+#          uri: lb://auth
+#          predicates:
+#            - Host=auth.thellumall.com
+#
 ### front end use api prefix
 #    nacos:
 #      discovery:
