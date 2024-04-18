@@ -8,6 +8,7 @@ package com.ecommercesystemtemplate.common.exception;
     3. exception description:
         10: common
             001: validation exception
+            002: verification code frequency exception
         11: product
         12: order
         13: cart
@@ -18,7 +19,8 @@ public enum BizCodeEnume {
 
     UNKNOWN_EXCEPTION(10000, "Unknown exception"),
     VALID_EXCEPTION(10001, "Validation exception"),
-    PRODUCT_TO_LIST_FAILED(11000, "Commodity data to list failed");
+    PRODUCT_TO_LIST_FAILED(11000, "Commodity data to list failed"),
+    SMS_CODE_EXCEPTION(10002, "Get verification code too frequently");
 
     private Integer code;
     private String message;
