@@ -5,6 +5,9 @@ import com.aliyun.oss.common.auth.CredentialsProviderFactory;
 import com.aliyun.oss.common.auth.EnvironmentVariableCredentialsProvider;
 import com.aliyun.oss.model.PutObjectRequest;
 import com.aliyun.oss.model.PutObjectResult;
+import com.ecommercesystemtemplate.thirdparty.component.SmsComponent;
+import com.ecommercesystemtemplate.thirdparty.utils.HttpUtils;
+import org.apache.http.HttpResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -13,12 +16,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 @SpringBootTest
 class ThirdPartyApplicationTests {
 
 	@Resource
 	OSSClient ossClient;
+
+	@Resource
+	SmsComponent smsComponent;
 
 	@Test
 	void contextLoads() {
@@ -64,6 +72,36 @@ class ThirdPartyApplicationTests {
 				ossClient.shutdown();
 			}
 		}
+	}
+
+	@Test
+	public void testSMS(){
+		String host = "http://gyytz.market.alicloudapi.com";
+		String path = "/sms/smsSend";
+		String method = "POST";
+		String appcode = "your own APPcode";
+		Map<String, String> headers = new HashMap<String, String>();
+		//header format: Authorization:APPCODE 83359fd73fe94948385f570e3c139105
+		headers.put("Authorization", "APPCODE " + appcode);
+		Map<String, String> querys = new HashMap<String, String>();
+		querys.put("mobile", "mobile");
+		querys.put("param", "**code**:12345,**minute**:5");
+		querys.put("smsSignId", "2e65b1bb3d054466b82f0c9d125465e2");
+		querys.put("templateId", "908e94ccf08b4476ba6c876d13f084ad");
+		Map<String, String> bodys = new HashMap<String, String>();
+
+		try {
+			HttpResponse response = HttpUtils.doPost(host, path, method, headers, querys, bodys);
+			System.out.println(response.toString());
+			//System.out.println(EntityUtils.toString(response.getEntity()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	public void testSendSms(){
+		smsComponent.sendSms("your phone number", "12345");
 	}
 
 }

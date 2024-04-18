@@ -5,6 +5,19 @@
 #        server-addr: 127.0.0.1:8848
 #    util:
 #      enabled: false
+#    alicloud:
+#      access-key: your-access-key
+#      secret-key: your-secret-key
+#      oss:
+#        endpoint: oss-cn-beijing.aliyuncs.com
+#        bucket: 0-to-1-microservices-distributed-e-commerce-system-template
+#      sms:
+#        host: http://gyytz.market.alicloudapi.com
+#        path: /sms/smsSend
+#        appcode: your-appcode
+#        smsSignId: your-smsSignId
+#        templateId: your-templateId
+#
 #  application:
 #    name: thirdParty
 #server:
