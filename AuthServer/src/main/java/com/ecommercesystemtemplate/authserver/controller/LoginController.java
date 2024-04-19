@@ -1,18 +1,26 @@
 package com.ecommercesystemtemplate.authserver.controller;
 
 import com.ecommercesystemtemplate.authserver.feign.ThirdPartyFeignService;
+import com.ecommercesystemtemplate.authserver.vo.UserRegistVo;
 import com.ecommercesystemtemplate.common.constant.AuthServerConstant;
 import com.ecommercesystemtemplate.common.exception.BizCodeEnume;
 import com.ecommercesystemtemplate.common.utils.R;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.validation.Valid;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Controller
 public class LoginController {
@@ -47,6 +55,25 @@ public class LoginController {
         thirdPartyFeignService.sendCode(phone,code);
         return R.ok();
 
+    }
+
+    /**
+     * register successfully then redirect to login page
+     * @return
+     */
+    @PostMapping("/register")
+    public String register(@Valid UserRegistVo vo, BindingResult result, RedirectAttributes redirectAttributes){
+        if (result.hasErrors()){
+            Map<String,String> errors = result.getFieldErrors().stream().collect(
+                    Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage)
+            );
+            redirectAttributes.addFlashAttribute("errors",errors);
+            return "redirect:http://auth.thellumall.com/register.html";
+        }
+        // register, use feign to call third party service to send verification code
+
+
+        return "redirect:/login.html";
     }
 
 }

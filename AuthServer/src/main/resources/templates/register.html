@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 
 	<head>
 		<meta charset="utf-8" />
@@ -5009,45 +5009,53 @@ Cookie</span>是由网页服务器存放在您的访问设备上的文本文件�
 			</div>
 		</header>
 		<section>
-			<form action="" class="one">
+			<form action="/register" method="post" class="one">
 				<div class="register-box">
-					<label for="username" class="username_label">用 户 名
-			<input maxlength="20" type="text" placeholder="您的用户名和登录名" >
+					<label class="username_label">USERNAME
+						<input maxlength="20" type="text" placeholder="YOUR USERNAME" name="userName">
+					</label>
+					<div class="tips" style="color: red"
+						 th:text="${errors != null ? (#maps.containsKey(errors,'userName') ? errors.userName: '') : '' }">
+
+					</div>
+				</div>
+				<div class="register-box">
+					<label class="other_label">PASSWORD
+						<input maxlength="20" type="password" placeholder="At least two character" name="password">
+					</label>
+					<div class="tips" style="color: red"
+						 th:text="${errors != null ? (#maps.containsKey(errors,'password') ? errors.password: '') : '' }">
+
+					</div>
+				</div>
+				<div class="register-box">
+					<label class="other_label">CONFIRM PASSWORD
+						<input maxlength="20" type="password" placeholder="Please enter password again">
 					</label>
 					<div class="tips">
 
 					</div>
 				</div>
 				<div class="register-box">
-					<label for="username" class="other_label">设 置 密 码
-			<input maxlength="20" type="password" placeholder="建议至少使用两种字符组合">
-			</label>
-					<div class="tips">
+					<label class="other_label">
+						<span>CHINA 0086∨</span>
+						<input class="phone" id="phoneNumber" maxlength="20" type="text" name="phone"
+							   placeholder="recommended to use a commonly used mobile phone">
+					</label>
+					<div class="tips" style="color: red"
+						 th:text="${errors != null ? (#maps.containsKey(errors,'phone') ? errors.phone: '') : '' }">
 
 					</div>
 				</div>
 				<div class="register-box">
-					<label for="username" class="other_label">确 认 密 码
-			<input maxlength="20" type="password" placeholder="请再次输入密码">
-			</label>
-					<div class="tips">
-
-					</div>
-				</div>
-				<div class="register-box">
-					<label for="username" class="other_label">
-			<span>中国 0086∨</span>
-			<input class="phone" id="phoneNumber" maxlength="20" type="text" placeholder="recommended to use a commonly used mobile phone">
-			</label>
-					<div class="tips">
-
-					</div>
-				</div>
-				<div class="register-box">
-					<label for="username" class="other_label">验 证 码
-			<input maxlength="20" type="text" placeholder="请输入验证码" class="caa">
-			</label>
+					<label class="other_label">VERIFICATION CODE
+						<input maxlength="20" type="text" placeholder="Please input verification code" class="caa" name="code">
+					</label>
 					<a id="sendCode"> Send the verification code </a>
+					<div class="tips" style="color: red"
+						 th:text="${errors != null ? (#maps.containsKey(errors,'code') ? errors.code: '') : '' }">
+
+					</div>
 				</div>
 				<div class="arguement">
 					<input type="checkbox" id="xieyi"> 阅读并同意
@@ -5056,9 +5064,9 @@ Cookie</span>是由网页服务器存放在您的访问设备上的文本文件�
 					<div class="tips">
 
 					</div>
-					<br />
+					<br/>
 					<div class="submit_btn">
-						<button type="submit" id="submit_btn">立 即 注 册</button>
+						<button type="submit" id="submit_btn">REGISTER NOW</button>
 					</div>
 				</div>
 
@@ -5242,37 +5250,37 @@ Cookie</span>是由网页服务器存放在您的访问设备上的文本文件�
 						}
 					})
 					//	提交按钮
-				$("#submit_btn").click(function(e) {
-					for(var j = 0; j < 5; j++) {
-						if($('input').eq(j).val().length == 0) {
-							$('input').eq(j).focus();
-							if(j == 4) {
-								$('input').eq(j).parent().next().next("div").text("此处不能为空");
-								$('input').eq(j).parent().next().next("div").css("color", 'red');
-								e.preventDefault();
-								return;
-							}
-							$('input').eq(j).parent().next(".tips").text("此处不能为空");
-							$('input').eq(j).parent().next(".tips").css("color", 'red');
-							e.preventDefault();
-							return;
-						}
-					}
-					//协议
-					if($("#xieyi")[0].checked) {
-						//向变量stuList数组添加一个数值，数值内部格式Student(name,password,tel,id)
-						//发送用户信息
-						stuList.push(new Student($('input').eq(0).val(), $('input').eq(1).val(), $('input').eq(3).val(), stuList.length + 1));
-						localStorage.setItem('stuList', JSON.stringify(stuList));
-						alert("注册成功");
-						window.open("userlist.html", "_blank");
-					} else {
-						$("#xieyi").next().next().next(".tips").text("请勾选协议");
-						$("#xieyi").next().next().next(".tips").css("color", 'red');
-						e.preventDefault();
-						return;
-					}
-				})
+				// $("#submit_btn").click(function(e) {
+				// 	for(var j = 0; j < 5; j++) {
+				// 		if($('input').eq(j).val().length == 0) {
+				// 			$('input').eq(j).focus();
+				// 			if(j == 4) {
+				// 				$('input').eq(j).parent().next().next("div").text("此处不能为空");
+				// 				$('input').eq(j).parent().next().next("div").css("color", 'red');
+				// 				e.preventDefault();
+				// 				return;
+				// 			}
+				// 			$('input').eq(j).parent().next(".tips").text("此处不能为空");
+				// 			$('input').eq(j).parent().next(".tips").css("color", 'red');
+				// 			e.preventDefault();
+				// 			return;
+				// 		}
+				// 	}
+				// 	//协议
+				// 	if($("#xieyi")[0].checked) {
+				// 		//向变量stuList数组添加一个数值，数值内部格式Student(name,password,tel,id)
+				// 		//发送用户信息
+				// 		stuList.push(new Student($('input').eq(0).val(), $('input').eq(1).val(), $('input').eq(3).val(), stuList.length + 1));
+				// 		localStorage.setItem('stuList', JSON.stringify(stuList));
+				// 		alert("注册成功");
+				// 		window.open("userlist.html", "_blank");
+				// 	} else {
+				// 		$("#xieyi").next().next().next(".tips").text("请勾选协议");
+				// 		$("#xieyi").next().next().next(".tips").css("color", 'red');
+				// 		e.preventDefault();
+				// 		return;
+				// 	}
+				// })
 
 				//  建立构造函数，构造学生信息模板
 				function Student(name, password, tel, id) {
