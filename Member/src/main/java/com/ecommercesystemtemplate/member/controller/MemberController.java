@@ -1,20 +1,14 @@
 package com.ecommercesystemtemplate.member.controller;
 
-import java.util.Arrays;
-import java.util.Map;
-
-import com.ecommercesystemtemplate.member.feign.CouponFeignService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.ecommercesystemtemplate.member.entity.MemberEntity;
-import com.ecommercesystemtemplate.member.service.MemberService;
 import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.common.utils.R;
+import com.ecommercesystemtemplate.member.entity.MemberEntity;
+import com.ecommercesystemtemplate.member.service.MemberService;
+import com.ecommercesystemtemplate.member.vo.MemberRegistVo;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.Map;
 
 
 
@@ -28,8 +22,26 @@ import com.ecommercesystemtemplate.common.utils.R;
 @RestController
 @RequestMapping("member/member")
 public class MemberController {
-    @Autowired
-    private MemberService memberService;
+    private final MemberService memberService;
+
+    public MemberController(MemberService memberService) {
+        this.memberService = memberService;
+    }
+
+    /**
+     * register
+     */
+    @PostMapping("/register")
+    public R register(@RequestBody MemberRegistVo member){
+        try {
+            memberService.register(member);
+        } catch (Exception e) {
+            return R.error();
+        }
+
+        return R.ok();
+    }
+
 
     /**
      * list

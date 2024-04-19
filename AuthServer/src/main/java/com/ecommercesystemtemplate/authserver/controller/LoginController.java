@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -70,7 +71,30 @@ public class LoginController {
             redirectAttributes.addFlashAttribute("errors",errors);
             return "redirect:http://auth.thellumall.com/register.html";
         }
-        // register, use feign to call third party service to send verification code
+        // 1. check verification code
+        String code = stringRedisTemplate.opsForValue().get(AuthServerConstant.SMS_CODE_CACHE_PREFIX + vo.getPhone());
+        if (StringUtils.isNotEmpty(code)) {
+            if (code.split("_")[0].equals(vo.getCode())) {
+                // delete verification code after verification
+                stringRedisTemplate.delete(AuthServerConstant.SMS_CODE_CACHE_PREFIX + vo.getPhone());
+                // register, use feign to call third party service
+
+
+
+                return "redirect:/login.html";
+            } else {
+                Map<String,String> errors = new HashMap<>();
+                errors.put("code","Verification code has expired or is incorrect, please try again" );
+                redirectAttributes.addFlashAttribute("errors", errors);
+                return "redirect:http://auth.thellumall.com/register.html";
+            }
+        } else {
+            // check failed redirect to register page
+            Map<String,String> errors = new HashMap<>();
+            errors.put("code","Verification code has expired or is incorrect, please try again" );
+            redirectAttributes.addFlashAttribute("errors", errors);
+            return "redirect:http://auth.thellumall.com/register.html";
+        }
 
 
         return "redirect:/login.html";
