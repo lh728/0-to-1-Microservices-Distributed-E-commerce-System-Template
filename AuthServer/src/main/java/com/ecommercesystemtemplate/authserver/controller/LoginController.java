@@ -3,7 +3,8 @@ package com.ecommercesystemtemplate.authserver.controller;
 import com.alibaba.fastjson.TypeReference;
 import com.ecommercesystemtemplate.authserver.feign.MemberFeignService;
 import com.ecommercesystemtemplate.authserver.feign.ThirdPartyFeignService;
-import com.ecommercesystemtemplate.authserver.vo.UserRegistVo;
+import com.ecommercesystemtemplate.authserver.vo.UserLoginVo;
+import com.ecommercesystemtemplate.authserver.vo.UserRegisterVo;
 import com.ecommercesystemtemplate.common.constant.AuthServerConstant;
 import com.ecommercesystemtemplate.common.exception.BizCodeEnume;
 import com.ecommercesystemtemplate.common.utils.R;
@@ -69,7 +70,7 @@ public class LoginController {
      * @return
      */
     @PostMapping("/register")
-    public String register(@Valid UserRegistVo vo, BindingResult result, RedirectAttributes redirectAttributes){
+    public String register(@Valid UserRegisterVo vo, BindingResult result, RedirectAttributes redirectAttributes){
         if (result.hasErrors()){
             Map<String,String> errors = result.getFieldErrors().stream().collect(
                     Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage)
@@ -107,8 +108,23 @@ public class LoginController {
             redirectAttributes.addFlashAttribute("errors", errors);
             return "redirect:http://auth.thellumall.com/register.html";
         }
+    }
 
+    @PostMapping("/login")
+    public String login(UserLoginVo vo, RedirectAttributes redirectAttributes){
+        // call member service to login
+        R r = memberFeignService.login(vo);
+        if (r.getCode() == 0){
+            return "redirect:http://thellumall.com";
+        } else {
+            Map<String,String> errors = new HashMap<>();
+            errors.put("msg",r.getData("msg",new TypeReference<String>(){}));
+            redirectAttributes.addFlashAttribute("errors", errors);
+            return "redirect:http://auth.thellumall.com/login.html";
+        }
 
     }
+
+
 
 }

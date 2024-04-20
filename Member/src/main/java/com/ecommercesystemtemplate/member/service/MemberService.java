@@ -5,6 +5,7 @@ import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.member.entity.MemberEntity;
 import com.ecommercesystemtemplate.member.exception.PhoneExistException;
 import com.ecommercesystemtemplate.member.exception.UserNameExistException;
+import com.ecommercesystemtemplate.member.vo.MemberLoginVo;
 import com.ecommercesystemtemplate.member.vo.MemberRegistVo;
 
 import java.util.Map;
@@ -25,5 +26,7 @@ public interface MemberService extends IService<MemberEntity> {
     void checkUsernameUnique(String username) throws UserNameExistException;
 
     void checkPhoneUnique(String phone) throws PhoneExistException;
+
+    MemberEntity login(MemberLoginVo vo);
 }
 

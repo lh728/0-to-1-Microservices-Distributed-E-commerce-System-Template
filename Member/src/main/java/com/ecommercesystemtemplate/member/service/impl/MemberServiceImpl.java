@@ -12,6 +12,7 @@ import com.ecommercesystemtemplate.member.entity.MemberLevelEntity;
 import com.ecommercesystemtemplate.member.exception.PhoneExistException;
 import com.ecommercesystemtemplate.member.exception.UserNameExistException;
 import com.ecommercesystemtemplate.member.service.MemberService;
+import com.ecommercesystemtemplate.member.vo.MemberLoginVo;
 import com.ecommercesystemtemplate.member.vo.MemberRegistVo;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -78,6 +79,28 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         Integer mobile = this.baseMapper.selectCount(new QueryWrapper<MemberEntity>().eq("mobile", phone));
         if (mobile > 0){
             throw new PhoneExistException();
+        }
+    }
+
+    @Override
+    public MemberEntity login(MemberLoginVo vo) {
+        String loginAccount = vo.getLoginAccount();
+        String password = vo.getPassword();
+
+        // query the database to retrieve the user password
+        MemberEntity memberEntity = this.baseMapper.selectOne(new QueryWrapper<MemberEntity>().eq("username", loginAccount).or().eq("mobile", loginAccount));
+        if (memberEntity != null){
+            BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+            boolean matches = bCryptPasswordEncoder.matches(password, memberEntity.getPassword());
+            if (matches){
+                return memberEntity;
+            }else {
+                // if the password does not match, return null
+                return null;
+            }
+        }else {
+            // if the user does not exist, return null
+            return null;
         }
     }
 

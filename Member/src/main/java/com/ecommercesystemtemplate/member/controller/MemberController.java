@@ -7,6 +7,7 @@ import com.ecommercesystemtemplate.member.entity.MemberEntity;
 import com.ecommercesystemtemplate.member.exception.PhoneExistException;
 import com.ecommercesystemtemplate.member.exception.UserNameExistException;
 import com.ecommercesystemtemplate.member.service.MemberService;
+import com.ecommercesystemtemplate.member.vo.MemberLoginVo;
 import com.ecommercesystemtemplate.member.vo.MemberRegistVo;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,6 +45,15 @@ public class MemberController {
             return R.error(BizCodeEnume.USER_EXIST_EXCEPTION.getCode(), BizCodeEnume.USER_EXIST_EXCEPTION.getMessage());
         }
         return R.ok();
+    }
+    @PostMapping("/login")
+    public R login(@RequestBody MemberLoginVo vo){
+        MemberEntity entity = memberService.login(vo);
+        if (entity != null) {
+            return R.ok().put("member", entity);
+        } else {
+            return R.error(BizCodeEnume.LOGIN_EXCEPTION.getCode(), BizCodeEnume.LOGIN_EXCEPTION.getMessage());
+        }
     }
 
 

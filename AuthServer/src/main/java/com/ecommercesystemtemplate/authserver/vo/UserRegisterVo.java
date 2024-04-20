@@ -10,7 +10,7 @@ import javax.validation.constraints.Pattern;
  * @author lhjls
  */
 @Data
-public class UserRegistVo {
+public class UserRegisterVo {
 
     @NotEmpty(message = "Username cannot be empty")
     @Length(min = 6, max = 18, message = "Username must be between 6 and 18 characters")

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 	<head>
 		<meta charset="utf-8" />
 		<link rel="stylesheet" type="text/css" href="/static/login/JD_sass/JD1.css" />
@@ -55,22 +55,30 @@
 				<div class="si_bom1 tab" style="display: none;">
 					<div class="error">
 						<div></div>
-						请输入账户名和密码
+						Please Input Your Account Name And Password
 					</div>
-					<ul>
-						<li class="top_1">
-							<img src="/static/login/JD_img/user_03.png" class="err_img1" />
-							<input type="text" placeholder=" 邮箱/用户名/已验证手机" class="user" />
-						</li>
-						<li>
-							<img src="/static/login/JD_img/user_06.png" class="err_img2" />
-							<input type="password" placeholder=" 密码" class="password" />
-						</li>
-						<li class="bri">
-							<a href="/static/login/">忘记密码</a>
-						</li>
-						<li class="ent"><button class="btn2"><a class="a">登 &nbsp; &nbsp;录</a></button></li>
-					</ul>
+					<form action="/login" method="post">
+						<div style="color: red"
+							 th:text="${errors != null ? (#maps.containsKey(errors,'msg') ? errors.msg: '') : '' }">
+						</div>
+						<ul>
+							<li class="top_1">
+								<img src="/static/login/JD_img/user_03.png" class="err_img1"/>
+								<input type="text" name="loginAccount"
+									   placeholder=" Username / Verified phone number" class="user"/>
+							</li>
+							<li>
+								<img src="/static/login/JD_img/user_06.png" class="err_img2"/>
+								<input type="password" name="password" placeholder=" Password" class="password"/>
+							</li>
+							<li class="bri">
+								<a href="/static/login/">Forget ur Password?</a>
+							</li>
+							<li class="ent">
+								<button class="btn2" type="submit"><a >LOGIN</a></button>
+							</li>
+						</ul>
+					</form>
 				</div>
 				<div class="si_out">
 					<ul>

@@ -23,7 +23,9 @@ public enum BizCodeEnume {
     PRODUCT_TO_LIST_FAILED(11000, "Commodity data to list failed"),
     SMS_CODE_EXCEPTION(10002, "Get verification code too frequently"),
     USER_EXIST_EXCEPTION(15001, "User already exists"),
-    PHONE_EXIST_EXCEPTION(15002, "Phone number already exists");
+    PHONE_EXIST_EXCEPTION(15002, "Phone number already exists"),
+    LOGIN_EXCEPTION(15003, "Login failed, incorrect username or password");
+
 
     private Integer code;
     private String message;
