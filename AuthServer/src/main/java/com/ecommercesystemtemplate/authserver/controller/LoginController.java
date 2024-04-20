@@ -1,5 +1,7 @@
 package com.ecommercesystemtemplate.authserver.controller;
 
+import com.alibaba.fastjson.TypeReference;
+import com.ecommercesystemtemplate.authserver.feign.MemberFeignService;
 import com.ecommercesystemtemplate.authserver.feign.ThirdPartyFeignService;
 import com.ecommercesystemtemplate.authserver.vo.UserRegistVo;
 import com.ecommercesystemtemplate.common.constant.AuthServerConstant;
@@ -28,10 +30,12 @@ public class LoginController {
 
     final ThirdPartyFeignService thirdPartyFeignService;
     final StringRedisTemplate stringRedisTemplate;
+    final MemberFeignService memberFeignService;
 
-    public LoginController(ThirdPartyFeignService thirdPartyFeignService, StringRedisTemplate stringRedisTemplate) {
+    public LoginController(ThirdPartyFeignService thirdPartyFeignService, StringRedisTemplate stringRedisTemplate, MemberFeignService memberFeignService) {
         this.thirdPartyFeignService = thirdPartyFeignService;
         this.stringRedisTemplate = stringRedisTemplate;
+        this.memberFeignService = memberFeignService;
     }
 
     @GetMapping("/sms/sendCode")
@@ -50,8 +54,10 @@ public class LoginController {
             }
         }
         // 3. ckeck code( redis )
-        String code = UUID.randomUUID().toString().substring(0, 5) + "_" + System.currentTimeMillis();
-        stringRedisTemplate.opsForValue().set(AuthServerConstant.SMS_CODE_CACHE_PREFIX +phone,code,10, TimeUnit.MINUTES);
+        String code = UUID.randomUUID().toString().substring(0, 5);
+        String substring = code + "_" + System.currentTimeMillis();
+        System.out.println("send code: " + code);
+        stringRedisTemplate.opsForValue().set(AuthServerConstant.SMS_CODE_CACHE_PREFIX +phone,substring,10, TimeUnit.MINUTES);
 
         thirdPartyFeignService.sendCode(phone,code);
         return R.ok();
@@ -78,10 +84,16 @@ public class LoginController {
                 // delete verification code after verification
                 stringRedisTemplate.delete(AuthServerConstant.SMS_CODE_CACHE_PREFIX + vo.getPhone());
                 // register, use feign to call third party service
+                R r = memberFeignService.register(vo);
+                if (r.getCode() == 0) {
 
-
-
-                return "redirect:/login.html";
+                    return "redirect:http://auth.thellumall.com/login.html";
+                } else {
+                    Map<String,String> errors = new HashMap<>();
+                    errors.put("msg",r.getData("msg",new TypeReference<String>(){}));
+                    redirectAttributes.addFlashAttribute("errors", errors);
+                    return "redirect:http://auth.thellumall.com/register.html";
+                }
             } else {
                 Map<String,String> errors = new HashMap<>();
                 errors.put("code","Verification code has expired or is incorrect, please try again" );
@@ -97,7 +109,6 @@ public class LoginController {
         }
 
 
-        return "redirect:/login.html";
     }
 
 }

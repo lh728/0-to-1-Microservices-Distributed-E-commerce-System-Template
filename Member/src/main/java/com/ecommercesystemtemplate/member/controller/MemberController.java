@@ -1,8 +1,11 @@
 package com.ecommercesystemtemplate.member.controller;
 
+import com.ecommercesystemtemplate.common.exception.BizCodeEnume;
 import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.common.utils.R;
 import com.ecommercesystemtemplate.member.entity.MemberEntity;
+import com.ecommercesystemtemplate.member.exception.PhoneExistException;
+import com.ecommercesystemtemplate.member.exception.UserNameExistException;
 import com.ecommercesystemtemplate.member.service.MemberService;
 import com.ecommercesystemtemplate.member.vo.MemberRegistVo;
 import org.springframework.web.bind.annotation.*;
@@ -35,10 +38,11 @@ public class MemberController {
     public R register(@RequestBody MemberRegistVo member){
         try {
             memberService.register(member);
-        } catch (Exception e) {
-            return R.error();
+        } catch (PhoneExistException e) {
+            return R.error(BizCodeEnume.PHONE_EXIST_EXCEPTION.getCode(), BizCodeEnume.PHONE_EXIST_EXCEPTION.getMessage());
+        } catch (UserNameExistException e) {
+            return R.error(BizCodeEnume.USER_EXIST_EXCEPTION.getCode(), BizCodeEnume.USER_EXIST_EXCEPTION.getMessage());
         }
-
         return R.ok();
     }
 

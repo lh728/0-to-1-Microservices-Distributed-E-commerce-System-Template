@@ -5010,13 +5010,15 @@ Cookie</span>是由网页服务器存放在您的访问设备上的文本文件�
 		</header>
 		<section>
 			<form action="/register" method="post" class="one">
+				<div class="tips" style="color: red"
+					 th:text="${errors != null ? (#maps.containsKey(errors,'msg') ? errors.msg: '') : '' }">
+				</div>
 				<div class="register-box">
 					<label class="username_label">USERNAME
 						<input maxlength="20" type="text" placeholder="YOUR USERNAME" name="userName">
 					</label>
 					<div class="tips" style="color: red"
 						 th:text="${errors != null ? (#maps.containsKey(errors,'userName') ? errors.userName: '') : '' }">
-
 					</div>
 				</div>
 				<div class="register-box">
@@ -5025,7 +5027,6 @@ Cookie</span>是由网页服务器存放在您的访问设备上的文本文件�
 					</label>
 					<div class="tips" style="color: red"
 						 th:text="${errors != null ? (#maps.containsKey(errors,'password') ? errors.password: '') : '' }">
-
 					</div>
 				</div>
 				<div class="register-box">
@@ -5044,7 +5045,6 @@ Cookie</span>是由网页服务器存放在您的访问设备上的文本文件�
 					</label>
 					<div class="tips" style="color: red"
 						 th:text="${errors != null ? (#maps.containsKey(errors,'phone') ? errors.phone: '') : '' }">
-
 					</div>
 				</div>
 				<div class="register-box">
@@ -5054,7 +5054,6 @@ Cookie</span>是由网页服务器存放在您的访问设备上的文本文件�
 					<a id="sendCode"> Send the verification code </a>
 					<div class="tips" style="color: red"
 						 th:text="${errors != null ? (#maps.containsKey(errors,'code') ? errors.code: '') : '' }">
-
 					</div>
 				</div>
 				<div class="arguement">

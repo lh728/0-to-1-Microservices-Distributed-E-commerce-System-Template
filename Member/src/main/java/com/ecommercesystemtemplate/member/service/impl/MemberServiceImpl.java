@@ -62,8 +62,6 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
 
         // set other default values
 
-
-
         this.baseMapper.insert(memberEntity);
     }
 
