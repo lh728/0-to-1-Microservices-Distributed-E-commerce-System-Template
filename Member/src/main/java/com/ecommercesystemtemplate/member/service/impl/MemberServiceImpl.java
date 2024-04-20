@@ -13,6 +13,7 @@ import com.ecommercesystemtemplate.member.exception.PhoneExistException;
 import com.ecommercesystemtemplate.member.exception.UserNameExistException;
 import com.ecommercesystemtemplate.member.service.MemberService;
 import com.ecommercesystemtemplate.member.vo.MemberRegistVo;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -54,7 +55,12 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         checkPhoneUnique(member.getPhone());
         checkUsernameUnique(member.getUserName());
 
-        // set password (Encrypted storage)
+        // set password (Encrypted storage MD5 hashing with salt)
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        String encode = bCryptPasswordEncoder.encode(member.getPassword());
+        memberEntity.setPassword(encode);
+
+        // set other default values
 
 
 
