@@ -71,6 +71,9 @@ create table ums_member
    growth               int comment 'growth',
    status               tinyint comment 'status',
    create_time          datetime comment 'create_time',
+   social_uid           varchar(255) COMMENT 'social account uid',
+   access_token         varchar(255) COMMENT 'social account access token',
+   expires_in           varchar(255) COMMENT 'social account access token visit time',
    primary key (id)
 );
 

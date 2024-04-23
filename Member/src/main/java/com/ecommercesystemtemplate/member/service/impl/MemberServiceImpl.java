@@ -1,8 +1,11 @@
 package com.ecommercesystemtemplate.member.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ecommercesystemtemplate.common.utils.HttpUtils;
 import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.common.utils.Query;
 import com.ecommercesystemtemplate.member.dao.MemberDao;
@@ -14,9 +17,13 @@ import com.ecommercesystemtemplate.member.exception.UserNameExistException;
 import com.ecommercesystemtemplate.member.service.MemberService;
 import com.ecommercesystemtemplate.member.vo.MemberLoginVo;
 import com.ecommercesystemtemplate.member.vo.MemberRegistVo;
+import com.ecommercesystemtemplate.member.vo.SocialUser;
+import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -101,6 +108,49 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         }else {
             // if the user does not exist, return null
             return null;
+        }
+    }
+
+    @Override
+    public MemberEntity login(SocialUser vo) throws Exception {
+        // combine login and registration logic
+        String uid = vo.getUid();
+        // 1. check if the user has logged in before
+        MemberEntity memberEntity = this.baseMapper.selectOne(new QueryWrapper<MemberEntity>().eq("social_uid", uid));
+        if (memberEntity != null){
+            MemberEntity entity = new MemberEntity();
+            entity.setId(memberEntity.getId());
+            entity.setAccessToken(vo.getAccess_token());
+            entity.setExpireTime(vo.getExpires_in());
+
+            this.baseMapper.updateById(entity);
+            memberEntity.setAccessToken(vo.getAccess_token());
+            memberEntity.setExpireTime(vo.getExpires_in());
+            return memberEntity;
+        } else {
+            // 2. register
+            MemberEntity entity = new MemberEntity();
+            try{
+                // 3. query current social account information
+                Map<String,String> queryMap = new HashMap<>();
+                queryMap.put("access_token",vo.getAccess_token());
+                queryMap.put("social_uid",vo.getUid());
+                HttpResponse response = HttpUtils.doGet("https://api.weibo.com", "/2/users/show.json", "get", new HashMap<String, String>(), queryMap);
+                if (response.getStatusLine().getStatusCode() == 200){
+                    String json = EntityUtils.toString(response.getEntity());
+                    JSONObject jsonObject = JSON.parseObject(json);
+                    String name = jsonObject.getString("name");
+                    String gender = jsonObject.getString("gender");
+                    entity.setNickname(name);
+                    entity.setGender(gender.equals("m") ? 1 : 0);
+                }
+            }catch (Exception e){
+            }
+            entity.setSocialUid(vo.getUid());
+            entity.setAccessToken(vo.getAccess_token());
+            entity.setExpireTime(vo.getExpires_in());
+            this.baseMapper.insert(entity);
+            return entity;
         }
     }
 

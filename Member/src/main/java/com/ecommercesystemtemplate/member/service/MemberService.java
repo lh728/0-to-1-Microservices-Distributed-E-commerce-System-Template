@@ -7,6 +7,7 @@ import com.ecommercesystemtemplate.member.exception.PhoneExistException;
 import com.ecommercesystemtemplate.member.exception.UserNameExistException;
 import com.ecommercesystemtemplate.member.vo.MemberLoginVo;
 import com.ecommercesystemtemplate.member.vo.MemberRegistVo;
+import com.ecommercesystemtemplate.member.vo.SocialUser;
 
 import java.util.Map;
 
@@ -28,5 +29,7 @@ public interface MemberService extends IService<MemberEntity> {
     void checkPhoneUnique(String phone) throws PhoneExistException;
 
     MemberEntity login(MemberLoginVo vo);
+
+    MemberEntity login(SocialUser vo) throws Exception;
 }
 

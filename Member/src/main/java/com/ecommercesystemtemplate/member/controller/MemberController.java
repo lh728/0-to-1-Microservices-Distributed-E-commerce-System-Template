@@ -9,6 +9,7 @@ import com.ecommercesystemtemplate.member.exception.UserNameExistException;
 import com.ecommercesystemtemplate.member.service.MemberService;
 import com.ecommercesystemtemplate.member.vo.MemberLoginVo;
 import com.ecommercesystemtemplate.member.vo.MemberRegistVo;
+import com.ecommercesystemtemplate.member.vo.SocialUser;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -31,6 +32,24 @@ public class MemberController {
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
     }
+
+    /**
+     * social login
+     * @param vo
+     * @return
+     */
+    @PostMapping("/oauth2/login")
+    public R login(@RequestBody SocialUser vo){
+        MemberEntity entity = memberService.login(vo);
+        if (entity != null) {
+            return R.ok().put("member", entity);
+        } else {
+            return R.error(BizCodeEnume.LOGIN_EXCEPTION.getCode(), BizCodeEnume.LOGIN_EXCEPTION.getMessage());
+        }
+    }
+
+
+
 
     /**
      * register

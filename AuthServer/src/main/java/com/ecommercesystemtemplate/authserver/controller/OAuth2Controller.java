@@ -1,7 +1,10 @@
 package com.ecommercesystemtemplate.authserver.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.ecommercesystemtemplate.authserver.vo.SocialUser;
 import com.ecommercesystemtemplate.common.utils.HttpUtils;
 import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,7 +25,16 @@ public class OAuth2Controller {
         map.put("code",code);
         HttpResponse post = HttpUtils.doPost("api.weibo.com",
                 "/oauth2/access_token", "POST", null, null, map);
+        if(post.getStatusLine().getStatusCode() == 200){
+            String s = EntityUtils.toString(post.getEntity());
+            SocialUser socialUser = JSON.parseObject(s, SocialUser.class);
+            // 1.1 if user first in, then register automatically
 
+
+
+        } else {
+            return "redirect:http://thellumall.com/login.html";
+        }
 
 
         // 2. if success, jump to front page

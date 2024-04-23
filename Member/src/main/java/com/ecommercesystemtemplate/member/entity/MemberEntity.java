@@ -2,14 +2,14 @@ package com.ecommercesystemtemplate.member.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
-import lombok.Data;
 
 /**
  * member
- * 
+ *
  * @author thel.lu
  * @email lhjlslw@gmail.com
  * @date 2023-11-20 21:28:50
@@ -92,5 +92,16 @@ public class MemberEntity implements Serializable {
 	 * create_time
 	 */
 	private Date createTime;
-
+	/**
+	 * social_uid
+	 */
+	private String socialUid;
+	/**
+	 * access_token
+	 */
+	private String accessToken;
+	/**
+	 * expire_time
+	 */
+	private Long expireTime;
 }
