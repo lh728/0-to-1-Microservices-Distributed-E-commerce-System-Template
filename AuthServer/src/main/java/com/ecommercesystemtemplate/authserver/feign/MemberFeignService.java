@@ -1,5 +1,6 @@
 package com.ecommercesystemtemplate.authserver.feign;
 
+import com.ecommercesystemtemplate.authserver.vo.SocialUser;
 import com.ecommercesystemtemplate.authserver.vo.UserLoginVo;
 import com.ecommercesystemtemplate.authserver.vo.UserRegisterVo;
 import com.ecommercesystemtemplate.common.utils.R;
@@ -15,6 +16,9 @@ public interface MemberFeignService {
 
     @PostMapping("/member/member/login")
     R login(@RequestBody UserLoginVo vo );
+
+    @PostMapping("/member/member/oauth2/login")
+    R oauthLogin(@RequestBody SocialUser vo) throws  Exception;
 
 
 }

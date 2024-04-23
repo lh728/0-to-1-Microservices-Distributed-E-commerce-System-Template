@@ -39,7 +39,7 @@ public class MemberController {
      * @return
      */
     @PostMapping("/oauth2/login")
-    public R login(@RequestBody SocialUser vo){
+    public R oauthLogin(@RequestBody SocialUser vo) throws Exception {
         MemberEntity entity = memberService.login(vo);
         if (entity != null) {
             return R.ok().put("member", entity);
