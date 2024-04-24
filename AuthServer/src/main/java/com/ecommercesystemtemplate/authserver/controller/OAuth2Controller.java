@@ -14,6 +14,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 
 @Controller
@@ -27,7 +29,7 @@ public class OAuth2Controller {
     }
 
     @GetMapping("/oauth2/weibo/success")
-    public String weibo(@RequestParam("code") String code) throws Exception {
+    public String weibo(@RequestParam("code") String code, HttpSession session, HttpServletResponse response) throws Exception {
         // 1. get accessToken
         HashMap<String, String> map = new HashMap<>();
         map.put("client_id","your_id");
@@ -45,6 +47,10 @@ public class OAuth2Controller {
             if (r.getCode() == 0){
                 MemberResponseVo data = r.getData("data", new TypeReference<MemberResponseVo>() {
                 });
+                // 1.2 first use session, save cookie
+                session.setAttribute("loginUser", data);
+                response.addCookie(MemberFeignService.setCookie("user-key", data.getId().toString()));
+
                 // 2. if success, jump to front page
                 return "redirect:http://thellumall.com";
             }else {
