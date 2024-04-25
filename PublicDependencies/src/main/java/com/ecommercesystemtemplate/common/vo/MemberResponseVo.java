@@ -1,11 +1,15 @@
-package com.ecommercesystemtemplate.authserver.vo;
+package com.ecommercesystemtemplate.common.vo;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 
+/**
+ * @author lhjls
+ */
 @Data
-public class MemberResponseVo {
+public class MemberResponseVo implements Serializable {
 
     private Long id;
     /**

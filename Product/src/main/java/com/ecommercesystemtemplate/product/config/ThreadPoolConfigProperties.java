@@ -1,4 +1,4 @@
-package com.ecommercesystemtemplate.product;
+package com.ecommercesystemtemplate.product.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

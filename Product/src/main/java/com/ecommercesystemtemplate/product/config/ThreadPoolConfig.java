@@ -1,6 +1,5 @@
 package com.ecommercesystemtemplate.product.config;
 
-import com.ecommercesystemtemplate.product.ThreadPoolConfigProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

@@ -39,6 +39,8 @@
 #      time-to-live: 60000
 #      use-key-prefix: true
 #      cache-null-values: true
+#  session:
+#    store-type: redis
 #
 #mybatis-plus:
 #  mapper-locations: classpath:/mapper/**/*.xml

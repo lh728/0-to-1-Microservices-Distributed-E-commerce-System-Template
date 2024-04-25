@@ -3,7 +3,7 @@ package com.ecommercesystemtemplate.authserver.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.ecommercesystemtemplate.authserver.feign.MemberFeignService;
-import com.ecommercesystemtemplate.authserver.vo.MemberResponseVo;
+import com.ecommercesystemtemplate.common.vo.MemberResponseVo;
 import com.ecommercesystemtemplate.authserver.vo.SocialUser;
 import com.ecommercesystemtemplate.common.utils.HttpUtils;
 import com.ecommercesystemtemplate.common.utils.R;
@@ -49,7 +49,7 @@ public class OAuth2Controller {
                 });
                 // 1.2 first use session, save cookie
                 session.setAttribute("loginUser", data);
-                response.addCookie(MemberFeignService.setCookie("user-key", data.getId().toString()));
+//                response.addCookie(MemberFeignService.setCookie("user-key", data.getId().toString()));
 
                 // 2. if success, jump to front page
                 return "redirect:http://thellumall.com";
