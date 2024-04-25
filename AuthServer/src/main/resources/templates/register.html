@@ -5223,17 +5223,17 @@ Cookie</span>是由网页服务器存放在您的访问设备上的文本文件�
 				code();
 				$("#code").click(code);
 				//	验证码验证
-				$('input').eq(4).blur(function() {
-						if($(this).val().length == 0) {
-							$(this).parent().next().next("div").text("");
-							$(this).parent().next().next("div").css("color", '#ccc');
-						} else if($(this).val().toUpperCase() != $("#code").text().toUpperCase()) {
-							$(this).parent().next().next("div").text("验证码不正确");
-							$(this).parent().next().next("div").css("color", 'red');
-						} else {
-							$(this).parent().next().next("div").text("");
-						}
-					})
+				// $('input').eq(4).blur(function() {
+				// 		if($(this).val().length == 0) {
+				// 			$(this).parent().next().next("div").text("");
+				// 			$(this).parent().next().next("div").css("color", '#ccc');
+				// 		} else if($(this).val().toUpperCase() != $("#code").text().toUpperCase()) {
+				// 			$(this).parent().next().next("div").text("验证码不正确");
+				// 			$(this).parent().next().next("div").css("color", 'red');
+				// 		} else {
+				// 			$(this).parent().next().next("div").text("");
+				// 		}
+				// 	})
 					//	提交按钮
 				// $("#submit_btn").click(function(e) {
 				// 	for(var j = 0; j < 5; j++) {

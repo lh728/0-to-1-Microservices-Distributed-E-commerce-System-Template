@@ -94,7 +94,7 @@
             </b>
             <ul>
                 <li>
-                    <a href="http://auth.thellumall.com/login.html">Please log in [[${session.loginUser.nickname}}]]</a>
+                    <a href="http://auth.thellumall.com/login.html">Please log in [[${session.loginUser == null? '':session.loginUser.nickname}]]</a>
                 </li>
                 <li>
                     <a href="http://auth.thellumall.com/register.html" class="li_2">sign up</a>

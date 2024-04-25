@@ -121,11 +121,11 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
             MemberEntity entity = new MemberEntity();
             entity.setId(memberEntity.getId());
             entity.setAccessToken(vo.getAccess_token());
-            entity.setExpireTime(vo.getExpires_in());
+            entity.setExpiresIn(vo.getExpires_in());
 
             this.baseMapper.updateById(entity);
             memberEntity.setAccessToken(vo.getAccess_token());
-            memberEntity.setExpireTime(vo.getExpires_in());
+            memberEntity.setExpiresIn(vo.getExpires_in());
             return memberEntity;
         } else {
             // 2. register
@@ -148,7 +148,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
             }
             entity.setSocialUid(vo.getUid());
             entity.setAccessToken(vo.getAccess_token());
-            entity.setExpireTime(vo.getExpires_in());
+            entity.setExpiresIn(vo.getExpires_in());
             this.baseMapper.insert(entity);
             return entity;
         }

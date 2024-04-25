@@ -103,5 +103,5 @@ public class MemberEntity implements Serializable {
 	/**
 	 * expire_time
 	 */
-	private Long expireTime;
+	private Long expiresIn;
 }
