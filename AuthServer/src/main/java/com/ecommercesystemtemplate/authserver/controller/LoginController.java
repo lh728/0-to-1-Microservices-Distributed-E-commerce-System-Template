@@ -8,6 +8,7 @@ import com.ecommercesystemtemplate.authserver.vo.UserRegisterVo;
 import com.ecommercesystemtemplate.common.constant.AuthServerConstant;
 import com.ecommercesystemtemplate.common.exception.BizCodeEnume;
 import com.ecommercesystemtemplate.common.utils.R;
+import com.ecommercesystemtemplate.common.vo.MemberResponseVo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
@@ -111,10 +113,11 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String login(UserLoginVo vo, RedirectAttributes redirectAttributes){
+    public String login(UserLoginVo vo, RedirectAttributes redirectAttributes, HttpSession session){
         // call member service to login
         R r = memberFeignService.login(vo);
         if (r.getCode() == 0){
+            session.setAttribute(AuthServerConstant.LOGIN_USER, r.getData("data",new TypeReference<MemberResponseVo>(){}));
             return "redirect:http://thellumall.com";
         } else {
             Map<String,String> errors = new HashMap<>();

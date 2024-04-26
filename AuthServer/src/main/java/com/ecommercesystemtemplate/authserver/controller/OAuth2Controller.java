@@ -3,6 +3,7 @@ package com.ecommercesystemtemplate.authserver.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.ecommercesystemtemplate.authserver.feign.MemberFeignService;
+import com.ecommercesystemtemplate.common.constant.AuthServerConstant;
 import com.ecommercesystemtemplate.common.vo.MemberResponseVo;
 import com.ecommercesystemtemplate.authserver.vo.SocialUser;
 import com.ecommercesystemtemplate.common.utils.HttpUtils;
@@ -48,7 +49,7 @@ public class OAuth2Controller {
                 MemberResponseVo data = r.getData("data", new TypeReference<MemberResponseVo>() {
                 });
                 // 1.2 first use session, save cookie
-                session.setAttribute("loginUser", data);
+                session.setAttribute(AuthServerConstant.LOGIN_USER, data);
 //                response.addCookie(MemberFeignService.setCookie("user-key", data.getId().toString()));
 
                 // 2. if success, jump to front page

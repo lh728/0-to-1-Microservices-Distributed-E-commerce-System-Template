@@ -94,10 +94,11 @@
             </b>
             <ul>
                 <li>
-                    <a href="http://auth.thellumall.com/login.html">Please log in [[${session.loginUser == null? '':session.loginUser.nickname}]]</a>
+                    <a th:if="${session.loginUser != null}">Welcome, [[${session.loginUser.nickname}]]</a>
+                    <a href="http://auth.thellumall.com/login.html" th:if="${session.loginUser == null}"> Please log in </a>
                 </li>
                 <li>
-                    <a href="http://auth.thellumall.com/register.html" class="li_2">sign up</a>
+                    <a th:if="${session.loginUser == null}" href="http://auth.thellumall.com/register.html" class="li_2">sign up</a>
                 </li>
                 <span>|</span>
                 <li>
