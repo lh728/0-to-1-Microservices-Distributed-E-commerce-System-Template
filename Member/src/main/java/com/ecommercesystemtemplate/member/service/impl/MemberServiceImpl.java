@@ -58,6 +58,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         memberEntity.setMobile(member.getPhone());
         // set username attr
         memberEntity.setUsername(member.getUserName());
+        memberEntity.setNickname(member.getUserName());
 
         // check username and phonenumber uniqueness
         checkPhoneUnique(member.getPhone());

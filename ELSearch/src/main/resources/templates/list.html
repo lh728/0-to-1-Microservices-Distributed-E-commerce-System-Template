@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -64,10 +64,13 @@
         </b>
         <ul>
             <li>
-                <a href="/static/search/#" class="li_2">你好，请登录</a>
+                <a href="http://auth.thellumall.com/login.html" th:if="${session.loginUser == null}" class="li_2">
+                    Hi, please log in</a>
+                <a th:else class="li_2" style="width: 100px">[[${session.loginUser.nickname}]]</a>
             </li>
             <li>
-                <a href="/static/search/#">免费注册</a>
+                <a th:if="${session.loginUser == null}" href="http://auth.thellumall.com/register.html">
+                    Free Sign Up</a>
             </li>
             <span>|</span>
             <li>

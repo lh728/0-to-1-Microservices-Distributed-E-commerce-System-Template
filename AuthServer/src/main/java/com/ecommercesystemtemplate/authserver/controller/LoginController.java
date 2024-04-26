@@ -125,8 +125,16 @@ public class LoginController {
             redirectAttributes.addFlashAttribute("errors", errors);
             return "redirect:http://auth.thellumall.com/login.html";
         }
-
     }
+
+    @GetMapping("/login.html")
+    public String loginPage(HttpSession session){
+        if (session.getAttribute(AuthServerConstant.LOGIN_USER) != null){
+            return "redirect:http://thellumall.com";
+        }
+        return "login";
+    }
+
 
 
 
