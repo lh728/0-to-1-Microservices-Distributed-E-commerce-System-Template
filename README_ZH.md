@@ -266,13 +266,13 @@ cd ../
 vi nginx.conf
 ```
 
-进入thellumall.conf，修改server_name为thellumall.com等等需要的域名，删除location大括号中的内容，改为 如下所示：
+进入thellumall.conf，修改server_name为*.thellumall.com（后面是你的域名）再用空格分隔开域名，删除location大括号中的内容，改为 如下所示：
 
 ```shell
 server {
     listen       80;
     listen  [::]:80;
-    server_name  thellumall.com search.thellumall.com;
+    server_name  *.thellumall.com thellumall.com;
 
     #access_log  /var/log/nginx/host.access.log  main;
 
@@ -753,7 +753,9 @@ public class CorsConfig implements WebMvcConfigurer {
 
 <br>
 
-### OSS
+### 第三方服务
+
+#### OSS
 
 由于地域问题，目前选择使用阿里云开通OSS对象存储，将作为分布式系统的云文件存储器使用，存储图片等信息。（也可以使用AWS S3)
 
@@ -892,11 +894,156 @@ public class OssController {
 
 
 
+#### 手机验证码
+
+由于地域问题，目前选择使用阿里云开通云市场，以支持发送手机验证码的功能。
+
+详细内容可以参考：https://marketplace.alibabacloud.com/?spm=a3c0i.7911826.6791778070.33.64ca3870uyf5vW#!
+
+购买成功后可以获得对应的短信验证码接口，具体支持的API接口详情见购买后内容。举例而言，我选择的API调用的请求地址为：http://gyytz.market.alicloudapi.com，通过POST请求调用，通过APPCODE的方式进行身份验证。
+
+详细代码参见ThirdParty服务内置代码：
+
+```java
+@Component
+@Data
+@ConfigurationProperties(prefix = "spring.cloud.alicloud.sms")
+public class SmsComponent {
+
+    private String host;
+    private String path;
+    private String smsSignId;
+    private String templateId;
+    private String appcode;
+    public void sendSms(String phoneNumber, String message) {
+        String method = "POST";
+        String appcode = "your own APPcode";
+        Map<String, String> headers = new HashMap<String, String>();
+        //header format: Authorization:APPCODE 83359fd73fe94948385f570e3c139105
+        headers.put("Authorization", "APPCODE " + appcode);
+        Map<String, String> querys = new HashMap<String, String>();
+        querys.put("mobile", phoneNumber);
+        // message : "**code**:12345,**minute**:5"
+        querys.put("param", message);
+        querys.put("smsSignId", smsSignId);
+        querys.put("templateId", templateId);
+        Map<String, String> bodys = new HashMap<String, String>();
+
+        try {
+            HttpResponse response = HttpUtils.doPost(host, path, method, headers, querys, bodys);
+            System.out.println(response.toString());
+            //System.out.println(EntityUtils.toString(response.getEntity()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+该方法提供SmsComponent以供其他微服务使用发送验证码功能。
+
 
 
 ### ELSearch
 
-这里除了elasticSearch相关的配置与远程调用之外，还有关于商城搜索页的前端代码，和Product
+有关Product数据库的建索引语句如下：
+
+```json
+PUT product
+{
+  "mappings": {
+    "properties": {
+      "skuId": {
+        "type": "long"
+      },
+      "spuId": {
+        "type": "keyword"
+      },
+      "skuTitle": {
+        "type": "text"
+      },
+      "skuPrice": {
+        "type": "keyword"
+      },
+      "skuImage": {
+        "type": "keyword"
+      },
+      "saleCount": {
+        "type": "long"
+      },
+      "hasStock": {
+        "type": "boolean"
+      },
+      "hotScore": {
+        "type": "long"
+      },
+      "brandId": {
+        "type": "long"
+      },
+      "catalogId": {
+        "type": "long"
+      },
+      "brandName": {
+        "type": "keyword"
+      },
+      "brandImg": {
+        "type": "keyword"
+      },
+      "catalogName": {
+        "type": "keyword"
+      },
+      "attrs": {
+        "type": "nested",
+        "properties": {
+          "attrId": {
+            "type": "long"
+          },
+          "attrName": {
+            "type": "keyword"
+          },
+          "attrValue":{
+            "type": "keyword"
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+
+
+这里除了elasticSearch相关的配置与远程调用之外，还有关于商城搜索页的前端代码，和首页跳转搜索页的部分逻辑代码。
+
+商城搜索页如下所示：
+
+
+
+
+
+这里实现了当搜索商品时，相关的业务和代码逻辑，包括与ES进行交互的信息。
+
+
+
+### AuthServer
+
+这里是有关安全认证的微服务。主要用于注册页和登录页相关的业务逻辑，存储密码采用的MD5+盐值加密，手机验证码远程调用ThridParty服务的接口，还涉及整合SpringSession对分布式session处理，以处理登录问题。
+
+注册页如下：
+
+
+
+登录页如下：
+
+
+
+同时还使用OAuth 2.0 支持社交网站登录。目前支持的登录方式只有微博，可以基于此功能进行其他社交网站登录功能的开发，流程都差不多。处理思路大致如下：
+
+<img src="C:\Users\lhjls\AppData\Roaming\Typora\typora-user-images\image-20240422102826744.png" alt="image-20240422102826744" style="zoom: 50%;" />
+
+
+
+
 
 
 
@@ -1015,6 +1162,16 @@ SPU管理的路由是product/spu。SPU管理是管理发布的产品SPU的地方
 微服务对应的前端内容放置在Static文件夹下，使用thymelaef作为模板引擎。注意这里的内容全都注释掉了，仅用于展示，实际使用只需要解除注释，按照安装Nginx的指示，把静态资源放在nginx中即可（不包括index.html)。
 
 这里存放商城首页，如下图所示：
+
+
+
+
+
+### Cart
+
+购物车服务
+
+
 
 
 
