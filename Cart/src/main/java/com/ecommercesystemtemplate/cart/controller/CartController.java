@@ -12,9 +12,14 @@ public class CartController {
     public String cartListPage(){
         // get userinfo fast
         UserInfoTo userInfoTo = CartInterceptor.threadLocal.get();
-
+        System.out.println(userInfoTo);
 
         return "cartList";
+    }
+
+    @GetMapping("/addToCart")
+    public String addToCart(){
+        return "success";
     }
 
 }
