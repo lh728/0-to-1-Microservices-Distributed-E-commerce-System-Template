@@ -66,7 +66,7 @@
             <li>
                 <a href="http://auth.thellumall.com/login.html" th:if="${session.loginUser == null}" class="li_2">
                     Hi, please log in</a>
-                <a th:else class="li_2" style="width: 100px">[[${session.loginUser.nickname}]]</a>
+                <a th:if="${session.loginUser != null}" class="li_2" style="width: 100px">[[${session.loginUser.nickname}]]</a>
             </li>
             <li>
                 <a th:if="${session.loginUser == null}" href="http://auth.thellumall.com/register.html">

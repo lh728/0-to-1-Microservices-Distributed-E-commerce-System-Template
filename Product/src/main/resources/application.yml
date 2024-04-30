@@ -41,6 +41,11 @@
 #      cache-null-values: true
 #  session:
 #    store-type: redis
+#thellumall:
+#  thread:
+#    max-size: 200
+#    core-size: 20
+#    keep-alive-time: 10
 #
 #mybatis-plus:
 #  mapper-locations: classpath:/mapper/**/*.xml
@@ -53,4 +58,6 @@
 #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 #server:
 #  port: 10000
+#
+#
 #

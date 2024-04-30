@@ -60,7 +60,7 @@
 							<li style="border: 0;">
 								<a href="http://auth.thellumall.com/login.html" th:if="${session.loginUser == null}" class="aa">
 									Hi, please log in</a>
-								<a th:else class="aa" style="width: 100px">[[${session.loginUser.nickname}]]</a>
+								<a th:if="${session.loginUser != null}" class="aa" style="width: 100px">[[${session.loginUser.nickname}]]</a>
 							</li>
 							<li><a th:if="${session.loginUser == null}" href="http://auth.thellumall.com/register.html" style="color: red;">
 								Free Sign Up</a> |</li>
@@ -616,7 +616,7 @@
 
 						<div class="box-btns clear">
 							<div class="box-btns-one">
-								<input type="text" name="" id="" value="1" />
+								<input type="text" name="" id="numInput" value="1" />
 								<div class="box-btns-one1">
 
 									<div>
@@ -633,7 +633,7 @@
 								</div>
 							</div>
 							<div class="box-btns-two">
-								<a href="http://cart.thellumall.com/addToCart">
+								<a href="#" id="addToCartA" th:attr="skuId=${item.info.skuId}">
 									Add to Cart
 								</a>
 							</div>
@@ -1305,6 +1305,14 @@
 			$(".sku_attr_value").parent().css({"border":"1px solid","color":"#ccc"});
 			$("a[class='sku_attr_value checked']").parent().css({"border":"1px solid","color":"#e4393c"});
 		})
+
+		$("#addToCartA").click(function (){
+			var num = $("#numInput").val();
+			var skuId = $(this).attr("skuId");
+			location.href = "http://cart.thellumall.com/addToCart?skuId=" + skuId +"&num=" + num;
+			return false;
+		});
+
 	</script>
 
 </html>

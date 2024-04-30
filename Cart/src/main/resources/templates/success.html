@@ -67,19 +67,19 @@
                 <div class="mc success-cont">
                     <div class="success-lcol">
                         <div class="success-top"><b class="succ-icon"></b>
-                            <h3 class="ftx-02">商品已成功加入购物车</h3></div>
+                            <h3 class="ftx-02">The product has been successfully added to the shopping cart</h3></div>
                         <div class="p-item">
                             <div class="p-img">
                                 <a href="/static/cart/javascript:;" target="_blank"><img
-                                        style="height: 60px;width:60px;" src="/static/cart/img/shop1.jpg"></a>
+                                        style="height: 60px;width:60px;" th:src="${item.image}"></a>
                             </div>
                             <div class="p-info">
                                 <div class="p-name">
-                                    <a href="/static/cart/'http://item.gmall.com/'+${skuInfo?.id}+'.html'"
-                                       text="${skuInfo?.skuName}">TCL 55A950C 55英寸32核人工智能
-                                        HDR曲面超薄4K电视金属机身（枪色）</a>
+                                    <a th:href="'http://item.thellumall.com/' + ${item.skuId} + '.html'" target="_blank"
+                                       th:text="${item.title}">
+                                    </a>
                                 </div>
-                                <div class="p-extra"><span class="txt" text="'数量：'+${skuNum}">  数量：1</span></div>
+                                <div class="p-extra"><span class="txt" th:text="'NUMBER：'+${item.count}">  NUMBER：1</span></div>
                             </div>
                             <div class="clr"></div>
                         </div>
@@ -91,7 +91,7 @@
                         <div class="clr"></div>
                         <div class="bg_shop">
                             <a class="btn-tobback"
-                               href="http://item.thellumall.com/1.html">Detail</a>
+                               th:href="'http://item.thellumall.com/' + ${item.skuId} + '.html'">Detail</a>
                             <a class="btn-addtocart" href="http://cart.thellumall.com/cart.html"
                                id="GotoShoppingCart"><b></b>Checkout</a>
                         </div>

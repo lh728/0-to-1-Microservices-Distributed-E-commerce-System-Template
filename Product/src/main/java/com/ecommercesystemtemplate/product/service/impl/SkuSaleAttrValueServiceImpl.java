@@ -1,5 +1,10 @@
 package com.ecommercesystemtemplate.product.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ecommercesystemtemplate.common.utils.PageUtils;
+import com.ecommercesystemtemplate.common.utils.Query;
 import com.ecommercesystemtemplate.product.dao.SkuSaleAttrValueDao;
 import com.ecommercesystemtemplate.product.entity.SkuSaleAttrValueEntity;
 import com.ecommercesystemtemplate.product.service.SkuSaleAttrValueService;
@@ -8,11 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.ecommercesystemtemplate.common.utils.PageUtils;
-import com.ecommercesystemtemplate.common.utils.Query;
 
 
 @Service("skuSaleAttrValueService")
@@ -34,6 +34,13 @@ public class SkuSaleAttrValueServiceImpl extends ServiceImpl<SkuSaleAttrValueDao
         List<SkuItemSaleAttrVo> saleAttrVos =  this.baseMapper.getSaleAttrsBySpuId(spuId);
 
         return saleAttrVos;
+
+    }
+
+    @Override
+    public List<String> getSkuSaleAttrValuesAsString(Long skuId) {
+
+        return this.baseMapper.getSkuSaleAttrValuesAsString(skuId);
 
     }
 

@@ -1,19 +1,14 @@
 package com.ecommercesystemtemplate.product.app;
 
-import java.util.Arrays;
-import java.util.Map;
-
-import com.ecommercesystemtemplate.product.entity.SkuSaleAttrValueEntity;
-import com.ecommercesystemtemplate.product.service.SkuSaleAttrValueService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.common.utils.R;
+import com.ecommercesystemtemplate.product.entity.SkuSaleAttrValueEntity;
+import com.ecommercesystemtemplate.product.service.SkuSaleAttrValueService;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 
 
@@ -27,11 +22,20 @@ import com.ecommercesystemtemplate.common.utils.R;
 @RestController
 @RequestMapping("product/skusaleattrvalue")
 public class SkuSaleAttrValueController {
-    @Autowired
-    private SkuSaleAttrValueService skuSaleAttrValueService;
+    private final SkuSaleAttrValueService skuSaleAttrValueService;
+
+    public SkuSaleAttrValueController(SkuSaleAttrValueService skuSaleAttrValueService) {
+        this.skuSaleAttrValueService = skuSaleAttrValueService;
+    }
+
+    @GetMapping("/stringList/{skuId}")
+    public List<String> getSkuSaleAttrValues(@PathVariable("skuId") Long skuId){
+        List<String> strings = skuSaleAttrValueService.getSkuSaleAttrValuesAsString(skuId);
+        return strings;
+    }
 
     /**
-     * 列表
+     * list
      */
     @RequestMapping("/list")
     public R list(@RequestParam Map<String, Object> params){
@@ -42,7 +46,7 @@ public class SkuSaleAttrValueController {
 
 
     /**
-     * 信息
+     * info
      */
     @RequestMapping("/info/{id}")
     public R info(@PathVariable("id") Long id){
@@ -52,7 +56,7 @@ public class SkuSaleAttrValueController {
     }
 
     /**
-     * 保存
+     * save
      */
     @RequestMapping("/save")
     public R save(@RequestBody SkuSaleAttrValueEntity skuSaleAttrValue){
@@ -62,7 +66,7 @@ public class SkuSaleAttrValueController {
     }
 
     /**
-     * 修改
+     * update
      */
     @RequestMapping("/update")
     public R update(@RequestBody SkuSaleAttrValueEntity skuSaleAttrValue){
@@ -72,7 +76,7 @@ public class SkuSaleAttrValueController {
     }
 
     /**
-     * 删除
+     * delete
      */
     @RequestMapping("/delete")
     public R delete(@RequestBody Long[] ids){
