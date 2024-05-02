@@ -40,31 +40,43 @@ public class CartServiceImpl implements CartService{
     public CartItem addToCart(Long skuId, Integer num) throws ExecutionException, InterruptedException {
 
         BoundHashOperations cartOps = getCartOps();
-        CartItem cartItem = new CartItem();
-        CompletableFuture<Void> getSkuInfoTask = CompletableFuture.runAsync(() -> {
-            // 1. remote query curr product info
-            R info = productFeignService.info(skuId);
-            SkuInfoVo skuInfo = info.getData("skuInfo", new TypeReference<SkuInfoVo>() {
-            });
-            // 2. add product to cart
-            cartItem.setCheck(true);
-            cartItem.setCount(num);
-            cartItem.setImage(skuInfo.getSkuDefaultImg());
-            cartItem.setTitle(skuInfo.getSkuTitle());
-            cartItem.setSkuId(skuId);
-            cartItem.setPrice(skuInfo.getPrice());
-        }, threadPoolExecutor);
+        // check if the product is already in the cart
+        String cartItemJson = (String) cartOps.get(skuId.toString());
 
-        // 3. remote query sku attr
-        CompletableFuture<Void> getSkuSaleAttrValuesTask = CompletableFuture.runAsync(() -> {
-            List<String> skuSaleAttrValues = productFeignService.getSkuSaleAttrValues(skuId);
-            cartItem.setSkuAttr(skuSaleAttrValues);
-        }, threadPoolExecutor);
+        if (cartItemJson != null){
+            // 1. product already in the cart, increase the quantity
+            CartItem cartItem = JSON.parseObject(cartItemJson, CartItem.class);
+            cartItem.setCount(cartItem.getCount() + num);
+            cartOps.put(skuId.toString(), JSON.toJSONString(cartItem));
+            return cartItem;
+        } else{
+            CartItem cartItem = new CartItem();
+            CompletableFuture<Void> getSkuInfoTask = CompletableFuture.runAsync(() -> {
+                // 1. remote query curr product info
+                R info = productFeignService.info(skuId);
+                SkuInfoVo skuInfo = info.getData("skuInfo", new TypeReference<SkuInfoVo>() {
+                });
+                // 2. add product to cart
+                cartItem.setCheck(true);
+                cartItem.setCount(num);
+                cartItem.setImage(skuInfo.getSkuDefaultImg());
+                cartItem.setTitle(skuInfo.getSkuTitle());
+                cartItem.setSkuId(skuId);
+                cartItem.setPrice(skuInfo.getPrice());
+            }, threadPoolExecutor);
 
-        CompletableFuture.allOf(getSkuInfoTask, getSkuSaleAttrValuesTask).get();
+            // 3. remote query sku attr
+            CompletableFuture<Void> getSkuSaleAttrValuesTask = CompletableFuture.runAsync(() -> {
+                List<String> skuSaleAttrValues = productFeignService.getSkuSaleAttrValues(skuId);
+                cartItem.setSkuAttr(skuSaleAttrValues);
+            }, threadPoolExecutor);
 
-        cartOps.put(skuId.toString(), JSON.toJSONString(cartItem));
-        return cartItem;
+            CompletableFuture.allOf(getSkuInfoTask, getSkuSaleAttrValuesTask).get();
+
+            cartOps.put(skuId.toString(), JSON.toJSONString(cartItem));
+            return cartItem;
+        }
+
     }
 
     /**
