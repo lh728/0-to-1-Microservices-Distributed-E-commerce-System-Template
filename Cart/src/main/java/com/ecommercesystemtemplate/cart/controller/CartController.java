@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.concurrent.ExecutionException;
 
@@ -30,8 +31,23 @@ public class CartController {
     }
 
     @GetMapping("/addToCart")
-    public String addToCart(@RequestParam("skuId") Long skuId, @RequestParam("num") Integer num, Model model) throws ExecutionException, InterruptedException {
-        CartItem cartItem = cartService.addToCart(skuId,num);
+    public String addToCart(@RequestParam("skuId") Long skuId,
+                            @RequestParam("num") Integer num, RedirectAttributes redirectAttributes) throws ExecutionException, InterruptedException {
+        cartService.addToCart(skuId,num);
+        redirectAttributes.addAttribute("skuId",skuId);
+        return "redirect:http://cart.thellumall.com/addToCartSuccess.html";
+    }
+
+    /**
+     * solve duplicate problem form submission
+     * @param skuId
+     * @param model
+     * @return
+     */
+    @GetMapping("/addToCartSuccess.html")
+    public String addToCartSuccessPage(@RequestParam("skuId") Long skuId, Model model) {
+        // redirect to success page, query cart info again
+        CartItem cartItem = cartService.getCartItem(skuId);
         model.addAttribute("item",cartItem);
         return "success";
     }

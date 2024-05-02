@@ -39,7 +39,7 @@ public class CartServiceImpl implements CartService{
     @Override
     public CartItem addToCart(Long skuId, Integer num) throws ExecutionException, InterruptedException {
 
-        BoundHashOperations cartOps = getCartOps();
+        BoundHashOperations<String, Object, Object> cartOps = getCartOps();
         // check if the product is already in the cart
         String cartItemJson = (String) cartOps.get(skuId.toString());
 
@@ -79,11 +79,19 @@ public class CartServiceImpl implements CartService{
 
     }
 
+    @Override
+    public CartItem getCartItem(Long skuId) {
+        BoundHashOperations<String, Object, Object> cartOps = getCartOps();
+        String s = (String) cartOps.get(skuId.toString());
+        CartItem cartItem = JSON.parseObject(s, CartItem.class);
+        return cartItem;
+    }
+
     /**
      * get cart that we need to operate
      * @return
      */
-    private BoundHashOperations getCartOps() {
+    private BoundHashOperations<String, Object, Object> getCartOps() {
         UserInfoTo userInfoTo = CartInterceptor.threadLocal.get();
         String cartKey = "";
         if (userInfoTo.getUserId() != null){

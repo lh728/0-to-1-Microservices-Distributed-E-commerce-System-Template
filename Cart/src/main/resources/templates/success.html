@@ -64,7 +64,7 @@
     <div class="success-wrap">
         <div class="w" id="result">
             <div class="m succeed-box">
-                <div class="mc success-cont">
+                <div th:if="${item != null}" class="mc success-cont">
                     <div class="success-lcol">
                         <div class="success-top"><b class="succ-icon"></b>
                             <h3 class="ftx-02">The product has been successfully added to the shopping cart</h3></div>
@@ -96,6 +96,10 @@
                                id="GotoShoppingCart"><b></b>Checkout</a>
                         </div>
                     </div>
+                </div>
+                <div th:if="${item == null}" class="mc success-cont">
+                    <h2> No items in Your Shopping Cart</h2>
+                    <a href="http://thellumall.com"> GO SHOPPING</a>
                 </div>
             </div>
         </div>
