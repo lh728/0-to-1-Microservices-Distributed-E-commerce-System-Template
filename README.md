@@ -1,5 +1,5 @@
 # 0-to-1-Microservices-Distributed-E-commerce-System-Template
-SpringBoot + Vue2 + Maven3 + Java17 + Spring Cloud + Redis + Docker + OSS + Mysql + MybatisPlus + Nginx + Git + Unit Testing
+SpringBoot + Vue2 + Maven3 + Java17 + Spring Cloud + Redis + Docker + OSS + Mysql + MybatisPlus + Nginx + Git + Unit Testing + OAuth2 +  Spring Cache
 
 This is an ongoing construction of a microservices-based distributed e-commerce system template, aimed at leveraging various advanced management tools and practices from 0 to 1, to achieve distributed solutions such as application monitoring, network limiting, gateways, circuit breaker degradation, etc.; distributed transactions, distributed locks; high concurrency, thread pools, asynchronous orchestration; stress testing and performance optimization; cluster technology; and CI/CD
 
@@ -7,13 +7,15 @@ This is an ongoing construction of a microservices-based distributed e-commerce 
 
 <br>
 
+For the Chinese version of this project, click [中文版本](https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/blob/37da94e53a7ca79a9574ef6534c75d3aaa2c1b4d/README_ZH.md).
+
 **I will strive to use various high-version programming languages and dependencies.**
 
 <br>
 
-- Front-end and back-end separation development, deployment for both intranet and internet, front-end apps, and web, backend cluster deployment for intranet.
+- Backend management system developed with front-end and back-end separation, deployed for both intranet and internet, front-end applications and web, backend cluster deployment for intranet, e-commerce pages achieving dynamic/static separation via NGINX.
 - Implemented functionalities include
-  - Product service, which involves CRUD operations, inventory management, product details, payment, discounts, etc.；
+  - Product service, which involves inventory management, brand management, product management, product attributes, product details, payment processing, and discount management. Rendering of the main pages of the e-commerce system and related remote service calls.
   - User service, covering user profiles, shipping addresses, etc.
   - Warehousing service, managing product inventory, flash sales, etc.
   - Order service, handling order operations.
@@ -22,7 +24,7 @@ This is an ongoing construction of a microservices-based distributed e-commerce 
 
 <br>
 
-For the Chinese version of this project, click [中文版本](https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/blob/c1e9f9be829f4cffc694bcba5e0209531082ed80/README_ZH.md).
+
 
 
 
@@ -63,6 +65,8 @@ Springboot 2.7.17
 Spring Web
 
 Spring loadbalancer
+
+Elasticsearch Clients
 
 <br>
 
@@ -246,11 +250,123 @@ Continuing with instructions, you can access Elasticsearch by using your virtual
 
 <br>
 
+#### Install Nginx
+
+```shell
+# run nginx container
+docker run -d -p 80:80 --name nginx -v /mydata/nginx/html:/usr/share/nginx/html -v /mydata/nginx/logs:/var/log/nginx -v /mydata/nginx/conf:/etc/nginx nginx
+
+# check nginx 
+docker ps
+```
+
+nginx will be used for reverse proxy and load balancing in the future. If you need to simulate domain hosting, you can modify the hosts file located at C:\Windows\System32\drivers\etc. Simply add a line at the bottom: `192.168.56.10 thellumall.com`, where the left side is your virtual machine address and the right side is the domain you've set.
+
+If you need to add more in the future, simply continue adding below. For example: `192.168.56.10 search.thellumall.com`.
+
+In the future, reverse proxy will be used to redirect services pointing to thellumall.com to the microservice gateway. The configuration is as follows:
+
+```shell
+cd mydata/nginx/conf/conf.d
+# copy default configuration
+cp default.conf thellumall.conf
+vi thellumall.conf
+
+cd ../
+vi nginx.conf
+```
+
+Enter the thellumall.conf file and modify the server_name to `*.thellumall.com` (with your domain name following it), separated by spaces. Delete the contents within the location curly braces and replace it with the following:
+
+```shell
+server {
+    listen       80;
+    listen  [::]:80;
+    server_name  *.thellumall.com thellumall.com;
+
+    #access_log  /var/log/nginx/host.access.log  main;
+
+    location / {
+        proxy_set_header Host $host;
+        proxy_pass http://thellumall;
+    }
+
+    ...
+}
+
+```
+
+Then, go to nginx.conf and add the upstream servers. Modify the http section as follows:
+
+```shell
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log  /var/log/nginx/access.log  main;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    keepalive_timeout  65;
+
+    #gzip  on;
+    upstream thellumall{
+      server 192.168.56.1:88;
+    }
+
+    include /etc/nginx/conf.d/*.conf;
+}
+
+```
+
+Using this approach, reverse proxying to the gateway is achieved, and after configuring the gateway, it directs traffic to the microservices.
+
+Simultaneously, to implement dynamic/static resource separation, all project static resources are stored within Nginx to optimize server throughput. Requests targeting the specified path /static/** are directly served with static resources.
+
+```shell
+cd /mydata/nginx/html
+# create static folder to save all static resource
+mkdir static
+```
+
+Next, place the static resources of each microservice under the /static/** directory.
+
+```shell
+cd /mydata/nginx/conf/conf.d
+vi thellumall.conf
+```
+
+Enter thellumall.conf，add location /static/ as follows：
+
+```shell
+    listen       80;
+    listen  [::]:80;
+    server_name  thellumall.com;
+
+    #access_log  /var/log/nginx/host.access.log  main;
+    location /static/{
+       root /usr/share/nginx/html;
+    }
+
+    location / {
+        proxy_set_header Host $host;
+        proxy_pass http://thellumall;
+    }
+
+```
+
+
+
+
+
 ## Administraion System
 
 For the backend management, we will directly use the existing "renren-fast" to save time.
-
-<br>
 
 The project's GitHub repository can be found at the following address: https://github.com/renrenio/renren-fast.git
 
@@ -258,13 +374,11 @@ The project's GitHub repository can be found at the following address: https://g
 
 For the front-end pages, we use "renren-fast-vue" to achieve rapid development: https://github.com/renrenio/renren-fast-vue.git. 
 
-<br>The frontend code for this project is here: <a href = "https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template-front-end" >0-to-1-Microservices-Distributed-E-commerce-System-Template-front-end </a> .
+The frontend code for this project is here: <a href = "https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template-front-end" >0-to-1-Microservices-Distributed-E-commerce-System-Template-front-end </a> .
 
 <br>
 
 To start the administration service, a database named "ADMIN" needs to be created. The table creation statements for this database and the corresponding data generation can be found in the "Static/admin/db" folder of the project.
-
-<br>
 
 The backend starts after modifying the database files. For the frontend, after downloading Node.js, execute the `npm install` command and then run `npm run dev`.
 
@@ -696,6 +810,8 @@ public class CorsConfig implements WebMvcConfigurer {
 
 
 
+### Third Party Service
+
 #### OSS
 
 Due to geographical considerations, we have currently opted to use Alibaba Cloud to set up OSS (Object Storage Service) as a cloud file storage for our distributed system, serving as a repository for images and other information. (Alternatively, AWS S3 can also be used.)
@@ -839,15 +955,176 @@ Please be aware that in the Gateway configuration YAML file, when setting up loa
 
 <br>
 
-### Order
+#### Mobile Verification Code
+
+Due to geographical constraints, we have opted to utilize Alibaba Cloud's Cloud Marketplace to facilitate the functionality of sending SMS verification codes.
+
+For detailed information, please refer to: https://marketplace.alibabacloud.com/?spm=a3c0i.7911826.6791778070.33.64ca3870uyf5vW#!
+
+Upon successful purchase, access to the corresponding SMS verification code interface is granted. Specific details regarding supported API interfaces are available in the post-purchase content. For example, the request address for the API I've selected is: [http://gyytz.market.alicloudapi.com](http://gyytz.market.alicloudapi.com/), invoked via POST request and authenticated using the APPCODE method.
+
+For detailed code implementation, please refer to the built-in code within the ThirdParty service.
+
+```java
+@Component
+@Data
+@ConfigurationProperties(prefix = "spring.cloud.alicloud.sms")
+public class SmsComponent {
+
+    private String host;
+    private String path;
+    private String smsSignId;
+    private String templateId;
+    private String appcode;
+    public void sendSms(String phoneNumber, String message) {
+        String method = "POST";
+        String appcode = "your own APPcode";
+        Map<String, String> headers = new HashMap<String, String>();
+        //header format: Authorization:APPCODE 83359fd73fe94948385f570e3c139105
+        headers.put("Authorization", "APPCODE " + appcode);
+        Map<String, String> querys = new HashMap<String, String>();
+        querys.put("mobile", phoneNumber);
+        // message : "**code**:12345,**minute**:5"
+        querys.put("param", message);
+        querys.put("smsSignId", smsSignId);
+        querys.put("templateId", templateId);
+        Map<String, String> bodys = new HashMap<String, String>();
+
+        try {
+            HttpResponse response = HttpUtils.doPost(host, path, method, headers, querys, bodys);
+            System.out.println(response.toString());
+            //System.out.println(EntityUtils.toString(response.getEntity()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+This method provides the SmsComponent for other microservices to utilize the functionality of sending verification codes.
 
 <br>
 
-### Member
+### ELSearch Service
+
+It is mainly used for product search. The ElasticSearch index building statements for the Product database are as follows:
+
+```json
+PUT product
+{
+  "mappings": {
+    "properties": {
+      "skuId": {
+        "type": "long"
+      },
+      "spuId": {
+        "type": "keyword"
+      },
+      "skuTitle": {
+        "type": "text"
+      },
+      "skuPrice": {
+        "type": "keyword"
+      },
+      "skuImage": {
+        "type": "keyword"
+      },
+      "saleCount": {
+        "type": "long"
+      },
+      "hasStock": {
+        "type": "boolean"
+      },
+      "hotScore": {
+        "type": "long"
+      },
+      "brandId": {
+        "type": "long"
+      },
+      "catalogId": {
+        "type": "long"
+      },
+      "brandName": {
+        "type": "keyword"
+      },
+      "brandImg": {
+        "type": "keyword"
+      },
+      "catalogName": {
+        "type": "keyword"
+      },
+      "attrs": {
+        "type": "nested",
+        "properties": {
+          "attrId": {
+            "type": "long"
+          },
+          "attrName": {
+            "type": "keyword"
+          },
+          "attrValue":{
+            "type": "keyword"
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+In addition to the configuration and remote calls related to elasticSearch, there is also the front-end code for the mall search page and some logic code for the home page to jump to the search page.
+
+The mall search page looks like this:
 
 <br>
 
-### Product System
+Here, the relevant business and code logic is implemented when searching for products, including information for interacting with ES.
+
+<br>
+
+### AuthServer Service
+
+Here is a microservice related to security authentication. It is mainly used for business logic related to the registration page and login page. It uses MD5+ salt encryption to store passwords. The mobile phone verification code remotely calls the interface of the ThridParty service. It also involves integrating SpringSession for distributed session processing to handle login issues.
+
+Registration Page as follows：
+
+<br>
+
+Login Page as follows:
+
+<br>
+
+It also uses OAuth 2.0 to support social networking site login. Currently, the only supported login method is Weibo. You can develop login functions for other social networking sites based on this function. The process is similar. The processing idea is roughly as follows:
+
+<img src="C:\Users\lhjls\AppData\Roaming\Typora\typora-user-images\image-20240422102826744.png" alt="image-20240422102826744" style="zoom: 50%;" />
+
+
+
+
+
+
+
+
+
+<br>
+
+### Order Service
+
+<br>
+
+### Member Service
+
+#### Membership Level
+
+The route for Membership Level is member/level. This function is used to manage membership levels. Information such as different membership levels and privileges can be set here.
+
+The main information storage of this page is the same as that of the Product microservice. It adopts the dynamic and static separation strategy, puts the static resources in nginx, and places the corresponding front-end content in the Static folder. It uses thymelaef as the template engine and has been commented out for display only.
+
+The search page looks like this:
+
+<br>
+
+### Product Service
 
 The product system added a new "Product System" directory through the backend management system.
 
@@ -855,7 +1132,7 @@ The product system added a new "Product System" directory through the backend ma
 
 The configuration for `product/category` is designed for managing the three-level classification of the category maintenance service. It aims to retrieve all categories and subcategories in a single query, organize them into a tree data structure for efficient management, and support functionalities such as `append`, `delete`, `batch delete`, and `update`.
 
-该页主要信息存储在pms_category表中
+The main information of this page is stored in the pms_category table
 
 <img src="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/raw/e506621a17f5208b5685663765bbde960a9a9305/Static/product_maintenance.png" style="zoom: 50%;" />
 
@@ -877,29 +1154,131 @@ The main information for this page is stored in the "pms_brand" table.
 
 <br>
 
+#### Platform Properties
 
+Platform attributes are used to maintain attributes for Standard Product Units (SPUs) and Stock Keeping Units (SKUs), which include sub-menu attribute groups, specification parameters, and sales attributes.
+
+- Attribute Groups
+
+The route for attribute groups is `product/attrgroup`. Attribute groups primarily record which category belongs to which group. Each attribute group is associated with multiple specification parameters.
+
+This page dynamically displays group information for the corresponding category based on the information of the category tree when clicked, and supports cascade selection of the parent group when adding.
+
+The main information of this page is stored in the pms_attr_group table.
+
+- Specification Parameters
+
+The route for specification parameters is `product/baseattr`. Specification parameters are mainly used to record some basic information of e-commerce products (such as production year, core configuration, etc., which remain constant under different sales attributes). Similar to attribute groups, the corresponding basic attribute information is dynamically displayed based on the information of the category tree when clicked.
+
+The main information of this page is stored in the pms_attr table.
+
+- Sales Attributes
+
+The route for sales attributes is `product/saleattr`. Sales attributes, like specification parameters, are also a type of attrType. Sales attributes are mainly used to record some sales attributes of e-commerce products (such as selecting white, black, etc., for mobile phones). Similar to attribute groups, the corresponding sales attribute information for the corresponding category is dynamically displayed based on the category tree when clicked, but sales attributes do not need to be saved in groups.
+
+The main information of this page is also stored in the pms_attr table.
+
+<br>
+
+#### Product Maintenance
+
+Product maintenance is used to maintain product information and manage the lifecycle of releases. It includes three categories: SPU Management, Product Publishing, and Product Management.
+
+- SPU Management
+
+The route for SPU management is `product/spu`. SPU management is where released product SPUs are managed. By default, newly created products have a status of NEW, and actions such as listing and delisting can be performed. Additionally, detailed specifications of the SPU can be viewed and configured. Within the detailed specifications, SPU information can be updated and confirmed.
+
+The listing functionality is associated with the ES database, where product information to be listed is stored for retrieval.
+
+The main information of this page is stored in the pms_spu_info table.
+
+- Product Publishing
+
+The route for product publishing is `product/spuadd`. Product publishing involves filling in basic information, followed by specification parameters and sales attributes. Subsequently, the confirmation and completion of generating the Cartesian product SKU information based on the sales attributes is required before successful saving. Additionally, this functionality requires support from the member and coupon microservices as it needs to obtain member level information, and related product information will be stored in the coupon database.
+
+This functionality involves saving information across multiple tables and databases, such as pms_sku_images, pms_sku_info, sms_sku_full_reduction, etc.
+
+- Product Management
+
+The route for product management is `product/manager`. Product management is where SKU information is managed. It supports actions such as previewing, commenting, uploading images, participating in flash sales, setting discounts, setting discounts, and setting member prices, as well as search and expanding details.
+
+The main information of this page is stored in the sku_info table.
+
+<br>
+
+#### FrontEnd
+
+By adopting a dynamic/static separation strategy and storing static resources in Nginx, the gateway no longer needs to forward requests to microservices each time a static resource is requested, thus alleviating the load on the microservices. Additionally, this setup allows for the direct serving of static resources in the future.
+
+The frontend content corresponding to microservices is placed in the Static folder, utilizing Thymeleaf as the template engine. Please note that all content here is commented out for demonstration purposes only. In actual usage, uncomment the content and follow the instructions for installing Nginx to place the static resources in Nginx (excluding index.html).
+
+Here is where the homepage of the online store is stored, as shown in the following diagram:
 
 
 
 <br>
 
+### Cart Service
 
+The shopping cart service allows users to add items to their shopping cart while logged in (user cart/online cart) or while not logged in (guest cart/offline cart/temporary cart). Additionally, when a user logs in, these items are also added to the online cart and the temporary cart is then emptied.
 
+Furthermore, the service supports the following functionalities:
 
+- Users can proceed to checkout and place orders using the shopping cart.
+- Adding items to the shopping cart.
+- Users can view their own shopping carts.
+- Users can modify the quantity of items in the shopping cart.
+- Users can remove items from the shopping cart.
+- Selecting/unselecting items.
+- Displaying promotional information for items in the shopping cart to indicate price changes.
 
-
-
-
-
-
-
-
-
-### WareHouse
+The shopping cart page is as follows:
 
 <br>
 
-### Coupon
+### WareHouse Service
+
+#### Warehouse Maintenance
+
+The route for warehouse maintenance is `ware/wareinfo`. Warehouse maintenance is primarily used to manage information related to warehouses and supports corresponding CRUD operations.
+
+The main information of this page is stored in the wms_ware_info table.
+
+<br>
+
+#### Product Inventory
+
+The route for product warehousing is `ware/sku`. Product warehousing is primarily used to manage storage information for each warehouse. This functionality is associated with the procurement function, where inventory is automatically displayed once procurement is completed.
+
+The main information of this page is stored in the wms_ware_sku table.
+
+<br>
+
+#### Purchase Order Management
+
+- Purchase Requisitions
+
+The route for purchase requisitions is `ware/purchaseitem`. Purchase requisitions are primarily used to manage SKU-related procurement information, determining purchase item IDs, quantities, etc., while also supporting the merging of purchase orders.
+
+The main information of this page is stored in the wms_purchase_detail table.
+
+- Inventory Work Orders
+
+The route for inventory work orders is `ware/task`
+
+- Purchase Orders
+
+The route for purchase orders is `ware/purchase` This is used to generate and manage purchase orders, supporting CRUD operations and associated with the purchase requisitions page.
+
+The main information of this page is stored in the wms_purchase table.
+
+- Receiving Purchase Orders
+
+This functionality is not part of the backend management system and can be configured for procurement personnel. Requests are initiated via mobile devices or other means to the `/api/warehouse/purchase/received` endpoint, which can be simulated using Postman. It is used for procurement personnel to receive purchase orders.
+
+<br>
+
+### Coupon Service
 
 <br>
 
