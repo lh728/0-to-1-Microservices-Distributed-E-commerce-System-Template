@@ -1,6 +1,6 @@
 # 从0到1的微服务分布式电子商务系统模板
 
-SpringBoot + Vue2 + Maven3 + Java17 + Spring Cloud + Redis + Redisson + Docker + OSS + Mysql + MybatisPlus + Nginx + Git + Unit Testing
+SpringBoot + Vue2 + Maven3 + Java17 + Spring Cloud + Redis + Redisson + Docker + OSS + Mysql + MybatisPlus + Nginx + Git + Unit Testing + OAuth2 +  Spring Cache
 
 这是一个正在构建中的基于微服务的分布式电子商务系统模板，旨在利用各种先进的管理工具和实践，从零到一实现应用监控、限流、网关、熔断降级等分布式方案；分布式事务、分布式锁；高并发、线程池、异步编排；压力测试与性能优化；集群技术；CI/CD。
 
@@ -10,14 +10,14 @@ SpringBoot + Vue2 + Maven3 + Java17 + Spring Cloud + Redis + Redisson + Docker +
 
 **我将尽可能使用高版本的编程语言和依赖环境。**
 
-- 前后端分离开发，内外网部署，前端应用和Web，内网部署后端集群。
+- 后端管理系统前后端分离开发，内外网部署，前端应用和Web，内网部署后端集群，商城页面通过NGINX实现动静分离。
 - 已实现功能包括：
-  - 商品服务，涉及CRUD操作、库存管理、商品详情、支付、优惠等；
+  - 商品服务：管理系统库存、品牌、商品、商品属性、商品详情、支付、优惠管理等；商城系统主页面渲染，相关远程服务调用。
   - 用户服务，包括用户档案、收货地址等；
   - 仓储服务，管理商品库存、秒杀等；
   - 订单服务，处理订单操作；
   - 检索服务，集成Elasticsearch进行商品检索；
-  - 集中认证服务，包括登录、注册、单点登录、社交登录等。
+  - 集中认证服务，包括验证码发送、登录、注册、社交登录等；
 - 性能优化：中间件网络交互优化、DB Mysql优化、模板渲染速度优化（缓存）、业务逻辑优化
 
 <br>
@@ -946,7 +946,7 @@ public class SmsComponent {
 
 ### ELSearch
 
-有关Product数据库的建索引语句如下：
+主要用于商品检索，有关Product数据库的建索引语句如下：
 
 ```json
 PUT product
@@ -1099,6 +1099,10 @@ Brand Management的路由是product/brand。还配置用于管理电商品牌，
 
 该页主要信息存储在pms_brand表中
 
+
+
+<img src="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/raw/722c94adf20cc6e55752cbebe8c1488c4bf7a89c/Static/brand_management2.png" style="zoom:50%;" />
+
 <img src="https://github.com/lh728/0-to-1-Microservices-Distributed-E-commerce-System-Template/raw/6d891db6976c4e3b62de60f101d999bc41a9cd99/Static/brand_management.png" style="zoom:50%;" />
 
 <br>
@@ -1169,11 +1173,19 @@ SPU管理的路由是product/spu。SPU管理是管理发布的产品SPU的地方
 
 ### Cart
 
-购物车服务
+购物车服务，用户可以在登录状态下将商品添加到购物车（用户购物车/在线购物车），用户可以在未登录状态下将商品添加到购物车（游客购物车/离线购物车/临时购物车）。同时登录后，这些商品也会添加进在线购物车中，然后清空临时购物车。
 
+除此之外，还支持功能：
 
+用户可以使用购物车一起结算下单
+给购物车添加商品
+用户可以查询自己的购物车
+用户可以在购物车中修改购买商品的数量。
+用户可以在购物车中删除商品。
+选中不选中商品
+在购物车中展示商品优惠信息提示购物车商品价格变化
 
-
+购物车页面如下：
 
 
 
