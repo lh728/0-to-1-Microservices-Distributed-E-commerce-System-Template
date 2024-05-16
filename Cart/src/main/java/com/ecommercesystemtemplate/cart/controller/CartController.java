@@ -1,9 +1,8 @@
 package com.ecommercesystemtemplate.cart.controller;
 
-import com.ecommercesystemtemplate.cart.interceptor.CartInterceptor;
 import com.ecommercesystemtemplate.cart.service.CartService;
+import com.ecommercesystemtemplate.cart.vo.Cart;
 import com.ecommercesystemtemplate.cart.vo.CartItem;
-import com.ecommercesystemtemplate.cart.vo.UserInfoTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,11 +21,10 @@ public class CartController {
     }
 
     @GetMapping("/cart.html")
-    public String cartListPage(){
+    public String cartListPage(Model model) throws ExecutionException, InterruptedException {
         // get userinfo fast
-        UserInfoTo userInfoTo = CartInterceptor.threadLocal.get();
-        System.out.println(userInfoTo);
-
+        Cart cart = cartService.getCart();
+        model.addAttribute("cart",cart);
         return "cartList";
     }
 

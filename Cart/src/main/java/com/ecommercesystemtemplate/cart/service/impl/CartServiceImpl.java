@@ -5,6 +5,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.ecommercesystemtemplate.cart.feign.ProductFeignService;
 import com.ecommercesystemtemplate.cart.interceptor.CartInterceptor;
 import com.ecommercesystemtemplate.cart.service.CartService;
+import com.ecommercesystemtemplate.cart.vo.Cart;
 import com.ecommercesystemtemplate.cart.vo.CartItem;
 import com.ecommercesystemtemplate.cart.vo.SkuInfoVo;
 import com.ecommercesystemtemplate.cart.vo.UserInfoTo;
@@ -87,6 +88,40 @@ public class CartServiceImpl implements CartService{
         return cartItem;
     }
 
+    @Override
+    public Cart getCart() throws ExecutionException, InterruptedException {
+        UserInfoTo userInfoTo = CartInterceptor.threadLocal.get();
+        Cart cart = new Cart();
+        if (userInfoTo.getUserId() != null){
+            // 1. has logged in
+            String cartKey = CART_PREFIX + userInfoTo.getUserId();
+            BoundHashOperations<String, Object, Object> hashOperations = stringRedisTemplate.boundHashOps(cartKey);
+            // 2. if temporary user has cart
+            String tempCartKey = CART_PREFIX + userInfoTo.getUserKey();
+            List<CartItem> tempCartItems = getCartItems(tempCartKey);
+            if (tempCartItems != null && !tempCartItems.isEmpty()){
+                for (CartItem tempCartItem : tempCartItems) {
+                    addToCart(tempCartItem.getSkuId(), tempCartItem.getCount());
+                }
+//                // 3. merge temporary cart to logged in cart
+//                tempCartItems.forEach((item) -> {
+//                    hashOperations.put(item.getSkuId().toString(), JSON.toJSONString(item));
+//                });
+                // 4. clear temporary cart
+                clearCart(tempCartKey);
+            } else {
+                List<CartItem> cartItems = getCartItems(cartKey);
+                cart.setItems(cartItems);
+            }
+
+        } else {
+            String cartKey = CART_PREFIX + userInfoTo.getUserKey();
+            List<CartItem> cartItems = getCartItems(cartKey);
+            cart.setItems(cartItems);
+        }
+        return cart;
+    }
+
     /**
      * get cart that we need to operate
      * @return
@@ -102,6 +137,24 @@ public class CartServiceImpl implements CartService{
         }
         BoundHashOperations<String, Object, Object> hashOperations = stringRedisTemplate.boundHashOps(cartKey);
         return hashOperations;
+    }
+
+    private List<CartItem> getCartItems(String cartKey) {
+        BoundHashOperations<String, Object, Object> hashOperations = stringRedisTemplate.boundHashOps(cartKey);
+        List<Object> values = hashOperations.values();
+        if (values != null && !values.isEmpty()) {
+            List<CartItem> collect = values.stream().map((obj) -> {
+                CartItem cartItem = JSON.parseObject((String) obj, CartItem.class);
+                return cartItem;
+            }).toList();
+            return collect;
+        }
+        return null;
+    }
+
+    @Override
+    public void clearCart(String cartKey) {
+        stringRedisTemplate.delete(cartKey);
     }
 }
 
