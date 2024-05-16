@@ -20,6 +20,13 @@ public class CartController {
         this.cartService = cartService;
     }
 
+    @GetMapping("/checkItem")
+    public String checkItem(@RequestParam("skuId") Long skuId,
+                            @RequestParam("check") Integer check) {
+        cartService.checkItem(skuId,check);
+        return "redirect:http://cart.thellumall.com/cart.html";
+    }
+
     @GetMapping("/cart.html")
     public String cartListPage(Model model) throws ExecutionException, InterruptedException {
         // get userinfo fast
