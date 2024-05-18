@@ -110,16 +110,16 @@
 
                             </li>
                             <li>
-                                <p>
-                                    <span>-</span>
-                                    <span th:text="${item.count}">5</span>
-                                    <span>+</span>
+                                <p th:attr="skuId=${item.skuId}">
+                                    <span class="countOpsBtn">-</span>
+                                    <span class="countOpsNum" th:text="${item.count}">5</span>
+                                    <span class="countOpsBtn">+</span>
                                 </p>
 
                             </li>
                             <li style="font-weight:bold"><p class="zj">€[[${#numbers.formatDecimal(item.totalPrice,3,2)}]]</p></li>
                             <li>
-                                <p>DELETE</p>
+                                <p class="deleteItemBtn" th:attr="skuId=${item.skuId}">DELETE</p>
 
                             </li>
                         </ol>
@@ -160,19 +160,19 @@
 
 <div class="One_isDel">
     <p>
-        <span>删除</span><span><img src="/static/cart/img/错误.png" alt=""></span>
+        <span>DELETE</span><span><img src="/static/cart/img/错误.png" alt=""></span>
     </p>
     <div>
         <dl>
             <dt><img src="/static/cart/img/感叹三角形 (2).png" alt=""></dt>
             <dd>
-                <li>删除商品？</li>
-                <li>您可以选择移到关注，或删除商品。</li>
+                <li>Delete it?</li>
+                <li>You can choose to move to follow, or delete the product.</li>
             </dd>
         </dl>
     </div>
     <div>
-        <button type="button">删除</button>
+        <button type="button" onclick="deleteItem()">DELETE</button>
 
     </div>
 </div>
@@ -772,6 +772,21 @@
         var check = $(this).prop("checked");
         location.href = "http://cart.thellumall.com/checkItem?skuId=" + skuId + "&check=" + (check ? 1 : 0);
     })
+
+    $(".countOpsBtn").click(function (){
+        let skuId = $(this).parent().attr("skuId");
+        let num = $(this).parent().find(".countOpsNum").text();
+        location.href = "http://cart.thellumall.com/countItem?skuId=" + skuId + "&num=" + num;
+    })
+
+    var deleteId = 0;
+    function deleteItem(){
+        location.href = "http://cart.thellumall.com/deleteItem?skuId=" + deleteId;
+    }
+
+    $(".deleteItemBtn").click(function () {
+        deleteId = $(this).attr("skuId");
+    });
 
 </script>
 </html>

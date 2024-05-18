@@ -27,6 +27,14 @@ public class CartController {
         return "redirect:http://cart.thellumall.com/cart.html";
     }
 
+    @GetMapping("/countItem")
+    public String countItem(@RequestParam("skuId") Long skuId,
+                            @RequestParam("num") Integer num){
+        cartService.changeItemCount(skuId,num);
+        return "redirect:http://cart.thellumall.com/cart.html";
+    }
+
+
     @GetMapping("/cart.html")
     public String cartListPage(Model model) throws ExecutionException, InterruptedException {
         // get userinfo fast

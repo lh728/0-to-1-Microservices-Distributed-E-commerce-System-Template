@@ -43,4 +43,11 @@ public interface CartService {
      * @param check
      */
     void checkItem(Long skuId, Integer check);
+
+    /**
+     * modify number in the cart
+     * @param skuId
+     * @param num
+     */
+    void changeItemCount(Long skuId, Integer num);
 }
