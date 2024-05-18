@@ -34,6 +34,12 @@ public class CartController {
         return "redirect:http://cart.thellumall.com/cart.html";
     }
 
+    @GetMapping("/deleteItem")
+    public String deleteItem(@RequestParam("skuId") Long skuId){
+        cartService.deleteItem(skuId);
+        return "redirect:http://cart.thellumall.com/cart.html";
+    }
+
 
     @GetMapping("/cart.html")
     public String cartListPage(Model model) throws ExecutionException, InterruptedException {
