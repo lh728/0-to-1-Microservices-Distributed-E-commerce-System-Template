@@ -26,6 +26,10 @@
 #    name: order
 #  jackson:
 #    date-format: yyyy-MM-dd HH:mm:ss
+#  rabbitmq:
+#    host: 192.168.56.10
+#    port: 5672
+#    virtual-host: /
 #mybatis-plus:
 #  mapper-locations: classpath:/mapper/**/*.xml
 #  global-config:
