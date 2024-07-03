@@ -6,6 +6,7 @@ import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -15,18 +16,27 @@ class OrderApplicationTests {
     @Autowired
     AmqpAdmin amqpAdmin;
 
+    @Autowired
+    RabbitTemplate rabbitTemplate;
+
+    @Test
+    public void send(){
+        rabbitTemplate.convertAndSend("hello-exchange","hello.java","hello java");
+        log.info("send message success");
+    }
+
     @Test
     public void createExchange(){
         DirectExchange directExchange = new DirectExchange("hello-exchange",true,false);
         amqpAdmin.declareExchange(directExchange);
-        log.info("hello-exchange创建成功");
+        log.info("hello-exchange create success");
     }
 
     @Test
     public void createQueue(){
         Queue queue = new Queue("hello-queue",true,false,false);
         amqpAdmin.declareQueue(queue);
-        log.info("hello-queue创建成功","hello-java-queue");
+        log.info("hello-queue create success","hello-java-queue");
 
     }
 
@@ -40,7 +50,7 @@ class OrderApplicationTests {
                         null
                 )
         );
-        log.info("hello-java-queue绑定成功");
+        log.info("hello-java-queue bind hello-exchange success");
     }
 
 
