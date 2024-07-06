@@ -34,6 +34,9 @@
 #    publisher-returns: true
 #    template:
 #      mandatory: true
+#    listener:
+#      simple:
+#        acknowledge-mode: manual
 #mybatis-plus:
 #  mapper-locations: classpath:/mapper/**/*.xml
 #  global-config:
