@@ -167,6 +167,9 @@ docker run -d -p 3306:3306 --name mysql-container \
 # Verify if the MySQL container is running
 docker ps
 
+# set Start automatically at boot
+docker update mysql-container --restart=always
+
 # Set the character encoding (if needed). Create a my.cnf file in /mydata/mysql/conf using vi.
 [mysqld]
 character-set-server=utf8
@@ -192,8 +195,14 @@ docker run -p 6379:6379 --name redis -v /mydata/redis/data:/data \
 # Verify if the Redis container is running
 docker ps
 
+# set Start automatically at boot
+docker update redis --restart=always
+
 # Interact with Redis (optional)
 docker exec -it redis redis-cli
+
+# set Start automatically at boot
+docker update redis --restart=always
 
 # The latest Redis versions have persistence enabled by default, so you don't need to modify the configuration file for now. 
 
@@ -207,17 +216,12 @@ docker exec -it redis redis-cli
 # Pull the Elasticsearch image
 docker pull elasticsearch:7.4.2
 
-# Run the Elasticsearch container
-docker run -d -p 9200:9200 -p 9300:9300 --name elasticsearch docker.elastic.co/elasticsearch/elasticsearch:7.4.2
+# add max_map_count number
+sudo sysctl -w vm.max_map_count=262144
+echo "vm.max_map_count=262144" | sudo tee -a /etc/sysctl.conf
 
 # Pull the Kibana image
 docker pull kibana:7.4.2
-
-# Verify if the Elasticsearch container is running
-docker ps
-
-#test Elasticsearch
-curl -X GET "localhost:9200/"
 
 #create dir
 mkdir -p /mydata/elasticsearch/config
@@ -229,11 +233,21 @@ chmod -R 777 /mydata/elasticsearch/
 docker run --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" -e ES_JAVA_OPTS="-Xms64m -Xmx512m" -v /mydata/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml -v /mydata/elasticsearch/data:/usr/share/elasticsearch/data -v /mydata/elasticsearch/plugins:/usr/share/elasti
 csearch/plugins -d elasticsearch:7.4.2
 
+# Verify if the Elasticsearch container is running
+docker ps
+
+#test Elasticsearch
+curl -X GET "localhost:9200/"
+
 # run kibana
 docker run --name kibana -e ELASTICSEARCH_HOSTS=http://<your own vm address>:9200 -p 5601:5601 -d kibana:7.4.2
 
 # check Elasticsearch and kibana
 docker ps
+
+# set Start automatically at boot
+docker update elasticsearch --restart=always
+docker update kibana --restart=always
 ```
 
 接着你可以通过你的虚拟机端口号+9200访问Elasticsearch，注意启动很慢，需要耐心等待
@@ -248,6 +262,9 @@ docker run -d -p 80:80 --name nginx -v /mydata/nginx/html:/usr/share/nginx/html 
 
 # check nginx 
 docker ps
+
+# set Start automatically at boot
+docker update nginx --restart=always
 ```
 
 nginx会用于后续反向代理和负载均衡。如果需要模拟域名搭建，可以修改C:\Windows\System32\drivers\etc 下的hosts文件，在底部增加一行即可： `192.168.56.10  thellumall.com`左边是你的虚拟机地址，右边是你设置的域名。
@@ -349,6 +366,26 @@ vi thellumall.conf
     }
 
 ```
+
+
+
+#### 安装RabbitMQ
+
+```shell
+docker run -d --name rabbitmq -p 5671:5671 -p 5672:5672 -p 4369:4369 -p 25672:25672 -p 15671:15671 -p 15672:15672 rabbitmq:management
+
+# set Start automatically at boot
+docker update rabbitmq --restart=always
+```
+
+其中，
+
+- 5671:5671: AMQP 协议的 SSL/TLS 端口
+- 5672:5672: AMQP 协议的非 SSL/TLS 端口
+- 4369:4369: Erlang Port Mapper Daemon（EPMD）端口，用于节点间通信
+- 25672:25672: Erlang 节点间通信端口
+- 15671:15671: 管理界面的 SSL/TLS 端口
+- 15672:15672: 管理界面的非 SSL/TLS 端口
 
 
 
