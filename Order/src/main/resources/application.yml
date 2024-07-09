@@ -12,13 +12,6 @@
 #        server-addr: 127.0.0.1:8848
 #        namespace: 22221e13-393d-4683-b76d-dc0ddd1adcbb
 #        group: dev
-#    alicloud:
-#      access-key: <your access key>
-#      secret-key: <your secret key>
-#      oss:
-#        endpoint: https://oss-cn-beijing.aliyuncs.com
-#    util:
-#      enabled: false
 #  config:
 #    import:
 #      - nacos:nacos-config-example.properties?refresh=true
@@ -29,7 +22,7 @@
 #  rabbitmq:
 #    host: 192.168.56.10
 #    port: 5672
-#    virtual-host: /
+#    virtual-host: /s
 #    publisher-confirm-type: correlated
 #    publisher-returns: true
 #    template:
@@ -37,7 +30,12 @@
 #    listener:
 #      simple:
 #        acknowledge-mode: manual
-#
+#alibaba:
+#  cloud:
+#    access-key: <your access key>
+#    secret-key: <your secret key>
+#    oss:
+#      endpoint: https://oss-cn-beijing.aliyuncs.com
 #mybatis-plus:
 #  mapper-locations: classpath:/mapper/**/*.xml
 #  global-config:

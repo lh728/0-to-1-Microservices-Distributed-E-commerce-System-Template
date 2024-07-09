@@ -12,13 +12,6 @@
 #        server-addr: 127.0.0.1:8848
 #        namespace: ced4a4a9-59a8-4757-a101-e1914c127389
 #        group: dev
-#    alicloud:
-#      access-key: <your access key>
-#      secret-key: <your secret key>
-#      oss:
-#        endpoint: https://oss-cn-beijing.aliyuncs.com
-#    util:
-#      enabled: false
 #  config:
 #    import:
 #      - nacos:nacos-config-example.properties?refresh=true
@@ -26,7 +19,12 @@
 #    name: coupon
 #  jackson:
 #    date-format: yyyy-MM-dd HH:mm:ss
-#
+#alibaba:
+#  cloud:
+#    access-key: <your access key>
+#    secret-key: <your secret key>
+#    oss:
+#      endpoint: https://oss-cn-beijing.aliyuncs.com
 #mybatis-plus:
 #  mapper-locations: classpath:/mapper/**/*.xml
 #  global-config:
