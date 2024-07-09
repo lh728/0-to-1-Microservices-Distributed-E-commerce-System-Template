@@ -10,7 +10,7 @@
 #        server-addr: 127.0.0.1:8848
 #      config:
 #        server-addr: 127.0.0.1:8848
-#        namespace: bdf512fb-731e-4bb7-8e42-ef320bd4852a
+#        namespace: 22221e13-393d-4683-b76d-dc0ddd1adcbb
 #        group: dev
 #    alicloud:
 #      access-key: <your access key>
@@ -37,7 +37,7 @@
 #    listener:
 #      simple:
 #        acknowledge-mode: manual
-
+#
 #mybatis-plus:
 #  mapper-locations: classpath:/mapper/**/*.xml
 #  global-config:

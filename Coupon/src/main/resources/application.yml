@@ -10,7 +10,7 @@
 #        server-addr: 127.0.0.1:8848
 #      config:
 #        server-addr: 127.0.0.1:8848
-#        namespace: 7201755b-6f7f-4300-8d26-eea32695c636
+#        namespace: ced4a4a9-59a8-4757-a101-e1914c127389
 #        group: dev
 #    alicloud:
 #      access-key: <your access key>
