@@ -56,6 +56,11 @@
 #          uri: lb://cart
 #          predicates:
 #            - Host=cart.thellumall.com
+#
+#        - id: thellumall_order_route
+#          uri: lb://order
+#          predicates:
+#            - Host=order.thellumall.com
 ### front end use api prefix
 #    nacos:
 #      discovery:
