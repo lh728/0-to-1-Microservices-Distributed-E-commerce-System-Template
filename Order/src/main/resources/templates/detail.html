@@ -131,11 +131,13 @@
 						</li>
 					</ul>
 					<ul class="header_ul_right">
-						<li style="border: 0;">
-							<a href="/static/order/detail/denglu.html" class="aa">你好，请登录</a>
+						<li style="width: 100px">
+							<a th:if="${session.loginUser != null}">Welcome, [[${session.loginUser==null?'':session.loginUser.nickname}]]</a>
+							<a href="http://auth.thellumall.com/login.html" th:if="${session.loginUser == null}"> Please log in </a>
 						</li>
-						<li>
-							<a href="/static/order/detail/javascript:;" style="color: red;">免费注册</a> |</li>
+						<li th:if="${session.loginUser == null}">
+							<a  href="http://auth.thellumall.com/register.html" class="li_2">sign up</a>
+						</li>
 						<li>
 							<a href="/static/order/detail/javascript:;" class="aa">我的订单</a> |</li>
 						<li class="jingdong" style="width:95px;">

@@ -32,6 +32,15 @@
 #    listener:
 #      simple:
 #        acknowledge-mode: manual
+#  redis:
+#    host: 192.168.56.10
+#  session:
+#    store-type: redis
+#thellumall:
+#  thread:
+#    max-size: 200
+#    core-size: 20
+#    keep-alive-time: 10
 #alibaba:
 #  cloud:
 #    access-key: <your access key>
