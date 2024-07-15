@@ -11,4 +11,9 @@ public class WebController {
     public String listPage(@PathVariable("page") String page) {
         return page;
     }
+
+    @GetMapping("/toTrade")
+    public String toTrade(){
+        return "confirm";
+    }
 }
