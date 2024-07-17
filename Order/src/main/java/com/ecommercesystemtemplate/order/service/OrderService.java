@@ -3,6 +3,7 @@ package com.ecommercesystemtemplate.order.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.order.entity.OrderEntity;
+import com.ecommercesystemtemplate.order.vo.OrderConfirmVo;
 
 import java.util.Map;
 
@@ -16,5 +17,11 @@ import java.util.Map;
 public interface OrderService extends IService<OrderEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    /**
+     * return correspondent data to order confirm page
+     * @return
+     */
+    OrderConfirmVo confirmOrder();
 }
 
