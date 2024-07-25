@@ -1,19 +1,14 @@
 package com.ecommercesystemtemplate.member.controller;
 
-import java.util.Arrays;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.ecommercesystemtemplate.member.entity.MemberReceiveAddressEntity;
-import com.ecommercesystemtemplate.member.service.MemberReceiveAddressService;
 import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.common.utils.R;
+import com.ecommercesystemtemplate.member.entity.MemberReceiveAddressEntity;
+import com.ecommercesystemtemplate.member.service.MemberReceiveAddressService;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 
 
@@ -27,8 +22,16 @@ import com.ecommercesystemtemplate.common.utils.R;
 @RestController
 @RequestMapping("member/memberreceiveaddress")
 public class MemberReceiveAddressController {
-    @Autowired
-    private MemberReceiveAddressService memberReceiveAddressService;
+    private final MemberReceiveAddressService memberReceiveAddressService;
+
+    public MemberReceiveAddressController(MemberReceiveAddressService memberReceiveAddressService) {
+        this.memberReceiveAddressService = memberReceiveAddressService;
+    }
+    @GetMapping("/{id}/address")
+    public List<MemberReceiveAddressEntity> getAddress(@PathVariable("id") Long id ){
+
+        return memberReceiveAddressService.getAddress(id);
+    }
 
     /**
      * 列表

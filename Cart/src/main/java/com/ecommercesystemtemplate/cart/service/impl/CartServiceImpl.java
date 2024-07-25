@@ -15,10 +15,12 @@ import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -178,6 +180,27 @@ public class CartServiceImpl implements CartService{
     public void deleteItem(Long skuId) {
         BoundHashOperations<String, Object, Object> cartOps = getCartOps();
         cartOps.delete(skuId.toString());
+    }
+
+    @Override
+    public List<CartItem> getUserCartItems() {
+        UserInfoTo userInfoTo = CartInterceptor.threadLocal.get();
+        if (userInfoTo == null || userInfoTo.getUserId() == null){
+            return null;
+        } else {
+            String cartKey = CART_PREFIX + userInfoTo.getUserId();
+            List<CartItem> cartItems = getCartItems(cartKey);
+            List<CartItem> collect = cartItems.stream().filter(cartItem -> cartItem.getCheck())
+                    .map(cartItem -> {
+                        // update price
+                        BigDecimal newestPrice = productFeignService.getNewestPrice(cartItem.getSkuId());
+                        // update newest price
+                        cartItem.setPrice(newestPrice);
+                        return cartItem;
+                    })
+                    .collect(Collectors.toList());
+            return collect;
+        }
     }
 }
 

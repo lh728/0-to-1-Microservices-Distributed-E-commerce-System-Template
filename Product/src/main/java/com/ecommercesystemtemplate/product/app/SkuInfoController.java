@@ -1,18 +1,14 @@
 package com.ecommercesystemtemplate.product.app;
 
-import java.util.Arrays;
-import java.util.Map;
-
-import com.ecommercesystemtemplate.product.entity.SkuInfoEntity;
-import com.ecommercesystemtemplate.product.service.SkuInfoService;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.common.utils.R;
+import com.ecommercesystemtemplate.product.entity.SkuInfoEntity;
+import com.ecommercesystemtemplate.product.service.SkuInfoService;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Map;
 
 
 
@@ -30,6 +26,13 @@ public class SkuInfoController {
 
     public SkuInfoController(SkuInfoService skuInfoService) {
         this.skuInfoService = skuInfoService;
+    }
+
+
+    @GetMapping("/{skuId}/getNewestPrice")
+    public BigDecimal getNewestPrice(@PathVariable("skuId") Long skuId){
+        SkuInfoEntity byId = skuInfoService.getById(skuId);
+        return byId.getPrice();
     }
 
     /**

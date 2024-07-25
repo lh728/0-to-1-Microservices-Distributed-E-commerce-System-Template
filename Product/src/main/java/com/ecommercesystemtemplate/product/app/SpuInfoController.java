@@ -1,15 +1,14 @@
 package com.ecommercesystemtemplate.product.app;
 
-import java.util.Arrays;
-import java.util.Map;
-
+import com.ecommercesystemtemplate.common.utils.PageUtils;
+import com.ecommercesystemtemplate.common.utils.R;
 import com.ecommercesystemtemplate.product.entity.SpuInfoEntity;
 import com.ecommercesystemtemplate.product.service.SpuInfoService;
 import com.ecommercesystemtemplate.product.vo.SpuSaveVo;
 import org.springframework.web.bind.annotation.*;
 
-import com.ecommercesystemtemplate.common.utils.PageUtils;
-import com.ecommercesystemtemplate.common.utils.R;
+import java.util.Arrays;
+import java.util.Map;
 
 
 

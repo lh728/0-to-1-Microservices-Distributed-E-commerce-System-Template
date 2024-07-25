@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @Controller
@@ -19,6 +20,12 @@ public class CartController {
     public CartController(CartService cartService) {
         this.cartService = cartService;
     }
+
+    @GetMapping("/currentUserCartItems")
+    public List<CartItem> getCurrentUserCartItems() {
+        return cartService.getUserCartItems();
+    }
+
 
     @GetMapping("/checkItem")
     public String checkItem(@RequestParam("skuId") Long skuId,
