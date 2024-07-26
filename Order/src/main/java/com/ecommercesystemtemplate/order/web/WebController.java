@@ -7,6 +7,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import javax.servlet.http.HttpServletRequest;
+
 @Controller
 public class WebController {
     final
@@ -22,7 +24,7 @@ public class WebController {
     }
 
     @GetMapping("/toTrade")
-    public String toTrade(Model model){
+    public String toTrade(Model model, HttpServletRequest request) {
         OrderConfirmVo orderConfirmVo = orderService.confirmOrder();
         model.addAttribute("orderConfirmData",orderConfirmVo);
         return "confirm";
