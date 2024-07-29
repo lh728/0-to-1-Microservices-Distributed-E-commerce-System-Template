@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.concurrent.ExecutionException;
 
 @Controller
 public class WebController {
@@ -24,7 +25,7 @@ public class WebController {
     }
 
     @GetMapping("/toTrade")
-    public String toTrade(Model model, HttpServletRequest request) {
+    public String toTrade(Model model, HttpServletRequest request) throws ExecutionException, InterruptedException {
         OrderConfirmVo orderConfirmVo = orderService.confirmOrder();
         model.addAttribute("orderConfirmData",orderConfirmVo);
         return "confirm";

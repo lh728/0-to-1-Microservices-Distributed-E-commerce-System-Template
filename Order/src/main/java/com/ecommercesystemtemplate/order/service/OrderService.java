@@ -6,6 +6,7 @@ import com.ecommercesystemtemplate.order.entity.OrderEntity;
 import com.ecommercesystemtemplate.order.vo.OrderConfirmVo;
 
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 /**
  * order
@@ -22,6 +23,6 @@ public interface OrderService extends IService<OrderEntity> {
      * return correspondent data to order confirm page
      * @return
      */
-    OrderConfirmVo confirmOrder();
+    OrderConfirmVo confirmOrder() throws ExecutionException, InterruptedException;
 }
 

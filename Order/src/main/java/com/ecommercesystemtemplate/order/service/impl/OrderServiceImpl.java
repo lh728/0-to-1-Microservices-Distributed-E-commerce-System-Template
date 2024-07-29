@@ -16,9 +16,14 @@ import com.ecommercesystemtemplate.order.vo.MemberAddressVo;
 import com.ecommercesystemtemplate.order.vo.OrderConfirmVo;
 import com.ecommercesystemtemplate.order.vo.OrderItemVo;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
 
 
 @Service("orderService")
@@ -30,9 +35,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     final
     CartFeignService cartFeignService;
 
-    public OrderServiceImpl(MemberFeignService memberFeignService, CartFeignService cartFeignService) {
+    final
+    ThreadPoolExecutor threadPoolExecutor;
+
+    public OrderServiceImpl(MemberFeignService memberFeignService, CartFeignService cartFeignService, ThreadPoolExecutor threadPoolExecutor) {
         this.memberFeignService = memberFeignService;
         this.cartFeignService = cartFeignService;
+        this.threadPoolExecutor = threadPoolExecutor;
     }
 
     @Override
@@ -46,21 +55,32 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     }
 
     @Override
-    public OrderConfirmVo confirmOrder() {
+    public OrderConfirmVo confirmOrder() throws ExecutionException, InterruptedException {
         OrderConfirmVo orderConfirmVo = new OrderConfirmVo();
         MemberResponseVo memberResponseVo = LoginUserInterceptor.loginUser.get();
+        // share interceptor data to async task
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
 
-        // 1. remote search all delivery addresses list
-        List<MemberAddressVo> address = memberFeignService.getAddress(memberResponseVo.getId());
-        orderConfirmVo.setAddress(address);
+        CompletableFuture<Void> getAddressFuture = CompletableFuture.runAsync(() -> {
+            // 1. remote search all delivery addresses list
+            RequestContextHolder.setRequestAttributes(requestAttributes);
+            List<MemberAddressVo> address = memberFeignService.getAddress(memberResponseVo.getId());
+            orderConfirmVo.setAddress(address);
 
-        // 2. remote search all payment list in cart
-        List<OrderItemVo> currentUserCartItems = cartFeignService.getCurrentUserCartItems();
-        orderConfirmVo.setOrderItemVoList(currentUserCartItems);
+        }, threadPoolExecutor);
+
+        CompletableFuture<Void> cartItemsFuture = CompletableFuture.runAsync(() -> {
+            // 2. remote search all payment list in cart
+            RequestContextHolder.setRequestAttributes(requestAttributes);
+            List<OrderItemVo> currentUserCartItems = cartFeignService.getCurrentUserCartItems();
+            orderConfirmVo.setOrderItemVoList(currentUserCartItems);
+        },threadPoolExecutor);
 
         // 3. get user points
         Integer integration = memberResponseVo.getIntegration();
         orderConfirmVo.setPoints(integration);
+
+        CompletableFuture.allOf(getAddressFuture, cartItemsFuture).get();
 
         return orderConfirmVo;
 
