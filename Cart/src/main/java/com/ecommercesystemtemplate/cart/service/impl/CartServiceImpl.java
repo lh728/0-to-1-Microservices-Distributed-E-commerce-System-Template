@@ -193,9 +193,10 @@ public class CartServiceImpl implements CartService{
             List<CartItem> collect = cartItems.stream().filter(cartItem -> cartItem.getCheck())
                     .map(cartItem -> {
                         // update price
-                        BigDecimal newestPrice = productFeignService.getNewestPrice(cartItem.getSkuId());
+                        R newestPrice = productFeignService.getNewestPrice(cartItem.getSkuId());
                         // update newest price
-                        cartItem.setPrice(newestPrice);
+                        String data = (String) newestPrice.get("data");
+                        cartItem.setPrice(new BigDecimal(data));
                         return cartItem;
                     })
                     .collect(Collectors.toList());

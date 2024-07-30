@@ -6,7 +6,6 @@ import com.ecommercesystemtemplate.product.entity.SkuInfoEntity;
 import com.ecommercesystemtemplate.product.service.SkuInfoService;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -30,9 +29,9 @@ public class SkuInfoController {
 
 
     @GetMapping("/{skuId}/getNewestPrice")
-    public BigDecimal getNewestPrice(@PathVariable("skuId") Long skuId){
+    public R getNewestPrice(@PathVariable("skuId") Long skuId){
         SkuInfoEntity byId = skuInfoService.getById(skuId);
-        return byId.getPrice();
+        return R.ok().setData(byId.getPrice().toString());
     }
 
     /**
