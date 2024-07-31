@@ -43,8 +43,23 @@ public class OrderConfirmVo {
     @Setter
     private String orderToken;
 
+    private Integer count;
+    private BigDecimal total;
+    private BigDecimal payablePrice;
 
-    public BigDecimal getTotalAmount() {
+
+    public Integer getCount() {
+        Integer count = 0;
+        if (orderItemVoList != null) {
+            for (OrderItemVo orderItemVo : orderItemVoList) {
+                count += orderItemVo.getCount();
+            }
+        }
+        return count;
+    }
+
+
+    public BigDecimal getTotal() {
         BigDecimal totalAmount = new BigDecimal("0");
         if (orderItemVoList != null) {
             for (OrderItemVo orderItemVo : orderItemVoList) {
@@ -56,6 +71,6 @@ public class OrderConfirmVo {
     }
 
     public BigDecimal getPayablePrice() {
-        return getTotalAmount();
+        return getTotal();
     }
 }
