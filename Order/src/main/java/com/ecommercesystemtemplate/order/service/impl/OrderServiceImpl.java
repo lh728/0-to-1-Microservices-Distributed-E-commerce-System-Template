@@ -1,20 +1,24 @@
 package com.ecommercesystemtemplate.order.service.impl;
 
+import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.common.utils.Query;
+import com.ecommercesystemtemplate.common.utils.R;
 import com.ecommercesystemtemplate.common.vo.MemberResponseVo;
 import com.ecommercesystemtemplate.order.dao.OrderDao;
 import com.ecommercesystemtemplate.order.entity.OrderEntity;
 import com.ecommercesystemtemplate.order.feign.CartFeignService;
 import com.ecommercesystemtemplate.order.feign.MemberFeignService;
+import com.ecommercesystemtemplate.order.feign.WmsFeignService;
 import com.ecommercesystemtemplate.order.interceptor.LoginUserInterceptor;
 import com.ecommercesystemtemplate.order.service.OrderService;
 import com.ecommercesystemtemplate.order.vo.MemberAddressVo;
 import com.ecommercesystemtemplate.order.vo.OrderConfirmVo;
 import com.ecommercesystemtemplate.order.vo.OrderItemVo;
+import com.ecommercesystemtemplate.order.vo.SkuStockVo;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -24,6 +28,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.stream.Collectors;
 
 
 @Service("orderService")
@@ -37,11 +42,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     final
     ThreadPoolExecutor threadPoolExecutor;
+    final WmsFeignService wmsFeignService;
 
-    public OrderServiceImpl(MemberFeignService memberFeignService, CartFeignService cartFeignService, ThreadPoolExecutor threadPoolExecutor) {
+    public OrderServiceImpl(MemberFeignService memberFeignService, CartFeignService cartFeignService, ThreadPoolExecutor threadPoolExecutor, WmsFeignService wmsFeignService) {
         this.memberFeignService = memberFeignService;
         this.cartFeignService = cartFeignService;
         this.threadPoolExecutor = threadPoolExecutor;
+        this.wmsFeignService = wmsFeignService;
     }
 
     @Override
@@ -74,6 +81,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             RequestContextHolder.setRequestAttributes(requestAttributes);
             List<OrderItemVo> currentUserCartItems = cartFeignService.getCurrentUserCartItems();
             orderConfirmVo.setOrderItemVoList(currentUserCartItems);
+        },threadPoolExecutor).thenRunAsync(() -> {
+            List<OrderItemVo> orderItemVoList = orderConfirmVo.getOrderItemVoList();
+            List<Long> list = orderItemVoList.stream().map(OrderItemVo::getSkuId).toList();
+            // 3. remote search all stock list
+            RequestContextHolder.setRequestAttributes(requestAttributes);
+            R skusHaveStock = wmsFeignService.getSkusHaveStock(list);
+            List<SkuStockVo> data = skusHaveStock.getData(new TypeReference<List<SkuStockVo>>() {
+            });
+            if (data != null){
+                Map<Long, Boolean> collect = data.stream().collect(Collectors.toMap(SkuStockVo::getSkuId, SkuStockVo::getHasStock));
+                orderConfirmVo.setStocks(collect);
+            }
+
         },threadPoolExecutor);
 
         // 3. get user points

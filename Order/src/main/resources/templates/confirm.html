@@ -663,7 +663,7 @@
 					<img style="width: 50px;height: 100px" th:src="${item.image}" class="yun"/>
 					<div class="mi">
 						<p>[[${item.title}]] <span style="color: red;"> ￥ [[${#numbers.formatDecimal(item.price,1,2)}]]</span> <span> x[[${item.count}]] </span>
-							<span>[[${item.hasStock ? "HasStock" : "NoStock"}]]</span></p>
+							<span> [[${orderConfirmData.stocks[item.skuId] ? "HasStock" : "NoStock"}]]   </span></p>
 						<p> <span>0.095kg</span></p>
 						<p class="tui-1"><img src="/static/order/confirm/img/i_07.png" />Support 7 days no-reason return</p>
 					</div>

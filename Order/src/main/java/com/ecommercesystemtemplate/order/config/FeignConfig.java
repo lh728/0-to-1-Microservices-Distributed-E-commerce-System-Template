@@ -18,11 +18,14 @@ public class FeignConfig {
             @Override
             public void apply(RequestTemplate requestTemplate) {
                 ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-                HttpServletRequest request = requestAttributes.getRequest();
-                if (request != null) {
-                    // sync headers
-                    requestTemplate.header("Cookie", request.getHeader("Cookie"));
+                if (requestAttributes != null) {
+                    HttpServletRequest request = requestAttributes.getRequest();
+                    if (request != null) {
+                        // sync headers
+                        requestTemplate.header("Cookie", request.getHeader("Cookie"));
+                    }
                 }
+
             }
         };
     }
