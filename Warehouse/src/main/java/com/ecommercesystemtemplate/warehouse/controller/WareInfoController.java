@@ -1,19 +1,14 @@
 package com.ecommercesystemtemplate.warehouse.controller;
 
-import java.util.Arrays;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.ecommercesystemtemplate.warehouse.entity.WareInfoEntity;
-import com.ecommercesystemtemplate.warehouse.service.WareInfoService;
 import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.common.utils.R;
+import com.ecommercesystemtemplate.warehouse.entity.WareInfoEntity;
+import com.ecommercesystemtemplate.warehouse.service.WareInfoService;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Map;
 
 
 
@@ -31,6 +26,17 @@ public class WareInfoController {
 
     public WareInfoController(WareInfoService wareInfoService) {
         this.wareInfoService = wareInfoService;
+    }
+
+
+    /**
+     * calculate freight
+     */
+    @GetMapping("/getFreight")
+    public R getFreight(@RequestParam("addrId") Long addrId){
+        BigDecimal fee = wareInfoService.getFreight(addrId);
+
+        return R.ok().setData(fee);
     }
 
     /**

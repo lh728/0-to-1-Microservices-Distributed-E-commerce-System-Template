@@ -597,8 +597,8 @@
 			</div>
 
 			<!--address-->
-			<div class="top-3" th:each="addr:${orderConfirmData.address}">
-				<p>[[${addr.name}]]</p><span>[[${addr.name}]]  [[${addr.province}]] [[${addr.detailAddress}]]  [[${addr.phone}]]</span>
+			<div class="top-3 addr-item" th:each="addr:${orderConfirmData.address}">
+				<p th:attr="def=${addr.defaultStatus}, addrId=${addr.id}">[[${addr.name}]]</p><span>[[${addr.name}]]  [[${addr.province}]] [[${addr.detailAddress}]]  [[${addr.phone}]]</span>
 			</div>
 			<p class="p2">More Address︾</p>
 			<div class="hh1"/></div>
@@ -711,8 +711,8 @@
 					<span class="rmb">  -￥0.00</span>
 				</p>
 				<p class="qian_y">
-					<span>运费： </span>
-					<span class="rmb"> &nbsp ￥0.00</span>
+					<span>Freight： </span>
+					<span class="rmb"> &nbsp ￥<b id="freightElement"></b></span>
 				</p>
 				<p class="qian_y">
 					<span>服务费： </span>
@@ -726,7 +726,7 @@
 			</div>
 
 			<div class="yfze">
-				<p class="yfze_a"><span class="z">应付总额：</span><span class="hq">￥[[${#numbers.formatDecimal(orderConfirmData.payablePrice,1,2)}]]</span></p>
+				<p class="yfze_a"><span class="z">Total Payable：</span><span class="hq">￥<b id="payableElement">[[${#numbers.formatDecimal(orderConfirmData.payablePrice,1,2)}]]</b></span></p>
 				<p class="yfze_b">寄送至： </p>
 			</div>
 			<button class="tijiao">提交订单</button>
@@ -962,7 +962,32 @@
                 },function(){
                     $('.h-r-1').css('display','none')
                 })
+				highlight();
+				getFreight(	$(".addr-item p[def='1']").attr("addrId"));
             })
+
+			function highlight() {
+				$(".addr-item p").css({"border": "2px solid gray"});
+				$(".addr-item p[def='1']").css({"border": "2px solid red"});
+			}
+
+			$(".addr-item p").click(function () {
+				$(".addr-item p").attr("def","0");
+				$(this).attr("def","1");
+				highlight();
+				// get curr address id
+				var currAddrId = $(this).attr("addrId");
+				// send ajax request
+				getFreight(currAddrId);
+			});
+
+			function getFreight(addrId){
+				$.get("http://thellumall.com/api/warehouse/wareinfo/getFreight?addrId="+addrId,function (data) {
+					$("#freightElement").text(data.data);
+					var total = [[${orderConfirmData.total}]];
+					$("#payableElement").text(total * 1 + data.data * 1);
+				})
+			}
 
 
 		</script>
