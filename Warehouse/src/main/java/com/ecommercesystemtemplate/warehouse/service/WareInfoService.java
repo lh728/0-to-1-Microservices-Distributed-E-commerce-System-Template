@@ -3,8 +3,8 @@ package com.ecommercesystemtemplate.warehouse.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.warehouse.entity.WareInfoEntity;
+import com.ecommercesystemtemplate.warehouse.vo.FreightVo;
 
-import java.math.BigDecimal;
 import java.util.Map;
 
 /**
@@ -20,9 +20,10 @@ public interface WareInfoService extends IService<WareInfoEntity> {
 
     /**
      * calculate the freight according to the address
+     *
      * @param addrId
      * @return
      */
-    BigDecimal getFreight(Long addrId);
+    FreightVo getFreight(Long addrId);
 }
 

@@ -4,9 +4,9 @@ import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.common.utils.R;
 import com.ecommercesystemtemplate.warehouse.entity.WareInfoEntity;
 import com.ecommercesystemtemplate.warehouse.service.WareInfoService;
+import com.ecommercesystemtemplate.warehouse.vo.FreightVo;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -34,7 +34,7 @@ public class WareInfoController {
      */
     @GetMapping("/getFreight")
     public R getFreight(@RequestParam("addrId") Long addrId){
-        BigDecimal fee = wareInfoService.getFreight(addrId);
+        FreightVo fee = wareInfoService.getFreight(addrId);
 
         return R.ok().setData(fee);
     }

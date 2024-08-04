@@ -11,6 +11,7 @@ import com.ecommercesystemtemplate.warehouse.dao.WareInfoDao;
 import com.ecommercesystemtemplate.warehouse.entity.WareInfoEntity;
 import com.ecommercesystemtemplate.warehouse.feign.MemberFeignService;
 import com.ecommercesystemtemplate.warehouse.service.WareInfoService;
+import com.ecommercesystemtemplate.warehouse.vo.FreightVo;
 import com.ecommercesystemtemplate.warehouse.vo.MemberAddressVo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
@@ -44,17 +45,21 @@ public class WareInfoServiceImpl extends ServiceImpl<WareInfoDao, WareInfoEntity
     }
 
     @Override
-    public BigDecimal getFreight(Long addrId) {
+    public FreightVo getFreight(Long addrId) {
+        FreightVo freightVo = new FreightVo();
         R r = memberFeignService.addrInfo(addrId);
         MemberAddressVo data = r.getData("memberReceiveAddress",new TypeReference<MemberAddressVo>() {
         });
         if (data != null){
             String phone = data.getPhone();
             // an easy logic to calculate freight
-            String substring = phone.substring(phone.length() - 1, phone.length());
-            return new BigDecimal(substring);
+            String substring = phone.substring(phone.length() - 1);
+            BigDecimal freight = new BigDecimal(substring);
+            freightVo.setFreight(freight);
+            freightVo.setAddress(data);
+            return freightVo;
         }
-        return new BigDecimal(0);
+        return freightVo;
     }
 
 }

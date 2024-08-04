@@ -727,7 +727,7 @@
 
 			<div class="yfze">
 				<p class="yfze_a"><span class="z">Total Payable：</span><span class="hq">￥<b id="payableElement">[[${#numbers.formatDecimal(orderConfirmData.payablePrice,1,2)}]]</b></span></p>
-				<p class="yfze_b">寄送至： </p>
+				<p class="yfze_b">Send to：<span id="receiverAddressElement"></span>  Receiver: <span id="receiverElement"></span> </p>
 			</div>
 			<button class="tijiao">提交订单</button>
 		</div>
@@ -983,9 +983,14 @@
 
 			function getFreight(addrId){
 				$.get("http://thellumall.com/api/warehouse/wareinfo/getFreight?addrId="+addrId,function (data) {
-					$("#freightElement").text(data.data);
+					$("#freightElement").text(data.data.freight);
 					var total = [[${orderConfirmData.total}]];
-					$("#payableElement").text(total * 1 + data.data * 1);
+					// set freight
+					$("#payableElement").text(total * 1 + data.data.freight * 1);
+					// set receiverAddress
+					$("#receiverAddressElement").text(data.data.address.province + " " + data.data.address.detailAddress);
+					// set receiverName
+					$("#receiverElement").text(data.data.address.name);
 				})
 			}
 
