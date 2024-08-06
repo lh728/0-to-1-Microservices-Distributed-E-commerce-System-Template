@@ -729,7 +729,12 @@
 				<p class="yfze_a"><span class="z">Total Payable：</span><span class="hq">￥<b id="payableElement">[[${#numbers.formatDecimal(orderConfirmData.payablePrice,1,2)}]]</b></span></p>
 				<p class="yfze_b">Send to：<span id="receiverAddressElement"></span>  Receiver: <span id="receiverElement"></span> </p>
 			</div>
-			<button class="tijiao">提交订单</button>
+			<form action="http://order.thellumall.com/submitOrder" method="post">
+				<input id="arrIdInput" type="hidden" name="addrId" >
+				<input id="payPriceInput" type="hidden" name="payPrice" >
+				<input type="hidden" name="orderToken" th:value="${orderConfirmData.orderToken}">
+				<button class="tijiao" type="submit">Submit</button>
+			</form>
 		</div>
 		</div>
 
@@ -982,11 +987,14 @@
 			});
 
 			function getFreight(addrId){
+				$("#arrIdInput").val(addrId);
 				$.get("http://thellumall.com/api/warehouse/wareinfo/getFreight?addrId="+addrId,function (data) {
 					$("#freightElement").text(data.data.freight);
 					var total = [[${orderConfirmData.total}]];
+					var payPrice = total * 1 + data.data.freight * 1;
 					// set freight
-					$("#payableElement").text(total * 1 + data.data.freight * 1);
+					$("#payableElement").text(payPrice);
+					$("#payPriceInput").val(payPrice);
 					// set receiverAddress
 					$("#receiverAddressElement").text(data.data.address.province + " " + data.data.address.detailAddress);
 					// set receiverName

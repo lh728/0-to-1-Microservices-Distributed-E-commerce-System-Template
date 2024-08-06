@@ -38,7 +38,7 @@ public class OrderConfirmVo {
 
     /**
      * orderToken
-     * Prevent repetition
+     * Prevent resubmit token
      */
     @Getter
     @Setter

@@ -8,6 +8,7 @@ import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.common.utils.Query;
 import com.ecommercesystemtemplate.common.utils.R;
 import com.ecommercesystemtemplate.common.vo.MemberResponseVo;
+import com.ecommercesystemtemplate.order.constant.OrderConstant;
 import com.ecommercesystemtemplate.order.dao.OrderDao;
 import com.ecommercesystemtemplate.order.entity.OrderEntity;
 import com.ecommercesystemtemplate.order.feign.CartFeignService;
@@ -19,15 +20,18 @@ import com.ecommercesystemtemplate.order.vo.MemberAddressVo;
 import com.ecommercesystemtemplate.order.vo.OrderConfirmVo;
 import com.ecommercesystemtemplate.order.vo.OrderItemVo;
 import com.ecommercesystemtemplate.order.vo.SkuStockVo;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
@@ -43,12 +47,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     final
     ThreadPoolExecutor threadPoolExecutor;
     final WmsFeignService wmsFeignService;
+    final StringRedisTemplate stringRedisTemplate;
 
-    public OrderServiceImpl(MemberFeignService memberFeignService, CartFeignService cartFeignService, ThreadPoolExecutor threadPoolExecutor, WmsFeignService wmsFeignService) {
+    public OrderServiceImpl(MemberFeignService memberFeignService, CartFeignService cartFeignService, ThreadPoolExecutor threadPoolExecutor, WmsFeignService wmsFeignService, StringRedisTemplate stringRedisTemplate) {
         this.memberFeignService = memberFeignService;
         this.cartFeignService = cartFeignService;
         this.threadPoolExecutor = threadPoolExecutor;
         this.wmsFeignService = wmsFeignService;
+        this.stringRedisTemplate = stringRedisTemplate;
     }
 
     @Override
@@ -100,6 +106,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         Integer integration = memberResponseVo.getIntegration();
         orderConfirmVo.setPoints(integration);
 
+        // 4. pay idempotence (anti-resubmit token)
+        String token = UUID.randomUUID().toString().replace("-", "");
+        stringRedisTemplate.opsForValue().set(OrderConstant.USER_ORDER_TOKEN_PREFIX+memberResponseVo.getId(),token,30, TimeUnit.MINUTES);
+        orderConfirmVo.setOrderToken(token);
         CompletableFuture.allOf(getAddressFuture, cartItemsFuture).get();
 
         return orderConfirmVo;
