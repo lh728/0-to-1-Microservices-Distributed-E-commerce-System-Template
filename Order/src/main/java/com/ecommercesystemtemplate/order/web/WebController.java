@@ -3,6 +3,7 @@ package com.ecommercesystemtemplate.order.web;
 import com.ecommercesystemtemplate.order.service.OrderService;
 import com.ecommercesystemtemplate.order.vo.OrderConfirmVo;
 import com.ecommercesystemtemplate.order.vo.OrderSubmitVo;
+import com.ecommercesystemtemplate.order.vo.SubmitOrderResponseVo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,10 +41,14 @@ public class WebController {
      */
     @PostMapping("/submitOrder")
     public String submitOrder(OrderSubmitVo orderSubmitVo) {
-        // 1. if success, go to payment page
+        SubmitOrderResponseVo submitOrderResponseVo = orderService.submitOrder(orderSubmitVo);
+        if (submitOrderResponseVo.getStatusCode() == 0) {
+            // 1. if success, go to payment page
+            return "pay";
+        } else {
+            // 2. if fail, go back to confirm page
+            return "redirect:http://order.com/toTrade.html";
+        }
 
-        // 2. if fail, go back to confirm page
-
-        return "confirm";
     }
 }

@@ -16,15 +16,14 @@ import com.ecommercesystemtemplate.order.feign.MemberFeignService;
 import com.ecommercesystemtemplate.order.feign.WmsFeignService;
 import com.ecommercesystemtemplate.order.interceptor.LoginUserInterceptor;
 import com.ecommercesystemtemplate.order.service.OrderService;
-import com.ecommercesystemtemplate.order.vo.MemberAddressVo;
-import com.ecommercesystemtemplate.order.vo.OrderConfirmVo;
-import com.ecommercesystemtemplate.order.vo.OrderItemVo;
-import com.ecommercesystemtemplate.order.vo.SkuStockVo;
+import com.ecommercesystemtemplate.order.vo.*;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -113,6 +112,26 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         CompletableFuture.allOf(getAddressFuture, cartItemsFuture).get();
 
         return orderConfirmVo;
+
+
+    }
+
+    @Override
+    public SubmitOrderResponseVo submitOrder(OrderSubmitVo vo) {
+        SubmitOrderResponseVo submitOrderResponseVo = new SubmitOrderResponseVo();
+        MemberResponseVo memberResponseVo = LoginUserInterceptor.loginUser.get();
+        // 1. check order token
+        String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
+        String orderToken = vo.getOrderToken();
+        Long result = stringRedisTemplate.execute(
+                new DefaultRedisScript<>(script, Long.class),
+                Collections.singletonList(OrderConstant.USER_ORDER_TOKEN_PREFIX + memberResponseVo.getId()),
+                orderToken);
+        if (result == 1L){
+
+        }else{
+            return submitOrderResponseVo;
+        }
 
 
     }
