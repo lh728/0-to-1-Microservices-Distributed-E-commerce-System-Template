@@ -3,6 +3,7 @@ package com.ecommercesystemtemplate.order.service.impl;
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.common.utils.Query;
@@ -11,11 +12,13 @@ import com.ecommercesystemtemplate.common.vo.MemberResponseVo;
 import com.ecommercesystemtemplate.order.constant.OrderConstant;
 import com.ecommercesystemtemplate.order.dao.OrderDao;
 import com.ecommercesystemtemplate.order.entity.OrderEntity;
+import com.ecommercesystemtemplate.order.entity.OrderItemEntity;
 import com.ecommercesystemtemplate.order.feign.CartFeignService;
 import com.ecommercesystemtemplate.order.feign.MemberFeignService;
 import com.ecommercesystemtemplate.order.feign.WmsFeignService;
 import com.ecommercesystemtemplate.order.interceptor.LoginUserInterceptor;
 import com.ecommercesystemtemplate.order.service.OrderService;
+import com.ecommercesystemtemplate.order.to.OrderCreateTo;
 import com.ecommercesystemtemplate.order.vo.*;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -23,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +40,8 @@ import java.util.stream.Collectors;
 
 @Service("orderService")
 public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> implements OrderService {
+
+    private ThreadLocal<OrderSubmitVo> threadLocal = new ThreadLocal<>();
 
     final
     MemberFeignService memberFeignService;
@@ -118,6 +124,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     @Override
     public SubmitOrderResponseVo submitOrder(OrderSubmitVo vo) {
+        threadLocal.set(vo);
         SubmitOrderResponseVo submitOrderResponseVo = new SubmitOrderResponseVo();
         MemberResponseVo memberResponseVo = LoginUserInterceptor.loginUser.get();
         // 1. check order token
@@ -127,13 +134,68 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                 new DefaultRedisScript<>(script, Long.class),
                 Collections.singletonList(OrderConstant.USER_ORDER_TOKEN_PREFIX + memberResponseVo.getId()),
                 orderToken);
-        if (result == 1L){
-
+        if (result == 0L){
+            //fail
+            submitOrderResponseVo.setStatusCode(1);
+            return submitOrderResponseVo;
         }else{
+            //success
+            OrderCreateTo order = createOrder();
             return submitOrderResponseVo;
         }
 
 
+    }
+
+    private OrderCreateTo createOrder(){
+        OrderCreateTo orderCreateTo = new OrderCreateTo();
+        // 1. generate order id
+        String orderId = IdWorker.getTimeId();
+        // 2. set address and freight
+        OrderEntity orderEntity = buildOrder(orderId);
+        // 3. get all order items
+        List<OrderItemEntity> orderItemEntities = buildOrderItems();
+
+        return orderCreateTo;
+
+    }
+
+    private OrderEntity buildOrder(String orderId) {
+        OrderEntity orderEntity = new OrderEntity();
+        orderEntity.setOrderSn(orderId);
+        OrderSubmitVo orderSubmitVo = threadLocal.get();
+        R freight = wmsFeignService.getFreight(orderSubmitVo.getAddrId());
+        FreightVo data = freight.getData(new TypeReference<FreightVo>() {
+        });
+        BigDecimal freight1 = data.getFreight();
+        orderEntity.setFreightAmount(freight1);
+        orderEntity.setReceiverCity(data.getAddress().getCity());
+        orderEntity.setReceiverDetailAddress(data.getAddress().getDetailAddress());
+        orderEntity.setReceiverName(data.getAddress().getName());
+        orderEntity.setReceiverPhone(data.getAddress().getPhone());
+        orderEntity.setReceiverProvince(data.getAddress().getPostCode());
+        orderEntity.setReceiverPostCode(data.getAddress().getProvince());
+        orderEntity.setReceiverRegion(data.getAddress().getRegion());
+        return orderEntity;
+    }
+
+    private List<OrderItemEntity> buildOrderItems() {
+        List<OrderItemVo> currentUserCartItems = cartFeignService.getCurrentUserCartItems();
+        if (currentUserCartItems != null && !currentUserCartItems.isEmpty()){
+            List<OrderItemEntity> list = currentUserCartItems.stream().map(item -> {
+                OrderItemEntity entity = buildOrderItem(item);
+
+                return entity;
+            }).collect(Collectors.toList());
+        }
+
+        return null;
+
+    }
+
+    private OrderItemEntity buildOrderItem(OrderItemVo item) {
+
+        return null;
     }
 
 }
