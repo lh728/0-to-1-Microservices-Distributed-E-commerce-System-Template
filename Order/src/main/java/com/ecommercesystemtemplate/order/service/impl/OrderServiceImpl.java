@@ -15,6 +15,7 @@ import com.ecommercesystemtemplate.order.entity.OrderEntity;
 import com.ecommercesystemtemplate.order.entity.OrderItemEntity;
 import com.ecommercesystemtemplate.order.feign.CartFeignService;
 import com.ecommercesystemtemplate.order.feign.MemberFeignService;
+import com.ecommercesystemtemplate.order.feign.ProductFeignService;
 import com.ecommercesystemtemplate.order.feign.WmsFeignService;
 import com.ecommercesystemtemplate.order.interceptor.LoginUserInterceptor;
 import com.ecommercesystemtemplate.order.service.OrderService;
@@ -23,6 +24,7 @@ import com.ecommercesystemtemplate.order.vo.*;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
@@ -42,19 +44,16 @@ import java.util.stream.Collectors;
 public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> implements OrderService {
 
     private ThreadLocal<OrderSubmitVo> threadLocal = new ThreadLocal<>();
-
-    final
-    MemberFeignService memberFeignService;
-
-    final
-    CartFeignService cartFeignService;
-
+    final ProductFeignService productFeignService;
+    final MemberFeignService memberFeignService;
+    final CartFeignService cartFeignService;
     final
     ThreadPoolExecutor threadPoolExecutor;
     final WmsFeignService wmsFeignService;
     final StringRedisTemplate stringRedisTemplate;
 
-    public OrderServiceImpl(MemberFeignService memberFeignService, CartFeignService cartFeignService, ThreadPoolExecutor threadPoolExecutor, WmsFeignService wmsFeignService, StringRedisTemplate stringRedisTemplate) {
+    public OrderServiceImpl(ProductFeignService productFeignService, MemberFeignService memberFeignService, CartFeignService cartFeignService, ThreadPoolExecutor threadPoolExecutor, WmsFeignService wmsFeignService, StringRedisTemplate stringRedisTemplate) {
+        this.productFeignService = productFeignService;
         this.memberFeignService = memberFeignService;
         this.cartFeignService = cartFeignService;
         this.threadPoolExecutor = threadPoolExecutor;
@@ -150,11 +149,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     private OrderCreateTo createOrder(){
         OrderCreateTo orderCreateTo = new OrderCreateTo();
         // 1. generate order id
-        String orderId = IdWorker.getTimeId();
+        String orderSn = IdWorker.getTimeId();
         // 2. set address and freight
-        OrderEntity orderEntity = buildOrder(orderId);
+        OrderEntity orderEntity = buildOrder(orderSn);
         // 3. get all order items
-        List<OrderItemEntity> orderItemEntities = buildOrderItems();
+        List<OrderItemEntity> orderItemEntities = buildOrderItems(orderSn);
 
         return orderCreateTo;
 
@@ -179,23 +178,48 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         return orderEntity;
     }
 
-    private List<OrderItemEntity> buildOrderItems() {
+    private List<OrderItemEntity> buildOrderItems(String orderSn) {
+        // check item price finally
         List<OrderItemVo> currentUserCartItems = cartFeignService.getCurrentUserCartItems();
         if (currentUserCartItems != null && !currentUserCartItems.isEmpty()){
             List<OrderItemEntity> list = currentUserCartItems.stream().map(item -> {
                 OrderItemEntity entity = buildOrderItem(item);
-
+                entity.setOrderSn(orderSn);
                 return entity;
-            }).collect(Collectors.toList());
+            }).toList();
+            return list;
         }
-
         return null;
 
     }
 
     private OrderItemEntity buildOrderItem(OrderItemVo item) {
+        OrderItemEntity entity = new OrderItemEntity();
+        // 1. order sn
+        // 2. product spu info
+        Long skuId = item.getSkuId();
+        R r = productFeignService.getSpuInfoBySkuId(skuId);
+        SpuInfoVo data = r.getData(new TypeReference<SpuInfoVo>() {
+        });
+        entity.setSpuId(data.getId());
+        entity.setSpuName(data.getSpuName());
+        entity.setCategoryId(data.getCatalogId());
+        entity.setSpuBrand(data.getBrandId().toString());
 
-        return null;
+        // 3. product sku info
+        entity.setSkuId(item.getSkuId());
+        entity.setSkuName(item.getTitle());
+        entity.setSkuPic(item.getImage());
+        entity.setSkuPrice(item.getPrice());
+        entity.setSkuAttrsVals(StringUtils.collectionToDelimitedString(item.getSkuAttr(), ";"));
+        entity.setSkuQuantity(item.getCount());
+
+        // 4. point info
+        entity.setGiftGrowth(item.getPrice().intValue());
+        entity.setGiftIntegration(item.getPrice().intValue());
+
+        return entity;
+
     }
 
 }
