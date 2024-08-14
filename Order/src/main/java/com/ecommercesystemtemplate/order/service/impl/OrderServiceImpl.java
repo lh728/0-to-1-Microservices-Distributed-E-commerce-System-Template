@@ -13,6 +13,7 @@ import com.ecommercesystemtemplate.order.constant.OrderConstant;
 import com.ecommercesystemtemplate.order.dao.OrderDao;
 import com.ecommercesystemtemplate.order.entity.OrderEntity;
 import com.ecommercesystemtemplate.order.entity.OrderItemEntity;
+import com.ecommercesystemtemplate.order.enume.OrderStatusEnum;
 import com.ecommercesystemtemplate.order.feign.CartFeignService;
 import com.ecommercesystemtemplate.order.feign.MemberFeignService;
 import com.ecommercesystemtemplate.order.feign.ProductFeignService;
@@ -139,7 +140,24 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             return submitOrderResponseVo;
         }else{
             //success
+            // 1. create order
             OrderCreateTo order = createOrder();
+            // 2. check price
+            BigDecimal payAmount = order.getOrder().getPayAmount();
+            BigDecimal payPrice = vo.getPayPrice();
+            if (Math.abs(payAmount.subtract(payPrice).doubleValue()) < 0.01){
+                // 3. save order
+                saveOrder(order);
+                // 4. delete cart items
+                deleteCartItems(order.getOrder().getId());
+                // 5. return success
+                submitOrderResponseVo.setOrder(order.getOrder());
+                submitOrderResponseVo.setStatusCode(0);
+            } else{
+                // 5. return fail
+                submitOrderResponseVo.setStatusCode(2);
+                return submitOrderResponseVo;
+            }
             return submitOrderResponseVo;
         }
 
@@ -154,8 +172,41 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         OrderEntity orderEntity = buildOrder(orderSn);
         // 3. get all order items
         List<OrderItemEntity> orderItemEntities = buildOrderItems(orderSn);
+        // 4. compute price
+        computePrice(orderEntity, orderItemEntities);
 
         return orderCreateTo;
+
+    }
+
+    private void computePrice(OrderEntity orderEntity, List<OrderItemEntity> orderItemEntities) {
+        BigDecimal total = new BigDecimal(0);
+        BigDecimal coupon = new BigDecimal(0);
+        BigDecimal point = new BigDecimal(0);
+        BigDecimal promotion = new BigDecimal(0);
+        BigDecimal gift = new BigDecimal(0);
+        BigDecimal growth = new BigDecimal(0);
+        for (OrderItemEntity item : orderItemEntities) {
+            coupon = coupon.add(item.getCouponAmount());
+            point = point.add(item.getIntegrationAmount());
+            promotion = promotion.add(item.getPromotionAmount());
+            total = total.add(item.getRealAmount());
+            gift = gift.add(new BigDecimal(item.getGiftIntegration().toString()));
+            growth = growth.add(new BigDecimal(item.getGiftGrowth().toString()));
+        }
+        // 1. relate to order price
+        orderEntity.setTotalAmount(total);
+        orderEntity.setPayAmount(total.add(orderEntity.getFreightAmount()));
+        orderEntity.setCouponAmount(coupon);
+        orderEntity.setIntegrationAmount(point);
+        orderEntity.setPromotionAmount(promotion);
+
+        // 2. relate to gift point and member growth point
+        orderEntity.setIntegration(gift.intValue());
+        orderEntity.setGrowth(growth.intValue());
+
+        // 3. relate to others
+        orderEntity.setDeleteStatus(0);
 
     }
 
@@ -175,6 +226,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         orderEntity.setReceiverProvince(data.getAddress().getPostCode());
         orderEntity.setReceiverPostCode(data.getAddress().getProvince());
         orderEntity.setReceiverRegion(data.getAddress().getRegion());
+
+        orderEntity.setStatus(OrderStatusEnum.CREATE_NEW.getCode());
+        orderEntity.setAutoConfirmDay(7);
         return orderEntity;
     }
 
@@ -215,8 +269,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         entity.setSkuQuantity(item.getCount());
 
         // 4. point info
-        entity.setGiftGrowth(item.getPrice().intValue());
-        entity.setGiftIntegration(item.getPrice().intValue());
+        entity.setGiftGrowth(item.getPrice().multiply(new BigDecimal(item.getCount().toString())).intValue());
+        entity.setGiftIntegration(item.getPrice().multiply(new BigDecimal(item.getCount().toString())).intValue());
+
+        // 5. order price info
+        entity.setPromotionAmount(BigDecimal.ZERO);
+        entity.setCouponAmount(BigDecimal.ZERO);
+        entity.setIntegrationAmount(BigDecimal.ZERO);
+        BigDecimal origin = entity.getSkuPrice().multiply(new BigDecimal(entity.getSkuQuantity().toString()));
+        BigDecimal subtract = origin.subtract(entity.getCouponAmount()).subtract(entity.getPromotionAmount()).subtract(entity.getIntegrationAmount());
+        entity.setRealAmount(subtract);
 
         return entity;
 
