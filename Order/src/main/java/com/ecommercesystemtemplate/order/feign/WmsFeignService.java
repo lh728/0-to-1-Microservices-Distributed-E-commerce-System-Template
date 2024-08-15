@@ -1,6 +1,7 @@
 package com.ecommercesystemtemplate.order.feign;
 
 import com.ecommercesystemtemplate.common.utils.R;
+import com.ecommercesystemtemplate.order.vo.WareSkuLockVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,4 +18,7 @@ public interface WmsFeignService {
 
     @GetMapping("/warehouse/wareinfo/getFreight")
     R getFreight(@RequestParam("addrId") Long addrId);
+
+    @PostMapping("/warehouse/waresku/lock/order")
+    R lockOrderStock(@RequestBody WareSkuLockVo vo);
 }

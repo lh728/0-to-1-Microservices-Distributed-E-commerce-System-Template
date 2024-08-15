@@ -1,17 +1,17 @@
 package com.ecommercesystemtemplate.warehouse.controller;
 
+import com.ecommercesystemtemplate.common.utils.PageUtils;
+import com.ecommercesystemtemplate.common.utils.R;
+import com.ecommercesystemtemplate.warehouse.entity.WareSkuEntity;
+import com.ecommercesystemtemplate.warehouse.service.WareSkuService;
+import com.ecommercesystemtemplate.warehouse.vo.LockStockResultVo;
+import com.ecommercesystemtemplate.warehouse.vo.SkuHasStockVo;
+import com.ecommercesystemtemplate.warehouse.vo.WareSkuLockVo;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
-import com.ecommercesystemtemplate.warehouse.vo.SkuHasStockVo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import com.ecommercesystemtemplate.warehouse.entity.WareSkuEntity;
-import com.ecommercesystemtemplate.warehouse.service.WareSkuService;
-import com.ecommercesystemtemplate.common.utils.PageUtils;
-import com.ecommercesystemtemplate.common.utils.R;
 
 
 
@@ -30,6 +30,13 @@ public class WareSkuController {
     public WareSkuController(WareSkuService wareSkuService) {
         this.wareSkuService = wareSkuService;
     }
+
+    @PostMapping("/lock/order")
+    public R lockOrderStock(@RequestBody WareSkuLockVo vo){
+        List<LockStockResultVo> vos = wareSkuService.orderLockStock(vo);
+        return R.ok().setData(vos);
+    }
+
 
     /**
      * if there is stock

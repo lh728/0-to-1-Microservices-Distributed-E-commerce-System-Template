@@ -19,21 +19,20 @@ import com.ecommercesystemtemplate.order.feign.MemberFeignService;
 import com.ecommercesystemtemplate.order.feign.ProductFeignService;
 import com.ecommercesystemtemplate.order.feign.WmsFeignService;
 import com.ecommercesystemtemplate.order.interceptor.LoginUserInterceptor;
+import com.ecommercesystemtemplate.order.service.OrderItemService;
 import com.ecommercesystemtemplate.order.service.OrderService;
 import com.ecommercesystemtemplate.order.to.OrderCreateTo;
 import com.ecommercesystemtemplate.order.vo.*;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -52,14 +51,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     ThreadPoolExecutor threadPoolExecutor;
     final WmsFeignService wmsFeignService;
     final StringRedisTemplate stringRedisTemplate;
+    final OrderItemService orderItemService;
 
-    public OrderServiceImpl(ProductFeignService productFeignService, MemberFeignService memberFeignService, CartFeignService cartFeignService, ThreadPoolExecutor threadPoolExecutor, WmsFeignService wmsFeignService, StringRedisTemplate stringRedisTemplate) {
+
+    public OrderServiceImpl(ProductFeignService productFeignService, MemberFeignService memberFeignService, CartFeignService cartFeignService, ThreadPoolExecutor threadPoolExecutor, WmsFeignService wmsFeignService, StringRedisTemplate stringRedisTemplate, OrderItemService orderItemService) {
         this.productFeignService = productFeignService;
         this.memberFeignService = memberFeignService;
         this.cartFeignService = cartFeignService;
         this.threadPoolExecutor = threadPoolExecutor;
         this.wmsFeignService = wmsFeignService;
         this.stringRedisTemplate = stringRedisTemplate;
+        this.orderItemService = orderItemService;
     }
 
     @Override
@@ -123,6 +125,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     }
 
     @Override
+    @Transactional
     public SubmitOrderResponseVo submitOrder(OrderSubmitVo vo) {
         threadLocal.set(vo);
         SubmitOrderResponseVo submitOrderResponseVo = new SubmitOrderResponseVo();
@@ -148,9 +151,27 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             if (Math.abs(payAmount.subtract(payPrice).doubleValue()) < 0.01){
                 // 3. save order
                 saveOrder(order);
-                // 4. delete cart items
+                // 4. lock stock info
+                WareSkuLockVo wareSkuLockVo = new WareSkuLockVo();
+                wareSkuLockVo.setOrderSn(order.getOrder().getOrderSn());
+                List<OrderItemVo> list = order.getOrderItems().stream().map(item -> {
+                    OrderItemVo orderItemVo = new OrderItemVo();
+                    orderItemVo.setSkuId(item.getSkuId());
+                    orderItemVo.setCount(item.getSkuQuantity());
+                    orderItemVo.setTitle(item.getSkuName());
+                    return orderItemVo;
+                }).toList();
+                wareSkuLockVo.setOrderItemVoList(list);
+                R r = wmsFeignService.lockOrderStock(wareSkuLockVo);
+                if (r.getCode() == 0){
+
+                }else{
+
+                }
+
+                // 5. delete cart items
                 deleteCartItems(order.getOrder().getId());
-                // 5. return success
+                // 6. return success
                 submitOrderResponseVo.setOrder(order.getOrder());
                 submitOrderResponseVo.setStatusCode(0);
             } else{
@@ -162,6 +183,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         }
 
 
+    }
+
+    private void saveOrder(OrderCreateTo order) {
+        OrderEntity orderEntity = order.getOrder();
+        orderEntity.setModifyTime(new Date());
+        this.save(orderEntity);
+
+        List<OrderItemEntity> orderItems = order.getOrderItems();
+        orderItemService.saveBatch(orderItems);
     }
 
     private OrderCreateTo createOrder(){
@@ -213,6 +243,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     private OrderEntity buildOrder(String orderId) {
         OrderEntity orderEntity = new OrderEntity();
         orderEntity.setOrderSn(orderId);
+        orderEntity.setMemberId(LoginUserInterceptor.loginUser.get().getId());
         OrderSubmitVo orderSubmitVo = threadLocal.get();
         R freight = wmsFeignService.getFreight(orderSubmitVo.getAddrId());
         FreightVo data = freight.getData(new TypeReference<FreightVo>() {

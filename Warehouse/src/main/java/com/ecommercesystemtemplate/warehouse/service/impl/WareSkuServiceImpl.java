@@ -1,23 +1,23 @@
 package com.ecommercesystemtemplate.warehouse.service.impl;
 
-import com.ecommercesystemtemplate.common.utils.R;
-import com.ecommercesystemtemplate.warehouse.feign.ProductFeignService;
-import com.ecommercesystemtemplate.warehouse.vo.SkuHasStockVo;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.common.utils.Query;
-
+import com.ecommercesystemtemplate.common.utils.R;
 import com.ecommercesystemtemplate.warehouse.dao.WareSkuDao;
 import com.ecommercesystemtemplate.warehouse.entity.WareSkuEntity;
+import com.ecommercesystemtemplate.warehouse.feign.ProductFeignService;
 import com.ecommercesystemtemplate.warehouse.service.WareSkuService;
+import com.ecommercesystemtemplate.warehouse.vo.LockStockResultVo;
+import com.ecommercesystemtemplate.warehouse.vo.SkuHasStockVo;
+import com.ecommercesystemtemplate.warehouse.vo.WareSkuLockVo;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
 
 
 @Service("wareSkuService")
@@ -88,6 +88,17 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
             return skuHasStockVo;
         }).toList();
         return list;
+    }
+
+    /**
+     * lock stock for order
+     * @param vo
+     * @return
+     */
+    @Override
+    public List<LockStockResultVo> orderLockStock(WareSkuLockVo vo) {
+
+
     }
 
 }
