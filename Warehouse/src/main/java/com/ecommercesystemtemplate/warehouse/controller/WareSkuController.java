@@ -1,10 +1,11 @@
 package com.ecommercesystemtemplate.warehouse.controller;
 
+import com.ecommercesystemtemplate.common.exception.BizCodeEnume;
 import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.common.utils.R;
 import com.ecommercesystemtemplate.warehouse.entity.WareSkuEntity;
+import com.ecommercesystemtemplate.warehouse.exception.NoStockException;
 import com.ecommercesystemtemplate.warehouse.service.WareSkuService;
-import com.ecommercesystemtemplate.warehouse.vo.LockStockResultVo;
 import com.ecommercesystemtemplate.warehouse.vo.SkuHasStockVo;
 import com.ecommercesystemtemplate.warehouse.vo.WareSkuLockVo;
 import org.springframework.web.bind.annotation.*;
@@ -33,8 +34,12 @@ public class WareSkuController {
 
     @PostMapping("/lock/order")
     public R lockOrderStock(@RequestBody WareSkuLockVo vo){
-        List<LockStockResultVo> vos = wareSkuService.orderLockStock(vo);
-        return R.ok().setData(vos);
+        try {
+            Boolean b = wareSkuService.orderLockStock(vo);
+            return R.ok();
+        } catch(NoStockException e){
+            return R.error(BizCodeEnume.NO_STOCK_EXCEPTION.getCode(), BizCodeEnume.NO_STOCK_EXCEPTION.getMessage());
+        }
     }
 
 

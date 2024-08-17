@@ -8,13 +8,16 @@ import com.ecommercesystemtemplate.common.utils.Query;
 import com.ecommercesystemtemplate.common.utils.R;
 import com.ecommercesystemtemplate.warehouse.dao.WareSkuDao;
 import com.ecommercesystemtemplate.warehouse.entity.WareSkuEntity;
+import com.ecommercesystemtemplate.warehouse.exception.NoStockException;
 import com.ecommercesystemtemplate.warehouse.feign.ProductFeignService;
 import com.ecommercesystemtemplate.warehouse.service.WareSkuService;
-import com.ecommercesystemtemplate.warehouse.vo.LockStockResultVo;
+import com.ecommercesystemtemplate.warehouse.vo.OrderItemVo;
 import com.ecommercesystemtemplate.warehouse.vo.SkuHasStockVo;
 import com.ecommercesystemtemplate.warehouse.vo.WareSkuLockVo;
+import lombok.Data;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -92,13 +95,57 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
 
     /**
      * lock stock for order
+     *
      * @param vo
-     * @return
+     * @return if lock
      */
     @Override
-    public List<LockStockResultVo> orderLockStock(WareSkuLockVo vo) {
+    @Transactional(rollbackFor = NoStockException.class)
+    public Boolean orderLockStock(WareSkuLockVo vo) {
+        // 1. according to address, get warehouse nearest to lock stock
+        List<OrderItemVo> orderItemVoList = vo.getOrderItemVoList();
+        List<SkuWareHasStock> lockStockResultVos = orderItemVoList.stream().map(item -> {
+            SkuWareHasStock skuWareHasStock = new SkuWareHasStock();
+            skuWareHasStock.setSkuId(item.getSkuId());
+            skuWareHasStock.setNum(item.getCount());
+            // Check where this product is in stock
+            List<Long> wareIds = wareSkuDao.listWareIdHasSku(item.getSkuId());
+            skuWareHasStock.setWareIds(wareIds);
+            return skuWareHasStock;
+        }).toList();
 
+        Boolean allLock = true;
+        // 2. lock stock
+        for (SkuWareHasStock skuWareHasStock : lockStockResultVos) {
+            Boolean skuStocked = false;
+            Long skuId = skuWareHasStock.getSkuId();
+            List<Long> wareIds = skuWareHasStock.getWareIds();
+            if (wareIds == null || wareIds.isEmpty()) {
+                throw new NoStockException(skuId);
+            }
+            for (Long wareId : wareIds) {
+                // 1 successes, 0 fail
+                Long count = wareSkuDao.lockStock(skuId, wareId, skuWareHasStock.getNum());
+                if (count == 0) {
+                    // current warehouse has no stock. try another
+                } else{
+                    skuStocked = true;
+                    break;
+                }
+            }
+            if (!skuStocked) {
+                // current product has no stock for all warehouses
+                throw new NoStockException(skuId);
+            }
+        }
+        return true;
+    }
+    @Data
+    class SkuWareHasStock{
 
+        private Long skuId;
+        private Integer num;
+        private List<Long> wareIds;
     }
 
 }

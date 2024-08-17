@@ -3,7 +3,6 @@ package com.ecommercesystemtemplate.warehouse.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.warehouse.entity.WareSkuEntity;
-import com.ecommercesystemtemplate.warehouse.vo.LockStockResultVo;
 import com.ecommercesystemtemplate.warehouse.vo.SkuHasStockVo;
 import com.ecommercesystemtemplate.warehouse.vo.WareSkuLockVo;
 
@@ -25,6 +24,6 @@ public interface WareSkuService extends IService<WareSkuEntity> {
 
     List<SkuHasStockVo> getSkusHaveStock(List<Long> skuIds);
 
-    List<LockStockResultVo> orderLockStock(WareSkuLockVo vo);
+    Boolean orderLockStock(WareSkuLockVo vo);
 }
 

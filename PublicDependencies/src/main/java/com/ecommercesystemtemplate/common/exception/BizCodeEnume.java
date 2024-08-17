@@ -14,6 +14,7 @@ package com.ecommercesystemtemplate.common.exception;
         13: cart
         14: delivery
         15: user
+        21: stock
 
  */
 public enum BizCodeEnume {
@@ -24,7 +25,8 @@ public enum BizCodeEnume {
     SMS_CODE_EXCEPTION(10002, "Get verification code too frequently"),
     USER_EXIST_EXCEPTION(15001, "User already exists"),
     PHONE_EXIST_EXCEPTION(15002, "Phone number already exists"),
-    LOGIN_EXCEPTION(15003, "Login failed, incorrect username or password");
+    LOGIN_EXCEPTION(15003, "Login failed, incorrect username or password"),
+    NO_STOCK_EXCEPTION(21000, "stock is empty");
 
 
     private Integer code;
