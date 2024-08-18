@@ -40,10 +40,11 @@ public class WebController {
      * @return
      */
     @PostMapping("/submitOrder")
-    public String submitOrder(OrderSubmitVo orderSubmitVo) {
+    public String submitOrder(OrderSubmitVo orderSubmitVo, Model model) {
         SubmitOrderResponseVo submitOrderResponseVo = orderService.submitOrder(orderSubmitVo);
         if (submitOrderResponseVo.getStatusCode() == 0) {
             // 1. if success, go to payment page
+            model.addAttribute("submitOrderResponse",submitOrderResponseVo);
             return "pay";
         } else {
             // 2. if fail, go back to confirm page

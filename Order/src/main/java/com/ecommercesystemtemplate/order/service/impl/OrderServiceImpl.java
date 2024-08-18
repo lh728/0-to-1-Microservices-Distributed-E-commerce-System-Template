@@ -130,6 +130,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         threadLocal.set(vo);
         SubmitOrderResponseVo submitOrderResponseVo = new SubmitOrderResponseVo();
         MemberResponseVo memberResponseVo = LoginUserInterceptor.loginUser.get();
+        submitOrderResponseVo.setStatusCode(0);
         // 1. check order token
         String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
         String orderToken = vo.getOrderToken();
@@ -164,22 +165,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                 wareSkuLockVo.setOrderItemVoList(list);
                 R r = wmsFeignService.lockOrderStock(wareSkuLockVo);
                 if (r.getCode() == 0){
-
+                    submitOrderResponseVo.setOrder(order.getOrder());
+                    return submitOrderResponseVo;
                 }else{
-
+                    submitOrderResponseVo.setStatusCode(3);
+                    return submitOrderResponseVo;
                 }
-
-                // 5. delete cart items
-                deleteCartItems(order.getOrder().getId());
-                // 6. return success
-                submitOrderResponseVo.setOrder(order.getOrder());
-                submitOrderResponseVo.setStatusCode(0);
             } else{
                 // 5. return fail
                 submitOrderResponseVo.setStatusCode(2);
                 return submitOrderResponseVo;
             }
-            return submitOrderResponseVo;
         }
 
 
