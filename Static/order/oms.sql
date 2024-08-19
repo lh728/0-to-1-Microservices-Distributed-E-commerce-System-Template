@@ -21,7 +21,7 @@ create table oms_order
 (
    id                   bigint not null auto_increment comment 'id',
    member_id            bigint comment 'member_id',
-   order_sn             char(32) comment 'order_sn',
+   order_sn             char(64) comment 'order_sn',
    coupon_id            bigint comment 'coupon_id',
    create_time          datetime comment 'create_time',
    member_username      varchar(200) comment 'username',
@@ -73,7 +73,7 @@ create table oms_order_item
 (
    id                   bigint not null auto_increment comment 'id',
    order_id             bigint comment 'order_id',
-   order_sn             char(32) comment 'order_sn',
+   order_sn             char(64) comment 'order_sn',
    spu_id               bigint comment 'spu_id',
    spu_name             varchar(255) comment 'spu_name',
    spu_pic              varchar(500) comment 'spu_pic',

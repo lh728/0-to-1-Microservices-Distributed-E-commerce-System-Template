@@ -1,8 +1,8 @@
-package com.ecommercesystemtemplate.warehouse.exception;
+package com.ecommercesystemtemplate.common.exception;
 
 public class NoStockException extends RuntimeException {
     private Long skuId;
-    public NoStockException( Long skuId) {
+    public NoStockException(Long skuId) {
         super("product id :" + skuId + " no stock");
     }
 

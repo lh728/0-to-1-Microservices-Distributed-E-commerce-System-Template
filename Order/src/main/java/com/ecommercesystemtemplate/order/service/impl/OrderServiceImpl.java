@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ecommercesystemtemplate.common.exception.NoStockException;
 import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.common.utils.Query;
 import com.ecommercesystemtemplate.common.utils.R;
@@ -165,9 +166,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                 wareSkuLockVo.setOrderItemVoList(list);
                 R r = wmsFeignService.lockOrderStock(wareSkuLockVo);
                 if (r.getCode() == 0){
+                    // success
                     submitOrderResponseVo.setOrder(order.getOrder());
                     return submitOrderResponseVo;
                 }else{
+                    throw new NoStockException();
                     submitOrderResponseVo.setStatusCode(3);
                     return submitOrderResponseVo;
                 }
@@ -200,6 +203,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         List<OrderItemEntity> orderItemEntities = buildOrderItems(orderSn);
         // 4. compute price
         computePrice(orderEntity, orderItemEntities);
+        orderCreateTo.setOrder(orderEntity);
+        orderCreateTo.setOrderItems(orderItemEntities);
 
         return orderCreateTo;
 

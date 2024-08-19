@@ -1,10 +1,10 @@
 package com.ecommercesystemtemplate.warehouse.controller;
 
 import com.ecommercesystemtemplate.common.exception.BizCodeEnume;
+import com.ecommercesystemtemplate.common.exception.NoStockException;
 import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.common.utils.R;
 import com.ecommercesystemtemplate.warehouse.entity.WareSkuEntity;
-import com.ecommercesystemtemplate.warehouse.exception.NoStockException;
 import com.ecommercesystemtemplate.warehouse.service.WareSkuService;
 import com.ecommercesystemtemplate.warehouse.vo.SkuHasStockVo;
 import com.ecommercesystemtemplate.warehouse.vo.WareSkuLockVo;

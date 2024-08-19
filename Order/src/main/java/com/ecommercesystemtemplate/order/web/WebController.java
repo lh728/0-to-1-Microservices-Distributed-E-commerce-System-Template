@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.concurrent.ExecutionException;
@@ -40,7 +41,7 @@ public class WebController {
      * @return
      */
     @PostMapping("/submitOrder")
-    public String submitOrder(OrderSubmitVo orderSubmitVo, Model model) {
+    public String submitOrder(OrderSubmitVo orderSubmitVo, Model model, RedirectAttributes redirectAttributes) {
         SubmitOrderResponseVo submitOrderResponseVo = orderService.submitOrder(orderSubmitVo);
         if (submitOrderResponseVo.getStatusCode() == 0) {
             // 1. if success, go to payment page
@@ -48,7 +49,17 @@ public class WebController {
             return "pay";
         } else {
             // 2. if fail, go back to confirm page
-            return "redirect:http://order.com/toTrade.html";
+            String message = "Submit Order Fail, ";
+            if (submitOrderResponseVo.getStatusCode() == 1) {
+                message += "Order info expired, please re-submit";
+            } else if (submitOrderResponseVo.getStatusCode() == 2) {
+                message += "Order price updated, please check then re-submit";
+            } else if (submitOrderResponseVo.getStatusCode() == 3) {
+                message += "Stock Check Fail, order stock is not enough";
+            }
+            model.addAttribute("message",message);
+            redirectAttributes.addFlashAttribute("msg",message);
+            return "redirect:http://order.thellumall.com/toTrade";
         }
 
     }
