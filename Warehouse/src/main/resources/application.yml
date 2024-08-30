@@ -25,6 +25,11 @@
 #    secret-key: <your secret key>
 #    oss:
 #      endpoint: https://oss-cn-beijing.aliyuncs.com
+#seata:
+#  tx-service-group: service-warehouse-group
+#  service:
+#    vgroup-mapping:
+#      service-warehouse-group: default
 #mybatis-plus:
 #  mapper-locations: classpath:/mapper/**/*.xml
 #  global-config:

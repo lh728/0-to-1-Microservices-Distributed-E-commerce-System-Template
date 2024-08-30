@@ -25,6 +25,11 @@
 #    secret-key: <your secret key>
 #    oss:
 #      endpoint: https://oss-cn-beijing.aliyuncs.com
+#seata:
+#  tx-service-group: service-coupon-group
+#  service:
+#    vgroup-mapping:
+#      service-coupon-group: default
 #mybatis-plus:
 #  mapper-locations: classpath:/mapper/**/*.xml
 #  global-config:
@@ -36,4 +41,3 @@
 #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 #server:
 #  port: 7000
-#

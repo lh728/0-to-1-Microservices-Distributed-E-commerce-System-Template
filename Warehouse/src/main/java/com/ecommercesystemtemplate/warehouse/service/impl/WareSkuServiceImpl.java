@@ -100,7 +100,7 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
      * @return if lock
      */
     @Override
-    @Transactional(rollbackFor = NoStockException.class)
+    @Transactional
     public Boolean orderLockStock(WareSkuLockVo vo) {
         // 1. according to address, get warehouse nearest to lock stock
         List<OrderItemVo> orderItemVoList = vo.getOrderItemVoList();
@@ -126,11 +126,12 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
             for (Long wareId : wareIds) {
                 // 1 successes, 0 fail
                 Long count = wareSkuDao.lockStock(skuId, wareId, skuWareHasStock.getNum());
-                if (count == 0) {
-                    // current warehouse has no stock. try another
-                } else{
+                if (count == 1) {
                     skuStocked = true;
                     break;
+                } else{
+                    // current warehouse has no stock. try another
+
                 }
             }
             if (!skuStocked) {

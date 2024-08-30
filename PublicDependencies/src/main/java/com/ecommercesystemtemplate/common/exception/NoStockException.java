@@ -6,6 +6,9 @@ public class NoStockException extends RuntimeException {
         super("product id :" + skuId + " no stock");
     }
 
+    public NoStockException(String msg) {
+    }
+
     public Long getSkuId() {
         return skuId;
     }

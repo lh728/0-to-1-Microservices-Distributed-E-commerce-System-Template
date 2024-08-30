@@ -24,6 +24,7 @@ import com.ecommercesystemtemplate.order.service.OrderItemService;
 import com.ecommercesystemtemplate.order.service.OrderService;
 import com.ecommercesystemtemplate.order.to.OrderCreateTo;
 import com.ecommercesystemtemplate.order.vo.*;
+import io.seata.spring.annotation.GlobalTransactional;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
@@ -127,6 +128,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     @Override
     @Transactional
+    @GlobalTransactional
     public SubmitOrderResponseVo submitOrder(OrderSubmitVo vo) {
         threadLocal.set(vo);
         SubmitOrderResponseVo submitOrderResponseVo = new SubmitOrderResponseVo();
@@ -168,11 +170,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                 if (r.getCode() == 0){
                     // success
                     submitOrderResponseVo.setOrder(order.getOrder());
+                    int i = 10/0;
                     return submitOrderResponseVo;
                 }else{
-                    throw new NoStockException();
-                    submitOrderResponseVo.setStatusCode(3);
-                    return submitOrderResponseVo;
+//                    submitOrderResponseVo.setStatusCode(3);
+                    String msg = (String) r.get("msg");
+                    throw new NoStockException(msg);
+//                    return submitOrderResponseVo;
                 }
             } else{
                 // 5. return fail
