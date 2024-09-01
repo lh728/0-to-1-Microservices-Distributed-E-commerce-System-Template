@@ -1,5 +1,6 @@
 package com.ecommercesystemtemplate.order.web;
 
+import com.ecommercesystemtemplate.common.exception.NoStockException;
 import com.ecommercesystemtemplate.order.service.OrderService;
 import com.ecommercesystemtemplate.order.vo.OrderConfirmVo;
 import com.ecommercesystemtemplate.order.vo.OrderSubmitVo;
@@ -42,25 +43,34 @@ public class WebController {
      */
     @PostMapping("/submitOrder")
     public String submitOrder(OrderSubmitVo orderSubmitVo, Model model, RedirectAttributes redirectAttributes) {
-        SubmitOrderResponseVo submitOrderResponseVo = orderService.submitOrder(orderSubmitVo);
-        if (submitOrderResponseVo.getStatusCode() == 0) {
-            // 1. if success, go to payment page
-            model.addAttribute("submitOrderResponse",submitOrderResponseVo);
-            return "pay";
-        } else {
-            // 2. if fail, go back to confirm page
-            String message = "Submit Order Fail, ";
-            if (submitOrderResponseVo.getStatusCode() == 1) {
-                message += "Order info expired, please re-submit";
-            } else if (submitOrderResponseVo.getStatusCode() == 2) {
-                message += "Order price updated, please check then re-submit";
-            } else if (submitOrderResponseVo.getStatusCode() == 3) {
-                message += "Stock Check Fail, order stock is not enough";
+        try{
+
+            SubmitOrderResponseVo submitOrderResponseVo = orderService.submitOrder(orderSubmitVo);
+            if (submitOrderResponseVo.getStatusCode() == 0) {
+                // 1. if success, go to payment page
+                model.addAttribute("submitOrderResponse",submitOrderResponseVo);
+                return "pay";
+            } else {
+                // 2. if fail, go back to confirm page
+                String message = "Submit Order Fail, ";
+                if (submitOrderResponseVo.getStatusCode() == 1) {
+                    message += "Order info expired, please re-submit";
+                } else if (submitOrderResponseVo.getStatusCode() == 2) {
+                    message += "Order price updated, please check then re-submit";
+                } else if (submitOrderResponseVo.getStatusCode() == 3) {
+                    message += "Stock Check Fail, order stock is not enough";
+                }
+                model.addAttribute("message",message);
+                redirectAttributes.addFlashAttribute("msg",message);
+                return "redirect:http://order.thellumall.com/toTrade";
             }
-            model.addAttribute("message",message);
-            redirectAttributes.addFlashAttribute("msg",message);
-            return "redirect:http://order.thellumall.com/toTrade";
+        }catch (Exception e){
+            if (e instanceof NoStockException){
+                String message = e.getMessage();
+                redirectAttributes.addFlashAttribute("msg",message);
+            }
         }
+        return "redirect:http://order.thellumall.com/toTrade";
 
     }
 }

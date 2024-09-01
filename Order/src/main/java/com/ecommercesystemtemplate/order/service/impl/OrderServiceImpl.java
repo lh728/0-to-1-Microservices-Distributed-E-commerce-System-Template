@@ -24,7 +24,6 @@ import com.ecommercesystemtemplate.order.service.OrderItemService;
 import com.ecommercesystemtemplate.order.service.OrderService;
 import com.ecommercesystemtemplate.order.to.OrderCreateTo;
 import com.ecommercesystemtemplate.order.vo.*;
-import io.seata.spring.annotation.GlobalTransactional;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
@@ -128,7 +127,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     @Override
     @Transactional
-    @GlobalTransactional
+//    @GlobalTransactional
     public SubmitOrderResponseVo submitOrder(OrderSubmitVo vo) {
         threadLocal.set(vo);
         SubmitOrderResponseVo submitOrderResponseVo = new SubmitOrderResponseVo();
