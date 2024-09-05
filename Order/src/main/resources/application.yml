@@ -24,7 +24,7 @@
 #  rabbitmq:
 #    host: 192.168.56.10
 #    port: 5672
-#    virtual-host: /s
+#    virtual-host: /
 #    publisher-confirm-type: correlated
 #    publisher-returns: true
 #    template:
