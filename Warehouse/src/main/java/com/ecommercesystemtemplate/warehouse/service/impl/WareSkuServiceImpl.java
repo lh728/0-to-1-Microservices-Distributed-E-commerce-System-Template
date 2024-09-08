@@ -4,18 +4,25 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ecommercesystemtemplate.common.exception.NoStockException;
+import com.ecommercesystemtemplate.common.to.mq.StockLockedTo;
 import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.common.utils.Query;
 import com.ecommercesystemtemplate.common.utils.R;
 import com.ecommercesystemtemplate.warehouse.dao.WareSkuDao;
+import com.ecommercesystemtemplate.warehouse.entity.WareOrderTaskDetailEntity;
+import com.ecommercesystemtemplate.warehouse.entity.WareOrderTaskEntity;
 import com.ecommercesystemtemplate.warehouse.entity.WareSkuEntity;
 import com.ecommercesystemtemplate.warehouse.feign.ProductFeignService;
+import com.ecommercesystemtemplate.warehouse.service.WareOrderTaskDetailService;
+import com.ecommercesystemtemplate.warehouse.service.WareOrderTaskService;
 import com.ecommercesystemtemplate.warehouse.service.WareSkuService;
 import com.ecommercesystemtemplate.warehouse.vo.OrderItemVo;
 import com.ecommercesystemtemplate.warehouse.vo.SkuHasStockVo;
 import com.ecommercesystemtemplate.warehouse.vo.WareSkuLockVo;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,16 +31,15 @@ import java.util.Map;
 
 
 @Service("wareSkuService")
+@AllArgsConstructor
 public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> implements WareSkuService {
 
     final
     WareSkuDao wareSkuDao;
     final ProductFeignService productFeignService;
-
-    public WareSkuServiceImpl(WareSkuDao wareSkuDao, ProductFeignService productFeignService) {
-        this.wareSkuDao = wareSkuDao;
-        this.productFeignService = productFeignService;
-    }
+    final RabbitTemplate rabbitTemplate;
+    final WareOrderTaskDetailService wareOrderTaskDetailService;
+    final WareOrderTaskService wareOrderTaskService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -102,6 +108,11 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
     @Override
     @Transactional
     public Boolean orderLockStock(WareSkuLockVo vo) {
+        // 0. create order task detail
+        WareOrderTaskEntity wareOrderTaskEntity = new WareOrderTaskEntity();
+        wareOrderTaskEntity.setOrderSn(vo.getOrderSn());
+        wareOrderTaskService.save(wareOrderTaskEntity);
+
         // 1. according to address, get warehouse nearest to lock stock
         List<OrderItemVo> orderItemVoList = vo.getOrderItemVoList();
         List<SkuWareHasStock> lockStockResultVos = orderItemVoList.stream().map(item -> {
@@ -128,6 +139,13 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
                 Long count = wareSkuDao.lockStock(skuId, wareId, skuWareHasStock.getNum());
                 if (count == 1) {
                     skuStocked = true;
+                    // tell MQ lock success
+                    WareOrderTaskDetailEntity entity = new WareOrderTaskDetailEntity(null, skuId, "", skuWareHasStock.getNum(), wareOrderTaskEntity.getId(), wareId, 1);;
+                    wareOrderTaskDetailService.save(entity);
+                    StockLockedTo stockLockedTo = new StockLockedTo();
+                    stockLockedTo.setId(wareOrderTaskEntity.getId());
+                    stockLockedTo.setDetailId(entity.getId());
+                    rabbitTemplate.convertAndSend("stock-event-exchange", "stock.locked", stockLockedTo);
                     break;
                 } else{
                     // current warehouse has no stock. try another

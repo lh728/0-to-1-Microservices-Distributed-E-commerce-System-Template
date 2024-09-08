@@ -94,6 +94,8 @@ create table wms_ware_order_task_detail
    sku_name             varchar(255) comment 'sku_name',
    sku_num              int comment 'sku_num',
    task_id              bigint comment 'task_id',
+   ware_id              bigint comment 'warehouse_id',
+   lock_status          int comment '1-lock 2-unlock 3-success',
    primary key (id)
 );
 
