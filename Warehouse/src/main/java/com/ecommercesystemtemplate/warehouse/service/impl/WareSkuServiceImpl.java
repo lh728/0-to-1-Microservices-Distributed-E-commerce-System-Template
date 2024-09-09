@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ecommercesystemtemplate.common.exception.NoStockException;
+import com.ecommercesystemtemplate.common.to.mq.StockDetailTo;
 import com.ecommercesystemtemplate.common.to.mq.StockLockedTo;
 import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.common.utils.Query;
@@ -22,7 +23,11 @@ import com.ecommercesystemtemplate.warehouse.vo.WareSkuLockVo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.annotation.RabbitHandler;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +37,7 @@ import java.util.Map;
 
 @Service("wareSkuService")
 @AllArgsConstructor
+@RabbitListener(queues = "stock.release.stock.queue")
 public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> implements WareSkuService {
 
     final
@@ -144,7 +150,10 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
                     wareOrderTaskDetailService.save(entity);
                     StockLockedTo stockLockedTo = new StockLockedTo();
                     stockLockedTo.setId(wareOrderTaskEntity.getId());
-                    stockLockedTo.setDetailId(entity.getId());
+                    // used to rollback data
+                    StockDetailTo stockDetailTo = new StockDetailTo();
+                    BeanUtils.copyProperties(entity,stockDetailTo);
+                    stockLockedTo.setDetail(stockDetailTo);
                     rabbitTemplate.convertAndSend("stock-event-exchange", "stock.locked", stockLockedTo);
                     break;
                 } else{
@@ -159,6 +168,36 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
         }
         return true;
     }
+
+    /**
+     * 1. stock auto unlock
+     *      order success, stock locked success; if transaction rollback, unlock stock
+     * 2. order fail
+     *      stock lock fail(for example, one of warehouses has no stock)
+     *
+     * @param to
+     * @param message
+     */
+    @RabbitHandler
+    public void handleStockUnlocked(StockLockedTo to, Message message){
+        Long id = to.getId();
+        StockDetailTo detail = to.getDetail();
+        Long detailId = detail.getId();
+        // 1. query database about this order locked detail
+        WareOrderTaskDetailEntity byId = wareOrderTaskDetailService.getById(detailId);
+        if (byId != null) {
+            // 1.1 if database has this detail, locked success
+
+        } else{
+            // 1.2 if database has not this detail, that means locked fail, stock rollback, do not need unlock
+
+        }
+
+
+    }
+
+
+
     @Data
     class SkuWareHasStock{
 

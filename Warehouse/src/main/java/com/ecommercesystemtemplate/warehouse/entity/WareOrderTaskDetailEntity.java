@@ -51,4 +51,6 @@ public class WareOrderTaskDetailEntity implements Serializable {
 	 * lock_status
 	 */
 	private Integer lockStatus;
+
+
 }

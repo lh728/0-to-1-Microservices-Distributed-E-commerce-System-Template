@@ -6,5 +6,5 @@ import lombok.Data;
 public class StockLockedTo {
 
     private Long id;
-    private Long detailId;
+    private StockDetailTo detail;
 }
