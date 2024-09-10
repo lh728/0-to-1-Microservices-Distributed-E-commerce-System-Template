@@ -1,5 +1,6 @@
 package com.ecommercesystemtemplate.warehouse.service.impl;
 
+import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -13,13 +14,16 @@ import com.ecommercesystemtemplate.warehouse.dao.WareSkuDao;
 import com.ecommercesystemtemplate.warehouse.entity.WareOrderTaskDetailEntity;
 import com.ecommercesystemtemplate.warehouse.entity.WareOrderTaskEntity;
 import com.ecommercesystemtemplate.warehouse.entity.WareSkuEntity;
+import com.ecommercesystemtemplate.warehouse.feign.OrderFeignService;
 import com.ecommercesystemtemplate.warehouse.feign.ProductFeignService;
 import com.ecommercesystemtemplate.warehouse.service.WareOrderTaskDetailService;
 import com.ecommercesystemtemplate.warehouse.service.WareOrderTaskService;
 import com.ecommercesystemtemplate.warehouse.service.WareSkuService;
 import com.ecommercesystemtemplate.warehouse.vo.OrderItemVo;
+import com.ecommercesystemtemplate.warehouse.vo.OrderVo;
 import com.ecommercesystemtemplate.warehouse.vo.SkuHasStockVo;
 import com.ecommercesystemtemplate.warehouse.vo.WareSkuLockVo;
+import com.rabbitmq.client.Channel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.commons.lang.StringUtils;
@@ -31,6 +35,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -40,12 +45,12 @@ import java.util.Map;
 @RabbitListener(queues = "stock.release.stock.queue")
 public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> implements WareSkuService {
 
-    final
-    WareSkuDao wareSkuDao;
+    final WareSkuDao wareSkuDao;
     final ProductFeignService productFeignService;
     final RabbitTemplate rabbitTemplate;
     final WareOrderTaskDetailService wareOrderTaskDetailService;
     final WareOrderTaskService wareOrderTaskService;
+    final OrderFeignService orderFeignService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -179,21 +184,41 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
      * @param message
      */
     @RabbitHandler
-    public void handleStockUnlocked(StockLockedTo to, Message message){
-        Long id = to.getId();
+    public void handleStockUnlocked(StockLockedTo to, Message message, Channel channel) throws IOException {
         StockDetailTo detail = to.getDetail();
         Long detailId = detail.getId();
         // 1. query database about this order locked detail
         WareOrderTaskDetailEntity byId = wareOrderTaskDetailService.getById(detailId);
         if (byId != null) {
-            // 1.1 if database has this detail, locked success
+            Long id = to.getId();
+            WareOrderTaskEntity task = wareOrderTaskService.getById(id);
+            String orderSn = task.getOrderSn();
+            R r = orderFeignService.getOrderStatus(orderSn);
+            if (r.getCode() == 0) {
+                OrderVo data = r.getData(new TypeReference<OrderVo>() {
+                });
+                if (data == null || data.getStatus() == 4) {
+                    // 1.1 if database has this detail, locked success
+                    // 1.1.1 if database has not this order, that means must unlock
+                    unlockStock(detail);
+                    channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+                    // 1.1.2 if database has this order, that means do not need unlock, order status change(cancel - unlock, not cancel - still locked)
+                }
+            }else{
+                channel.basicReject(message.getMessageProperties().getDeliveryTag(),true);
+            }
+
 
         } else{
             // 1.2 if database has not this detail, that means locked fail, stock rollback, do not need unlock
-
+            channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
         }
 
 
+    }
+
+    private void unlockStock(StockDetailTo vo) {
+        wareSkuDao.unlockStock(vo.getSkuId(), vo.getWareId(), vo.getSkuNum(), vo.getId());
     }
 
 

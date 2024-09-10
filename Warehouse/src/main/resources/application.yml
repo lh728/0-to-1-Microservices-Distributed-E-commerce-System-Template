@@ -22,6 +22,9 @@
 #  rabbitmq:
 #    virtual-host: /
 #    host: 192.168.56.10
+#    listener:
+#      simple:
+#        acknowledge-mode: manual
 #alibaba:
 #  cloud:
 #    access-key: <your access key>
