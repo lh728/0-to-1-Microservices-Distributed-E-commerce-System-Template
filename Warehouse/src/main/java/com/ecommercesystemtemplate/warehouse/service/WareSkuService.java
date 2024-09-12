@@ -1,6 +1,7 @@
 package com.ecommercesystemtemplate.warehouse.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.ecommercesystemtemplate.common.to.mq.StockLockedTo;
 import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.warehouse.entity.WareSkuEntity;
 import com.ecommercesystemtemplate.warehouse.vo.SkuHasStockVo;
@@ -26,5 +27,6 @@ public interface WareSkuService extends IService<WareSkuEntity> {
 
     Boolean orderLockStock(WareSkuLockVo vo);
 
+    void unlockStock(StockLockedTo to);
 }
 
