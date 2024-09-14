@@ -1,7 +1,9 @@
 package com.ecommercesystemtemplate.warehouse.config;
 
-import org.springframework.amqp.core.*;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.Exchange;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.TopicExchange;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -42,9 +44,5 @@ public class MyMqConfig {
                 "stock-event-exchange", "stock.locked", null);
     }
 
-    @RabbitListener(queues = "stock.release.stock.queue")
-    public void init(Message message){
-
-    }
 
 }

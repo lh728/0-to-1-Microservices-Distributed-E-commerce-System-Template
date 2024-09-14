@@ -187,13 +187,14 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
                 if (data == null || data.getStatus() == 4) {
                     // 1.1 if database has this detail, locked success
                     // 1.1.1 if database has not this order, that means must unlock
-                    unlockStock(detail);
+                    if (byId.getLockStatus() == 1) {
+                        unlockStock(detail);
+                    }
                     // 1.1.2 if database has this order, that means do not need unlock, order status change(cancel - unlock, not cancel - still locked)
                 }
             } else {
+                throw new RuntimeException("remote call failed");
             }
-
-
         } else {
             // 1.2 if database has not this detail, that means locked fail, stock rollback, do not need unlock
         }
@@ -202,7 +203,13 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
     }
 
     private void unlockStock(StockDetailTo vo) {
+        // unlock stock
         wareSkuDao.unlockStock(vo.getSkuId(), vo.getWareId(), vo.getSkuNum(), vo.getId());
+        // update warehouse detail status
+        WareOrderTaskDetailEntity wareOrderTaskDetailEntity = new WareOrderTaskDetailEntity();
+        wareOrderTaskDetailEntity.setId(vo.getId());
+        wareOrderTaskDetailEntity.setLockStatus(2);
+        wareOrderTaskDetailService.updateById(wareOrderTaskDetailEntity);
     }
 
 
