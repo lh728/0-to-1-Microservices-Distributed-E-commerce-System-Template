@@ -24,6 +24,7 @@ import com.ecommercesystemtemplate.order.service.OrderItemService;
 import com.ecommercesystemtemplate.order.service.OrderService;
 import com.ecommercesystemtemplate.order.to.OrderCreateTo;
 import com.ecommercesystemtemplate.order.vo.*;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
@@ -53,9 +54,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     final WmsFeignService wmsFeignService;
     final StringRedisTemplate stringRedisTemplate;
     final OrderItemService orderItemService;
+    final RabbitTemplate rabbitTemplate;
 
 
-    public OrderServiceImpl(ProductFeignService productFeignService, MemberFeignService memberFeignService, CartFeignService cartFeignService, ThreadPoolExecutor threadPoolExecutor, WmsFeignService wmsFeignService, StringRedisTemplate stringRedisTemplate, OrderItemService orderItemService) {
+    public OrderServiceImpl(ProductFeignService productFeignService, MemberFeignService memberFeignService, CartFeignService cartFeignService, ThreadPoolExecutor threadPoolExecutor, WmsFeignService wmsFeignService, StringRedisTemplate stringRedisTemplate, OrderItemService orderItemService, RabbitTemplate rabbitTemplate) {
         this.productFeignService = productFeignService;
         this.memberFeignService = memberFeignService;
         this.cartFeignService = cartFeignService;
@@ -63,6 +65,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         this.wmsFeignService = wmsFeignService;
         this.stringRedisTemplate = stringRedisTemplate;
         this.orderItemService = orderItemService;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     @Override
@@ -169,7 +172,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                 if (r.getCode() == 0){
                     // success
                     submitOrderResponseVo.setOrder(order.getOrder());
-                    int i = 10/0;
+                    // create order then send to mq
+                    rabbitTemplate.convertAndSend("order-event-exchange", "order.create.order", order);
                     return submitOrderResponseVo;
                 }else{
 //                    submitOrderResponseVo.setStatusCode(3);
@@ -191,6 +195,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     public OrderEntity getOrderStatus(String orderSn) {
         OrderEntity order_sn = this.getOne(new QueryWrapper<OrderEntity>().eq("order_sn", orderSn));
         return order_sn;
+    }
+
+    @Override
+    public void closeOrder(OrderEntity orderEntity) {
+        // 1. query order's current status
+        OrderEntity byId = this.getById(orderEntity.getId());
+        if (byId.getStatus().equals(OrderStatusEnum.CREATE_NEW.getCode())){
+            // 2. close order
+            OrderEntity update = new OrderEntity();
+            update.setId(orderEntity.getId());
+            update.setStatus(OrderStatusEnum.CANCLED.getCode());
+            this.updateById(update);
+        }
     }
 
     private void saveOrder(OrderCreateTo order) {
