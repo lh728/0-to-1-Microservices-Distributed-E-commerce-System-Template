@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ecommercesystemtemplate.common.exception.NoStockException;
+import com.ecommercesystemtemplate.common.to.mq.OrderTo;
 import com.ecommercesystemtemplate.common.to.mq.StockDetailTo;
 import com.ecommercesystemtemplate.common.to.mq.StockLockedTo;
 import com.ecommercesystemtemplate.common.utils.PageUtils;
@@ -200,6 +201,29 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
         }
 
 
+    }
+
+    /**
+     * prevent order service delay, cannot change order status
+     * that will not unlock stock forever
+     * @param orderTo
+     */
+    @Override
+    @Transactional
+    public void unlockStock(OrderTo orderTo) {
+        String orderSn = orderTo.getOrderSn();
+        // query the newest stock status to prevent unlock stock duplicate
+        WareOrderTaskEntity wareOrderTaskEntity = wareOrderTaskService.getOrderTaskByOrderSn(orderSn);
+        Long id = wareOrderTaskEntity.getId();
+        // according wareOrderTaskDetail to find all locked stock
+        List<WareOrderTaskDetailEntity> list = wareOrderTaskDetailService.list(new QueryWrapper<WareOrderTaskDetailEntity>().eq("task_id", id)
+                .eq("lock_status", 1));
+
+        for (WareOrderTaskDetailEntity entity : list) {
+            StockDetailTo stockDetailTo = new StockDetailTo();
+            BeanUtils.copyProperties(entity, stockDetailTo);
+            unlockStock(stockDetailTo);
+        }
     }
 
     private void unlockStock(StockDetailTo vo) {

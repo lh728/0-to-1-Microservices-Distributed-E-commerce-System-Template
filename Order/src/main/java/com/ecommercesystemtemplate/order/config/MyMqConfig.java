@@ -44,4 +44,13 @@ public class MyMqConfig {
 
     }
 
+    /**
+     * release order binding stock release
+     */
+    @Bean
+    public Binding orderReleaseOtherBinding() {
+        return new Binding("stock.release.stock.queue", Binding.DestinationType.QUEUE,
+                "order-event-exchange", "order.release.other.#", null);
+    }
+
 }

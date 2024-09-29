@@ -1,5 +1,6 @@
 package com.ecommercesystemtemplate.warehouse.listener;
 
+import com.ecommercesystemtemplate.common.to.mq.OrderTo;
 import com.ecommercesystemtemplate.common.to.mq.StockLockedTo;
 import com.ecommercesystemtemplate.warehouse.service.WareSkuService;
 import com.rabbitmq.client.Channel;
@@ -36,8 +37,16 @@ public class StockReleaseListener {
         }catch (Exception e){
             channel.basicReject(message.getMessageProperties().getDeliveryTag(), true);
         }
+    }
 
-
+    @RabbitHandler
+    public void handleOrderClose(OrderTo orderTo, Message message, Channel channel) throws IOException {
+        try{
+            wareSkuService.unlockStock(orderTo);
+            channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+        }catch (Exception e){
+            channel.basicReject(message.getMessageProperties().getDeliveryTag(), true);
+        }
     }
 
 
