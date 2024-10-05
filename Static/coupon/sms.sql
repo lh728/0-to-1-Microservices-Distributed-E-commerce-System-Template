@@ -303,3 +303,19 @@ CREATE TABLE IF NOT EXISTS `undo_log`
     UNIQUE KEY `ux_undo_log` (`xid`, `branch_id`)
     ) ENGINE = InnoDB AUTO_INCREMENT = 1 DEFAULT CHARSET = utf8mb4 COMMENT ='AT transaction mode undo table';
 ALTER TABLE `undo_log` ADD INDEX `ix_log_created` (`log_created`);
+
+-- ----------------------------
+-- Table structure for mq_message
+-- ----------------------------
+DROP TABLE IF EXISTS `mq_message`;
+CREATE TABLE `mq_message`  (
+                               `message_id` char(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+                               `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL,
+                               `to_exchange` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+                               `routing_key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+                               `class_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+                               `message_status` int(11) NULL DEFAULT 0 COMMENT '0-new, 1-has send, 2-error, 3-arrived',
+                               `create_time` datetime NULL DEFAULT NULL,
+                               `update_time` datetime NULL DEFAULT NULL,
+                               PRIMARY KEY (`message_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;

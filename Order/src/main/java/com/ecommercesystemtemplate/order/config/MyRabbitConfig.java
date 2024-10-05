@@ -24,6 +24,7 @@ public class MyRabbitConfig {
         rabbitTemplate.setConfirmCallback(new RabbitTemplate.ConfirmCallback() {
             @Override
             public void confirm(CorrelationData correlationData, boolean ack, String cause) {
+                // client receive ack
                 System.out.println("confirmCallback: " + correlationData + " ack: " + ack + " cause: " + cause);
             }
         } );
@@ -32,6 +33,8 @@ public class MyRabbitConfig {
         rabbitTemplate.setReturnsCallback(new RabbitTemplate.ReturnsCallback() {
             @Override
             public void returnedMessage(ReturnedMessage returnedMessage) {
+                // error, update db error status
+
                 System.out.println(returnedMessage.toString());
             }
         } );
