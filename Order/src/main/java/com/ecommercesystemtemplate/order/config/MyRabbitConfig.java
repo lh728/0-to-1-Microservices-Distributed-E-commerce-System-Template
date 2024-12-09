@@ -33,7 +33,7 @@ public class MyRabbitConfig {
         rabbitTemplate.setReturnsCallback(new RabbitTemplate.ReturnsCallback() {
             @Override
             public void returnedMessage(ReturnedMessage returnedMessage) {
-                // error, update db error status
+                //TODO error, update db error status
 
                 System.out.println(returnedMessage.toString());
             }
