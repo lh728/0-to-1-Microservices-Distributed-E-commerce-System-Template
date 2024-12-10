@@ -24,12 +24,12 @@ public class AlipayTemplate {
     // The server [asynchronous notification] page path must be a complete path in the http:// format.
     // Custom parameters such as ?id=123 cannot be added. It must be accessible from the external network.
     // Alipay will quietly send us a request to tell us that the payment was successful.
-    private  String notify_url;
+    private  String notify_url = "http://order.ecommercesystemtemplate.com/pay/result";
 
     // The page path for page jump synchronization notification needs to be a complete path in the http:// format. Custom parameters such as ?id=123 cannot be added. It must be accessible normally on the external network.The page path for page jump synchronization notification needs to be a complete path in the http:// format.
     // ustom parameters such as ?id=123 cannot be added. It must be accessible normally on the external network.
     //Synchronous notification, payment successful, usually jump to the success page
-    private  String return_url;
+    private  String return_url = "http://order.ecommercesystemtemplate.com/pay/result";
 
     // sign_type
     private  String sign_type = "RSA2";
