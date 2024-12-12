@@ -19,16 +19,12 @@ public class PayWebController {
         this.orderService = orderService;
     }
 
-    @GetMapping("/payOrder")
+    @GetMapping(value = "/payOrder", produces = "text/html")
     @ResponseBody
     public String payOrder(@RequestParam("OrderSn") String orderSn) throws AlipayApiException {
-        PayVo payVo = new PayVo();
-        payVo.setOut_trade_no(orderSn);
-        payVo.setTotal_amount("0.01");
-        payVo.setSubject("hello");
-        payVo.setBody("hello");
+        PayVo payVo = orderService.getOrderPayInfo(orderSn);
         String pay = alipayTemplate.pay(payVo);
         System.out.println(pay);
-        return "hello";
+        return pay;
     }
 }

@@ -5,6 +5,7 @@ import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.order.entity.OrderEntity;
 import com.ecommercesystemtemplate.order.vo.OrderConfirmVo;
 import com.ecommercesystemtemplate.order.vo.OrderSubmitVo;
+import com.ecommercesystemtemplate.order.vo.PayVo;
 import com.ecommercesystemtemplate.order.vo.SubmitOrderResponseVo;
 
 import java.util.Map;
@@ -32,5 +33,7 @@ public interface OrderService extends IService<OrderEntity> {
     OrderEntity getOrderStatus(String orderSn);
 
     void closeOrder(OrderEntity orderEntity);
+
+    PayVo getOrderPayInfo(String orderSn);
 }
 

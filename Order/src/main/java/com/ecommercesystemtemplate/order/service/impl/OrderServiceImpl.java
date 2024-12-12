@@ -216,6 +216,22 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         }
     }
 
+    @Override
+    public PayVo getOrderPayInfo(String orderSn) {
+        PayVo payVo = new PayVo();
+        OrderEntity order = this.getOrderStatus(orderSn);
+        BigDecimal bigDecimal = order.getPayAmount().setScale(2, BigDecimal.ROUND_UP);
+        payVo.setTotal_amount(bigDecimal.toString());
+        payVo.setOut_trade_no(orderSn);
+
+        List<OrderItemEntity> orderSns = orderItemService.list(new QueryWrapper<OrderItemEntity>().eq("order_sn", orderSn));
+        OrderItemEntity entity = orderSns.get(0);
+        payVo.setSubject(entity.getSkuName());
+        payVo.setBody(entity.getSkuAttrsVals());
+
+        return payVo;
+    }
+
     private void saveOrder(OrderCreateTo order) {
         OrderEntity orderEntity = order.getOrder();
         orderEntity.setModifyTime(new Date());
