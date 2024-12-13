@@ -29,7 +29,7 @@ public class AlipayTemplate {
     // The page path for page jump synchronization notification needs to be a complete path in the http:// format. Custom parameters such as ?id=123 cannot be added. It must be accessible normally on the external network.The page path for page jump synchronization notification needs to be a complete path in the http:// format.
     // ustom parameters such as ?id=123 cannot be added. It must be accessible normally on the external network.
     //Synchronous notification, payment successful, usually jump to the success page
-    private  String return_url = "http://order.ecommercesystemtemplate.com/pay/result";
+    private  String return_url = "http://member.thellumall.com/memberOrder.html";
 
     // sign_type
     private  String sign_type = "RSA2";
