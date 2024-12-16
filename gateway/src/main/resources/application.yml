@@ -61,6 +61,11 @@
 #          uri: lb://order
 #          predicates:
 #            - Host=order.thellumall.com
+#
+#        - id: thellumall_member_route
+#          uri: lb://member
+#          predicates:
+#            - Host=member.thellumall.com
 ### front end use api prefix
 #    nacos:
 #      discovery:

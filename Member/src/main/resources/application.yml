@@ -19,6 +19,10 @@
 #    name: member
 #  jackson:
 #    date-format: yyyy-MM-dd HH:mm:ss
+#  session:
+#    store-type: redis
+#  redis:
+#    host: 192.168.56.10
 #alibaba:
 #  cloud:
 #    access-key: <your access key>
