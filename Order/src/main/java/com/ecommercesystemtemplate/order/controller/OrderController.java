@@ -37,6 +37,18 @@ public class OrderController {
         return R.ok().put("page", page);
     }
 
+    /**
+     * query curr user's order
+     * @param params
+     * @return
+     */
+    @GetMapping("/listWithItems")
+    public R listWithItems(@RequestBody Map<String, Object> params){
+        PageUtils page = orderService.queryPageWithItems(params);
+
+        return R.ok().put("page", page);
+    }
+
 
     /**
      * info

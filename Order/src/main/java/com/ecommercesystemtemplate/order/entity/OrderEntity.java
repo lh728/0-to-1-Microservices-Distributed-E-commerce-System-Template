@@ -2,15 +2,16 @@ package com.ecommercesystemtemplate.order.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-
-import java.math.BigDecimal;
-import java.io.Serializable;
-import java.util.Date;
 import lombok.Data;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
 
 /**
  * order
- * 
+ *
  * @author thel.lu
  * @email lhjlslw@gmail.com
  * @date 2023-11-21 19:53:27
@@ -189,5 +190,9 @@ public class OrderEntity implements Serializable {
 	 * modify_time
 	 */
 	private Date modifyTime;
+	/**
+	 * order_items
+	 */
+	private List<OrderItemEntity> items;
 
 }
