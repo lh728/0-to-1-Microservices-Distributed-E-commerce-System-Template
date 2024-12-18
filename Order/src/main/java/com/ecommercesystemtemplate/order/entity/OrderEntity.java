@@ -1,5 +1,6 @@
 package com.ecommercesystemtemplate.order.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -193,6 +194,7 @@ public class OrderEntity implements Serializable {
 	/**
 	 * order_items
 	 */
+	@TableField(exist = false)
 	private List<OrderItemEntity> items;
 
 }

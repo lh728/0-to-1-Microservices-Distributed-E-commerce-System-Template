@@ -42,7 +42,7 @@ public class OrderController {
      * @param params
      * @return
      */
-    @GetMapping("/listWithItems")
+    @PostMapping("/listWithItems")
     public R listWithItems(@RequestBody Map<String, Object> params){
         PageUtils page = orderService.queryPageWithItems(params);
 

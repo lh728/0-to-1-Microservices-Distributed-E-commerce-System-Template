@@ -28,30 +28,30 @@ public class Query<T> {
     }
 
     public IPage<T> getPage(Map<String, Object> params, String defaultOrderField, boolean isAsc) {
-        //分页参数
+        //page parameter
         long curPage = 1;
         long limit = 10;
 
         if(params.get(Constant.PAGE) != null){
-            curPage = Long.parseLong((String)params.get(Constant.PAGE));
+            curPage = Long.parseLong(params.get(Constant.PAGE).toString());
         }
         if(params.get(Constant.LIMIT) != null){
             limit = Long.parseLong((String)params.get(Constant.LIMIT));
         }
 
-        //分页对象
+        //page object
         Page<T> page = new Page<>(curPage, limit);
 
-        //分页参数
+        //page parameter
         params.put(Constant.PAGE, page);
 
-        //排序字段
-        //防止SQL注入（因为sidx、order是通过拼接SQL实现排序的，会有SQL注入风险）
+        //order parameter
+        //avoid sql injection（beacuse sidx、order is a string，then there are sql injection risk）
         String orderField = SQLFilter.sqlInject((String)params.get(Constant.ORDER_FIELD));
         String order = (String)params.get(Constant.ORDER);
 
 
-        //前端字段排序
+        //front end order
         if(StringUtils.isNotEmpty(orderField) && StringUtils.isNotEmpty(order)){
             if(Constant.ASC.equalsIgnoreCase(order)) {
                 return  page.addOrder(OrderItem.asc(orderField));
@@ -60,12 +60,12 @@ public class Query<T> {
             }
         }
 
-        //没有排序字段，则不排序
+        //no order parameter, then no order
         if(StringUtils.isBlank(defaultOrderField)){
             return page;
         }
 
-        //默认排序
+        //default is asc
         if(isAsc) {
             page.addOrder(OrderItem.asc(defaultOrderField));
         }else {

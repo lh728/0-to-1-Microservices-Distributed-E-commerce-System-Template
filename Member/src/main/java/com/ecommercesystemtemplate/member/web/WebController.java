@@ -23,7 +23,7 @@ public class WebController {
     public String memberOrderPage(@RequestParam(defaultValue = "1", value = "pageNum" ) Integer pageNum,
                                   Model model){
         Map<String, Object> page = new HashMap<>();
-        page.put("page", pageNum);
+        page.put("page", pageNum.toString());
         R r = orderFeignService.listWithItems(page);
         model.addAttribute("orders", r);
 
