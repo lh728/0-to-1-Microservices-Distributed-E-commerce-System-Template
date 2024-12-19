@@ -200,35 +200,42 @@
             <div style="clear:both;"></div>
           </ul>
         </div>
-        <table class="table">
+        <table class="table" th:each="order:${orders.page.list}">
           <tr>
             <td colspan="7" style="background:#F7F7F7" >
               <span style="color:#AAAAAA">2017-12-09 20:50:10</span>
-              <span><ruby style="color:#AAAAAA">订单号:</ruby> 70207298274</span>
-              <span>慕熙威尔官方旗舰店<i class="table_i"></i></span>
+              <span><ruby style="color:#AAAAAA">orderNum:</ruby> [[${order.orderSn}]]</span>
+              <span>Thellu Mall<i class="table_i"></i></span>
               <i class="table_i5 isShow"></i>
             </td>
           </tr>
-          <tr class="tr">
-            <td colspan="3">
-              <img src="/static/member/img/ding.jpg" alt="" class="img">
+          <tr class="tr" th:each="item,itemStatus:${order.items}">
+            <td colspan="3" style="border-right: 1px solid #ccc">
+              <img style="height: 60px;width: 60px" th:src="${item.skuPic}" alt="" class="img">
               <div>
-                <p>MUXIWEIERPU皮手套男冬季加绒保暖户外骑<br />
-                车开车触摸屏全指防寒全指手套 黑色 均码</p>
-                <div><i class="table_i4"></i>找搭配</div>
+                <p style="width: 242px;height: auto;overflow: auto">
+                  [[${item.skuName}]]
+                </p>
+                <div><i class="table_i4"></i>find related</div>
               </div>
-              <div style="margin-left:15px;">x1</div>
+              <div style="margin-left:15px;">x[[${item.skuQuantity}]]</div>
               <div style="clear:both"></div>
             </td>
-            <td>张三<i><i class="table_i1"></i></i></td>
-            <td style="padding-left:10px;color:#AAAAB1;">
-              <p style="margin-bottom:5px;">总额 ￥26.00</p>
+            <td th:if="${itemStatus.index == 0}" th:rowspan="${itemStatus.size}">[[${order.receiverName}]]<i><i class="table_i1"></i></i></td>
+            <td th:if="${itemStatus.index == 0}" th:rowspan="${itemStatus.size}" style="padding-left:10px;color:#AAAAB1;">
+              <p style="margin-bottom:5px;">Total ￥[[${order.payAmount}]]</p>
               <hr style="width:90%;">
-              <p>在线支付</p>
+              <p>Online Payment</p>
             </td>
-            <td>
+            <td th:if="${itemStatus.index == 0}" th:rowspan="${itemStatus.size}">
               <ul>
-                <li style="color:#71B247;">等待收货</li>
+                <li style="color:#71B247;" th:if="${order.status == 0}">Payment pending</li>
+                <li style="color:#71B247;" th:if="${order.status == 1}">Paid</li>
+                <li style="color:#71B247;" th:if="${order.status == 2}">Shipped</li>
+                <li style="color:#71B247;" th:if="${order.status == 3}">Completed</li>
+                <li style="color:#71B247;" th:if="${order.status == 4}">Canceled</li>
+                <li style="color:#71B247;" th:if="${order.status == 5}">After-sales</li>
+                <li style="color:#71B247;" th:if="${order.status == 6}">After-sales completion</li>
                 <li style="margin:4px 0;" class="hide"><i class="table_i2"></i>跟踪<i class="table_i3"></i>
                     <div class="hi">
                       <div class="p-tit">
@@ -257,73 +264,7 @@
                 <li class="tdLi">订单详情</li>
               </ul>
             </td>
-            <td>
-              <button>确认收货</button>
-              <p style="margin:4px 0; ">取消订单</p>
-              <p>催单</p>
-            </td>
-          </tr>
-        </table>
-
-
-        <table class="table">
-          <tr>
-            <td colspan="7" style="background:#F7F7F7">
-              <span style="color:#AAAAAA">2017-12-09 20:50:10</span>
-              <span><ruby style="color:#AAAAAA">订单号:</ruby> 70207298274</span>
-              <span>慕熙威尔官方旗舰店<i class="table_i"></i></span>
-              <i class="table_i5 isShow"></i>
-            </td>
-          </tr>
-          <tr class="tr">
-            <td colspan="3">
-              <img src="/static/member/img/ding1.jpg" alt="" class="img">
-              <div>
-                <p>QOOVI 半入耳式手机耳机OPPOR11 R9s A57<br />
-                华为VIVOx9小米通话耳塞 一键线控C07</p>
-                <div><i class="table_i4"></i>找搭配</div>
-              </div>
-              <div style="margin-left:15px;">x1</div>
-              <div style="clear:both"></div>
-            </td>
-            <td>张三<i><i class="table_i1"></i></i></td>
-            <td style="padding-left:10px;color:#AAAAB1;">
-              <p style="margin-bottom:5px;">总额 ￥26.00</p>
-              <hr style="width:90%;">
-              <p>在线支付</p>
-            </td>
-            <td>
-              <ul>
-                <li style="color:#71B247;">等待收货</li>
-                <li style="margin:4px 0; " class="hide"><i class="table_i2"></i>跟踪<i class="table_i3"></i>
-                  <div class="hi">
-                    <div class="p-tit">
-                      普通快递   运单号:390085324974
-                    </div>
-                    <div class="hideList">
-                      <ul>
-                        <li>
-                          [北京市] 在北京昌平区南口公司进行签收扫描,快件已被拍照(您
-                          的快件已签收,感谢您使用韵达快递)签收
-                        </li>
-                        <li>
-                          [北京市] 在北京昌平区南口公司进行签收扫描,快件已被拍照(您
-                          的快件已签收,感谢您使用韵达快递)签收
-                        </li>
-                        <li>
-                          [北京昌平区南口公司] 在北京昌平区南口公司进行派件扫描
-                        </li>
-                        <li>
-                          [北京市] 在北京昌平区南口公司进行派件扫描;派送业务员:业务员;联系电话:17319268636
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </li>
-                <li class="tdLi">订单详情</li>
-              </ul>
-            </td>
-            <td>
+            <td th:if="${itemStatus.index == 0}" th:rowspan="${itemStatus.size}">
               <button>确认收货</button>
               <p style="margin:4px 0; ">取消订单</p>
               <p>催单</p>
@@ -333,205 +274,6 @@
 
 
 
-
-        <table class="table">
-          <tr>
-            <td colspan="7" style="background:#F7F7F7">
-              <span style="color:#AAAAAA">2017-12-09 20:50:10</span>
-              <span><ruby style="color:#AAAAAA">订单号:</ruby> 70207298274</span>
-              <span>慕熙威尔官方旗舰店<i class="table_i"></i></span>
-              <i class="table_i5 isShow"></i>
-            </td>
-          </tr>
-          <tr class="tr">
-            <td colspan="3">
-              <img src="/static/member/img/ding2.jpg" alt="" class="img">
-              <div>
-                <p>欧维沃加绒棉鞋男士休闲鞋男鞋子潮流男生韩<br />
-                版加厚保暖学生板鞋 黑色 42</p>
-                <div><i class="table_i4"></i>找搭配</div>
-              </div>
-              <div style="margin-left:15px;">x1</div>
-              <div style="clear:both"></div>
-            </td>
-            <td>张三<i><i class="table_i1"></i></i></td>
-            <td style="padding-left:10px;color:#AAAAB1;">
-              <p style="margin-bottom:5px;">总额 ￥26.00</p>
-              <hr style="width:90%;">
-              <p>在线支付</p>
-            </td>
-            <td>
-              <ul>
-                <li style="color:#71B247;">等待收货</li>
-                <li style="margin:4px 0; " class="hide"><i class="table_i2"></i>跟踪<i class="table_i3"></i>
-                  <div class="hi">
-                    <div class="p-tit">
-                      普通快递   运单号:390085324974
-                    </div>
-                    <div class="hideList">
-                      <ul>
-                        <li>
-                          [北京市] 在北京昌平区南口公司进行签收扫描,快件已被拍照(您
-                          的快件已签收,感谢您使用韵达快递)签收
-                        </li>
-                        <li>
-                          [北京市] 在北京昌平区南口公司进行签收扫描,快件已被拍照(您
-                          的快件已签收,感谢您使用韵达快递)签收
-                        </li>
-                        <li>
-                          [北京昌平区南口公司] 在北京昌平区南口公司进行派件扫描
-                        </li>
-                        <li>
-                          [北京市] 在北京昌平区南口公司进行派件扫描;派送业务员:业务员;联系电话:17319268636
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </li>
-                <li class="tdLi">订单详情</li>
-              </ul>
-            </td>
-            <td>
-              <button>确认收货</button>
-              <p style="margin:4px 0; ">取消订单</p>
-              <p>催单</p>
-            </td>
-          </tr>
-        </table>
-
-
-        <table class="table">
-          <tr>
-            <td colspan="7" style="background:#F7F7F7">
-              <span style="color:#AAAAAA">2017-12-09 20:50:10</span>
-              <span><ruby style="color:#AAAAAA">订单号:</ruby> 70207298274</span>
-              <span>慕熙威尔官方旗舰店<i class="table_i"></i></span>
-              <i class="table_i5 isShow"></i>
-            </td>
-          </tr>
-          <tr class="tr">
-            <td colspan="3">
-              <img src="/static/member/img/ding3.jpg" alt="" class="img">
-              <div>
-                <p>永日（yongri） 电动剃须刀男士电动刮胡刀<br />
-                剃胡刀便携式三刀头电须刀充电智能胡须刀</p>
-                <div><i class="table_i4"></i>找搭配</div>
-              </div>
-              <div style="margin-left:15px;">x1</div>
-              <div style="clear:both"></div>
-            </td>
-            <td>张三<i><i class="table_i1"></i></i></td>
-            <td style="padding-left:10px;color:#AAAAB1;">
-              <p style="margin-bottom:5px;">总额 ￥26.00</p>
-              <hr style="width:90%;">
-              <p>在线支付</p>
-            </td>
-            <td>
-              <ul>
-                <li style="color:#71B247;">等待收货</li>
-                <li style="margin:4px 0; " class="hide"><i class="table_i2"></i>跟踪<i class="table_i3"></i>
-                  <div class="hi">
-                    <div class="p-tit">
-                      普通快递   运单号:390085324974
-                    </div>
-                    <div class="hideList">
-                      <ul>
-                        <li>
-                          [北京市] 在北京昌平区南口公司进行签收扫描,快件已被拍照(您
-                          的快件已签收,感谢您使用韵达快递)签收
-                        </li>
-                        <li>
-                          [北京市] 在北京昌平区南口公司进行签收扫描,快件已被拍照(您
-                          的快件已签收,感谢您使用韵达快递)签收
-                        </li>
-                        <li>
-                          [北京昌平区南口公司] 在北京昌平区南口公司进行派件扫描
-                        </li>
-                        <li>
-                          [北京市] 在北京昌平区南口公司进行派件扫描;派送业务员:业务员;联系电话:17319268636
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </li>
-                <li class="tdLi">订单详情</li>
-              </ul>
-            </td>
-            <td>
-              <button>确认收货</button>
-              <p style="margin:4px 0; ">取消订单</p>
-              <p>催单</p>
-            </td>
-          </tr>
-        </table>
-
-
-
-
-        <table class="table">
-          <tr>
-            <td colspan="7" style="background:#F7F7F7">
-              <span style="color:#AAAAAA">2017-12-09 20:50:10</span>
-              <span><ruby style="color:#AAAAAA">订单号:</ruby> 70207298274</span>
-              <span>慕熙威尔官方旗舰店<i class="table_i"></i></span>
-              <i class="table_i5 isShow"></i>
-            </td>
-          </tr>
-          <tr class="tr">
-            <td colspan="3">
-              <img src="/static/member/img/ding4.jpg" alt="" class="img">
-              <div>
-                <p>ISIDO oppo r9s手机壳R9sk/r9splus保护套防<br />
-                摔磨砂全包硬壳男女款 R9s【黑】蝙蝠侠</p>
-                <div><i class="table_i4"></i>找搭配</div>
-              </div>
-              <div style="margin-left:15px;">x1</div>
-              <div style="clear:both"></div>
-            </td>
-            <td>张三<i><i class="table_i1"></i></i></td>
-            <td style="padding-left:10px;color:#AAAAB1;">
-              <p style="margin-bottom:5px;">总额 ￥26.00</p>
-              <hr style="width:90%;">
-              <p>在线支付</p>
-            </td>
-            <td>
-              <ul>
-                <li style="color:#71B247;">等待收货</li>
-                <li style="margin:4px 0; " class="hide"><i class="table_i2"></i>跟踪<i class="table_i3"></i>
-                  <div class="hi">
-                    <div class="p-tit">
-                      普通快递   运单号:390085324974
-                    </div>
-                    <div class="hideList">
-                      <ul>
-                        <li>
-                          [北京市] 在北京昌平区南口公司进行签收扫描,快件已被拍照(您
-                          的快件已签收,感谢您使用韵达快递)签收
-                        </li>
-                        <li>
-                          [北京市] 在北京昌平区南口公司进行签收扫描,快件已被拍照(您
-                          的快件已签收,感谢您使用韵达快递)签收
-                        </li>
-                        <li>
-                          [北京昌平区南口公司] 在北京昌平区南口公司进行派件扫描
-                        </li>
-                        <li>
-                          [北京市] 在北京昌平区南口公司进行派件扫描;派送业务员:业务员;联系电话:17319268636
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </li>
-                <li class="tdLi">订单详情</li>
-              </ul>
-            </td>
-            <td>
-              <button>确认收货</button>
-              <p style="margin:4px 0; ">取消订单</p>
-              <p>催单</p>
-            </td>
-          </tr>
-        </table>
 
         <div class="order_btm">
           <div>
