@@ -15,6 +15,7 @@ import com.ecommercesystemtemplate.order.constant.OrderConstant;
 import com.ecommercesystemtemplate.order.dao.OrderDao;
 import com.ecommercesystemtemplate.order.entity.OrderEntity;
 import com.ecommercesystemtemplate.order.entity.OrderItemEntity;
+import com.ecommercesystemtemplate.order.entity.PaymentInfoEntity;
 import com.ecommercesystemtemplate.order.enume.OrderStatusEnum;
 import com.ecommercesystemtemplate.order.feign.CartFeignService;
 import com.ecommercesystemtemplate.order.feign.MemberFeignService;
@@ -23,6 +24,7 @@ import com.ecommercesystemtemplate.order.feign.WmsFeignService;
 import com.ecommercesystemtemplate.order.interceptor.LoginUserInterceptor;
 import com.ecommercesystemtemplate.order.service.OrderItemService;
 import com.ecommercesystemtemplate.order.service.OrderService;
+import com.ecommercesystemtemplate.order.service.PaymentInfoService;
 import com.ecommercesystemtemplate.order.to.OrderCreateTo;
 import com.ecommercesystemtemplate.order.vo.*;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -57,9 +59,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     final StringRedisTemplate stringRedisTemplate;
     final OrderItemService orderItemService;
     final RabbitTemplate rabbitTemplate;
+    final PaymentInfoService paymentInfoService;
 
 
-    public OrderServiceImpl(ProductFeignService productFeignService, MemberFeignService memberFeignService, CartFeignService cartFeignService, ThreadPoolExecutor threadPoolExecutor, WmsFeignService wmsFeignService, StringRedisTemplate stringRedisTemplate, OrderItemService orderItemService, RabbitTemplate rabbitTemplate) {
+    public OrderServiceImpl(ProductFeignService productFeignService, MemberFeignService memberFeignService, CartFeignService cartFeignService, ThreadPoolExecutor threadPoolExecutor, WmsFeignService wmsFeignService, StringRedisTemplate stringRedisTemplate, OrderItemService orderItemService, RabbitTemplate rabbitTemplate, PaymentInfoService paymentInfoService) {
         this.productFeignService = productFeignService;
         this.memberFeignService = memberFeignService;
         this.cartFeignService = cartFeignService;
@@ -68,6 +71,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         this.stringRedisTemplate = stringRedisTemplate;
         this.orderItemService = orderItemService;
         this.rabbitTemplate = rabbitTemplate;
+        this.paymentInfoService = paymentInfoService;
     }
 
     @Override
@@ -248,6 +252,29 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         page.setRecords(orderSn);
 
         return new PageUtils(page);
+    }
+
+    /**
+     * handle Alipay pay result
+     * @param payAsyncVo
+     * @return
+     */
+    @Override
+    @Transactional
+    public String handlePayResult(PayAsyncVo payAsyncVo) {
+        // 1. save order statement
+        PaymentInfoEntity paymentInfoEntity = new PaymentInfoEntity();
+        paymentInfoEntity.setAlipayTradeNo(payAsyncVo.getTrade_no());
+        paymentInfoEntity.setOrderSn(payAsyncVo.getOut_trade_no());
+        paymentInfoEntity.setPaymentStatus(payAsyncVo.getTrade_status());
+        paymentInfoEntity.setCallbackTime(payAsyncVo.getNotify_time());
+        paymentInfoService.save(paymentInfoEntity);
+
+        // 2. update order status
+        if (payAsyncVo.getTrade_status().equals("TRADE_SUCCESS") || payAsyncVo.getTrade_status().equals("TRADE_FINISHED")){
+
+        }
+        return null;
     }
 
     private void saveOrder(OrderCreateTo order) {

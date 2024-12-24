@@ -1,5 +1,7 @@
 package com.ecommercesystemtemplate.order.listener;
 
+import com.ecommercesystemtemplate.order.service.OrderService;
+import com.ecommercesystemtemplate.order.vo.PayAsyncVo;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,10 +15,17 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 public class OrderPaidListener {
 
-    @PostMapping("/paid/notify")
-    public String handleAlipayPaid(HttpServletRequest request){
-        // if Alipay notify succeed, return "success", then Alipay will not send notify again
+    final
+    OrderService orderService;
 
+    public OrderPaidListener(OrderService orderService) {
+        this.orderService = orderService;
+    }
+
+    @PostMapping("/paid/notify")
+    public String handleAlipayPaid(HttpServletRequest request, PayAsyncVo payAsyncVo) {
+        // if Alipay notify succeed, return "success", then Alipay will not send notify again
+        String result = orderService.handlePayResult(payAsyncVo);
         return "success";
     }
 }

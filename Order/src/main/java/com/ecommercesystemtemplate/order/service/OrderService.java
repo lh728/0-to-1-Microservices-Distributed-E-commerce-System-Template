@@ -3,10 +3,7 @@ package com.ecommercesystemtemplate.order.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.order.entity.OrderEntity;
-import com.ecommercesystemtemplate.order.vo.OrderConfirmVo;
-import com.ecommercesystemtemplate.order.vo.OrderSubmitVo;
-import com.ecommercesystemtemplate.order.vo.PayVo;
-import com.ecommercesystemtemplate.order.vo.SubmitOrderResponseVo;
+import com.ecommercesystemtemplate.order.vo.*;
 
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -37,5 +34,7 @@ public interface OrderService extends IService<OrderEntity> {
     PayVo getOrderPayInfo(String orderSn);
 
     PageUtils queryPageWithItems(Map<String, Object> params);
+
+    String handlePayResult(PayAsyncVo payAsyncVo);
 }
 
