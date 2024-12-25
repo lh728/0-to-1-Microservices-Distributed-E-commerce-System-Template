@@ -2,7 +2,7 @@ package com.ecommercesystemtemplate.order.enume;
 
 public enum  OrderStatusEnum {
     CREATE_NEW(0,"Payment pending"),
-    PAYED(1,"Paid"),
+    PAID(1,"Paid"),
     SENDED(2,"Shipped"),
     RECIEVED(3,"Completed"),
     CANCLED(4,"Canceled"),
