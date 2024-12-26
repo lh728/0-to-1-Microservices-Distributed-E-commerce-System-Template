@@ -188,7 +188,7 @@ alter table oms_order_setting comment 'Order configuration information';
 create table oms_payment_info
 (
    id                   bigint not null auto_increment comment 'id',
-   order_sn             char(32) comment 'Order number (external business number)',
+   order_sn             char(64) comment 'Order number (external business number)',
    order_id             bigint comment 'order_id',
    alipay_trade_no      varchar(50) comment 'alipay_trade_no',
    total_amount         decimal(18,4) comment 'total_amount',

@@ -36,6 +36,7 @@ public class AlipayTemplate {
 
     // charset
     private  String charset = "utf-8";
+    private String timeout = "30m";
 
     // Alipay gatewayUrl； https://openapi.alipaydev.com/gateway.do
     private  String gatewayUrl = "https://openapi.alipaydev.com/gateway.do";
@@ -67,6 +68,7 @@ public class AlipayTemplate {
                 + "\"total_amount\":\""+ total_amount +"\","
                 + "\"subject\":\""+ subject +"\","
                 + "\"body\":\""+ body +"\","
+                + "\"time_expire\":\"" + timeout + "\","
                 + "\"product_code\":\"FAST_INSTANT_TRADE_PAY\"}");
 
         String result = alipayClient.pageExecute(alipayRequest).getBody();
