@@ -9,6 +9,13 @@
 #          filters:
 #            - RewritePath=/api/?(?<segment>.*), /$\{segment}
 #
+#        - id: coupon_route
+#          uri: lb://coupon
+#          predicates:
+#            - Path=/api/coupon/**
+#          filters:
+#            - RewritePath=/api/?(?<segment>.*), /$\{segment}
+#
 #        - id: third_party_route
 #          uri: lb://thirdParty
 #          predicates:
