@@ -1,21 +1,14 @@
 package com.ecommercesystemtemplate.coupon.controller;
 
-import java.util.Arrays;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.ecommercesystemtemplate.coupon.entity.SeckillSessionEntity;
-import com.ecommercesystemtemplate.coupon.service.SeckillSessionService;
 import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.common.utils.R;
+import com.ecommercesystemtemplate.coupon.entity.SeckillSessionEntity;
+import com.ecommercesystemtemplate.coupon.service.SeckillSessionService;
+import org.springframework.web.bind.annotation.*;
 
-
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * flash sale events
@@ -27,11 +20,23 @@ import com.ecommercesystemtemplate.common.utils.R;
 @RestController
 @RequestMapping("coupon/seckillsession")
 public class SeckillSessionController {
-    @Autowired
-    private SeckillSessionService seckillSessionService;
+    private final SeckillSessionService seckillSessionService;
+
+    public SeckillSessionController(SeckillSessionService seckillSessionService) {
+        this.seckillSessionService = seckillSessionService;
+    }
 
     /**
-     * 列表
+     * get past 3 days flash sale activities
+     */
+    @GetMapping("/getLatest3DaySession")
+    public R getLatest3DaySession() {
+        List<SeckillSessionEntity> sessions = seckillSessionService.getLatest3DaySession();
+        return R.ok().setData(sessions);
+    }
+
+    /**
+     * list
      */
     @RequestMapping("/list")
     public R list(@RequestParam Map<String, Object> params){
@@ -42,7 +47,7 @@ public class SeckillSessionController {
 
 
     /**
-     * 信息
+     * info
      */
     @RequestMapping("/info/{id}")
     public R info(@PathVariable("id") Long id){
@@ -52,7 +57,7 @@ public class SeckillSessionController {
     }
 
     /**
-     * 保存
+     * save
      */
     @RequestMapping("/save")
     public R save(@RequestBody SeckillSessionEntity seckillSession){
@@ -62,7 +67,7 @@ public class SeckillSessionController {
     }
 
     /**
-     * 修改
+     * update
      */
     @RequestMapping("/update")
     public R update(@RequestBody SeckillSessionEntity seckillSession){
@@ -72,7 +77,7 @@ public class SeckillSessionController {
     }
 
     /**
-     * 删除
+     * delete
      */
     @RequestMapping("/delete")
     public R delete(@RequestBody Long[] ids){
