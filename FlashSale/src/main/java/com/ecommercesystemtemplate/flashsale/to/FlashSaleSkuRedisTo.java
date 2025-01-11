@@ -39,5 +39,17 @@ public class FlashSaleSkuRedisTo {
      * sku detail
      */
     private SkuInfoVo skuInfoVo;
+    /**
+     * start time
+     */
+    private Long startTime;
+    /**
+     * end time
+     */
+    private Long endTime;
+    /**
+     * randomCode
+     */
+    private String randomCode;
 
 }

@@ -4,27 +4,38 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.ecommercesystemtemplate.common.utils.R;
 import com.ecommercesystemtemplate.flashsale.feign.CouponFeignService;
+import com.ecommercesystemtemplate.flashsale.feign.ProductFeignService;
 import com.ecommercesystemtemplate.flashsale.service.FlashSaleService;
 import com.ecommercesystemtemplate.flashsale.to.FlashSaleSkuRedisTo;
 import com.ecommercesystemtemplate.flashsale.vo.FlashSaleSessionsWithSku;
+import com.ecommercesystemtemplate.flashsale.vo.SkuInfoVo;
+import org.redisson.api.RSemaphore;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class FlashSaleServiceImpl implements FlashSaleService {
     final
     CouponFeignService couponFeignService;
     final RedisTemplate redisTemplate;
+    final ProductFeignService productFeignService;
+
+    final RedissonClient redissonClient;
     private final String SESSIONS_CACHE_PREFIX = "flashsale:sessions:";
     private final String SKU_FLASHSALE_CACHE_PREFIX = "flashsale:skus:";
+    private final String SKU_STOCK_SEMAPHORE = "flashsale:stock:"; // + random code
 
-    public FlashSaleServiceImpl(CouponFeignService couponFeignService, RedisTemplate redisTemplate) {
+    public FlashSaleServiceImpl(CouponFeignService couponFeignService, RedisTemplate redisTemplate, ProductFeignService productFeignService, RedissonClient redissonClient) {
         this.couponFeignService = couponFeignService;
         this.redisTemplate = redisTemplate;
+        this.productFeignService = productFeignService;
+        this.redissonClient = redissonClient;
     }
 
 
@@ -60,9 +71,23 @@ public class FlashSaleServiceImpl implements FlashSaleService {
             session.getFlashSaleSkuVos().stream().forEach(item -> {
                 FlashSaleSkuRedisTo flashSaleSkuRedisTo = new FlashSaleSkuRedisTo();
                 // 1. basic info
-
+                R skuInfo = productFeignService.getSkuInfo(item.getSkuId());
+                if (skuInfo.getCode() == 0) {
+                    SkuInfoVo data = skuInfo.getData(new TypeReference<SkuInfoVo>() {
+                    });
+                    flashSaleSkuRedisTo.setSkuInfoVo(data);
+                }
                 // 2. flash sale info
                 BeanUtils.copyProperties(item, flashSaleSkuRedisTo);
+                // 3. set time
+                flashSaleSkuRedisTo.setStartTime(session.getStartTime().getTime());
+                flashSaleSkuRedisTo.setEndTime(session.getEndTime().getTime());
+                // 4. set product random code
+                String token = UUID.randomUUID().toString().replace("-", "");
+                flashSaleSkuRedisTo.setRandomCode(token);
+                // 5. use stock number as distribution semaphore (Rate Limiting)
+                RSemaphore semaphore = redissonClient.getSemaphore(SKU_STOCK_SEMAPHORE + token);
+                semaphore.trySetPermits(item.getSeckillCount().intValue());
 
                 String s = JSON.toJSONString(item);
                 ops.put(item.getId().toString(), s);
