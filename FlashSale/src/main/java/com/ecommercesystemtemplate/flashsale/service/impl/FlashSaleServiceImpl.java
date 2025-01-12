@@ -59,7 +59,7 @@ public class FlashSaleServiceImpl implements FlashSaleService {
             Long startTime = session.getStartTime().getTime();
             Long endTime = session.getEndTime().getTime();
             String key = SESSIONS_CACHE_PREFIX + startTime + "-" + endTime;
-            List<String> list = session.getFlashSaleSkuVos().stream().map(item -> item.getId().toString()).toList();
+            List<String> list = session.getFlashSaleSkuVos().stream().map(item -> item.getSkuId().toString()).toList();
             redisTemplate.opsForList().leftPushAll(key, list);
 
         });
@@ -90,7 +90,7 @@ public class FlashSaleServiceImpl implements FlashSaleService {
                 semaphore.trySetPermits(item.getSeckillCount().intValue());
 
                 String s = JSON.toJSONString(item);
-                ops.put(item.getId().toString(), s);
+                ops.put(item.getSkuId().toString(), s);
             });
         });
     }
