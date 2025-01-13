@@ -59,8 +59,11 @@ public class FlashSaleServiceImpl implements FlashSaleService {
             Long startTime = session.getStartTime().getTime();
             Long endTime = session.getEndTime().getTime();
             String key = SESSIONS_CACHE_PREFIX + startTime + "-" + endTime;
-            List<String> list = session.getFlashSaleSkuVos().stream().map(item -> item.getSkuId().toString()).toList();
-            redisTemplate.opsForList().leftPushAll(key, list);
+            Boolean hasKey = redisTemplate.hasKey(key);
+            if (!hasKey) {
+                List<String> list = session.getFlashSaleSkuVos().stream().map(item -> item.getSkuId().toString()).toList();
+                redisTemplate.opsForList().leftPushAll(key, list);
+            }
 
         });
     }
@@ -69,28 +72,35 @@ public class FlashSaleServiceImpl implements FlashSaleService {
         sessions.stream().forEach(session -> {
             BoundHashOperations<String, Object, Object> ops = redisTemplate.boundHashOps(SKU_FLASHSALE_CACHE_PREFIX);
             session.getFlashSaleSkuVos().stream().forEach(item -> {
-                FlashSaleSkuRedisTo flashSaleSkuRedisTo = new FlashSaleSkuRedisTo();
-                // 1. basic info
-                R skuInfo = productFeignService.getSkuInfo(item.getSkuId());
-                if (skuInfo.getCode() == 0) {
-                    SkuInfoVo data = skuInfo.getData(new TypeReference<SkuInfoVo>() {
-                    });
-                    flashSaleSkuRedisTo.setSkuInfoVo(data);
-                }
-                // 2. flash sale info
-                BeanUtils.copyProperties(item, flashSaleSkuRedisTo);
-                // 3. set time
-                flashSaleSkuRedisTo.setStartTime(session.getStartTime().getTime());
-                flashSaleSkuRedisTo.setEndTime(session.getEndTime().getTime());
                 // 4. set product random code
                 String token = UUID.randomUUID().toString().replace("-", "");
-                flashSaleSkuRedisTo.setRandomCode(token);
-                // 5. use stock number as distribution semaphore (Rate Limiting)
-                RSemaphore semaphore = redissonClient.getSemaphore(SKU_STOCK_SEMAPHORE + token);
-                semaphore.trySetPermits(item.getSeckillCount().intValue());
+                if (Boolean.FALSE.equals(ops.hasKey(item.getSkuId().toString()))){
+                    FlashSaleSkuRedisTo flashSaleSkuRedisTo = new FlashSaleSkuRedisTo();
+                    // 1. basic info
+                    R skuInfo = productFeignService.getSkuInfo(item.getSkuId());
+                    if (skuInfo.getCode() == 0) {
+                        SkuInfoVo data = skuInfo.getData(new TypeReference<SkuInfoVo>() {
+                        });
+                        flashSaleSkuRedisTo.setSkuInfoVo(data);
+                    }
+                    // 2. flash sale info
+                    BeanUtils.copyProperties(item, flashSaleSkuRedisTo);
+                    // 3. set time
+                    flashSaleSkuRedisTo.setStartTime(session.getStartTime().getTime());
+                    flashSaleSkuRedisTo.setEndTime(session.getEndTime().getTime());
 
-                String s = JSON.toJSONString(item);
-                ops.put(item.getSkuId().toString(), s);
+                    flashSaleSkuRedisTo.setRandomCode(token);
+
+                    String s = JSON.toJSONString(item);
+                    ops.put(item.getSkuId().toString(), s);
+                }
+
+                // 5. use stock number as distribution semaphore (Rate Limiting)
+                Boolean hasKey = redisTemplate.hasKey(SKU_STOCK_SEMAPHORE + token);
+                if (Boolean.FALSE.equals(hasKey)) {
+                    RSemaphore semaphore = redissonClient.getSemaphore(SKU_STOCK_SEMAPHORE + token);
+                    semaphore.trySetPermits(item.getSeckillCount().intValue());
+                }
             });
         });
     }
