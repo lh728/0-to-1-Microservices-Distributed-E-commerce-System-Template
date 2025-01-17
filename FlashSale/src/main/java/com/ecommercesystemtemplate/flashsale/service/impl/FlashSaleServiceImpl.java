@@ -16,8 +16,7 @@ import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class FlashSaleServiceImpl implements FlashSaleService {
@@ -52,6 +51,37 @@ public class FlashSaleServiceImpl implements FlashSaleService {
             // 2. cache sku info
             saveSessionSkuInfos(data);
         }
+    }
+
+    @Override
+    public List<FlashSaleSkuRedisTo> getCurrentFlashSaleSkus() {
+        // 1. get current time
+        Long currentTime = new Date().getTime();
+        Set<String> keys = redisTemplate.keys(SESSIONS_CACHE_PREFIX + "*");
+        for (String key : keys) {
+            String replace = key.replace(SESSIONS_CACHE_PREFIX, "");
+            String[] split = replace.split("-");
+            Long startTime = Long.parseLong(split[0]);
+            Long endTime = Long.parseLong(split[1]);
+            if (currentTime >= startTime && currentTime <= endTime) {
+                // 2. get sku list from redis
+                List<String> list = redisTemplate.opsForList().range(key, -100, 100);
+                BoundHashOperations<String, Object, Object> ops = redisTemplate.boundHashOps(SKU_FLASHSALE_CACHE_PREFIX);
+                List<Object> objects = ops.multiGet(Collections.singleton(list));
+                if (objects != null && !objects.isEmpty()) {
+                    List<FlashSaleSkuRedisTo> collect = objects.stream().map(item -> {
+                        FlashSaleSkuRedisTo redisTo = JSON.parseObject((String) item, FlashSaleSkuRedisTo.class);
+//                        redisTo.setRandomCode();
+                        return redisTo;
+                    }).toList();
+                    return collect;
+                }
+                break;
+            }
+        }
+
+        return null;
+
     }
 
     private void saveSessionInfos(List<FlashSaleSessionsWithSku> sessions){
