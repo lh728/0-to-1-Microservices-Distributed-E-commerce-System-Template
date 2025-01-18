@@ -66,8 +66,8 @@ public class FlashSaleServiceImpl implements FlashSaleService {
             if (currentTime >= startTime && currentTime <= endTime) {
                 // 2. get sku list from redis
                 List<String> list = redisTemplate.opsForList().range(key, -100, 100);
-                BoundHashOperations<String, Object, Object> ops = redisTemplate.boundHashOps(SKU_FLASHSALE_CACHE_PREFIX);
-                List<Object> objects = ops.multiGet(Collections.singleton(list));
+                BoundHashOperations<String, String, String> ops = redisTemplate.boundHashOps(SKU_FLASHSALE_CACHE_PREFIX);
+                List<String> objects = ops.multiGet(list);
                 if (objects != null && !objects.isEmpty()) {
                     List<FlashSaleSkuRedisTo> collect = objects.stream().map(item -> {
                         FlashSaleSkuRedisTo redisTo = JSON.parseObject((String) item, FlashSaleSkuRedisTo.class);
