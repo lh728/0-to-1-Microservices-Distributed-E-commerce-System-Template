@@ -1,15 +1,19 @@
 package com.ecommercesystemtemplate.product.service.impl;
 
+import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.common.utils.Query;
+import com.ecommercesystemtemplate.common.utils.R;
 import com.ecommercesystemtemplate.product.dao.SkuInfoDao;
 import com.ecommercesystemtemplate.product.entity.SkuImagesEntity;
 import com.ecommercesystemtemplate.product.entity.SkuInfoEntity;
 import com.ecommercesystemtemplate.product.entity.SpuInfoDescEntity;
+import com.ecommercesystemtemplate.product.feign.FlashSaleFeignService;
 import com.ecommercesystemtemplate.product.service.*;
+import com.ecommercesystemtemplate.product.vo.FlashSaleInfoVo;
 import com.ecommercesystemtemplate.product.vo.SkuItemSaleAttrVo;
 import com.ecommercesystemtemplate.product.vo.SkuItemVo;
 import com.ecommercesystemtemplate.product.vo.SpuItemAttrGroupVo;
@@ -35,6 +39,7 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
     final AttrGroupService attrGroupService;
     final SkuSaleAttrValueService skuSaleAttrValueService;
     final ThreadPoolExecutor executor;
+    final FlashSaleFeignService flashSaleFeignService;
 
 
     @Override
@@ -132,8 +137,19 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
             skuItemVo.setImages(images);
         }, executor);
 
+        // 6. query flash sale info
+        CompletableFuture<Void> flashSaleFuture = CompletableFuture.runAsync(() -> {
+            R flashSaleSkuInfo = flashSaleFeignService.getFlashSaleSkuInfo(skuId);
+            if (flashSaleSkuInfo.getCode() == 0) {
+                FlashSaleInfoVo data = flashSaleSkuInfo.getData(new TypeReference<FlashSaleInfoVo>() {
+                });
+                skuItemVo.setFlashSaleInfo(data);
+            }
+        }, executor);
+
+
         // wait until all tasks are completed
-        CompletableFuture.allOf( saleAttrFuture, descrFuture, specificationAttrFuture, imageFuture).get();
+        CompletableFuture.allOf( saleAttrFuture, descrFuture, specificationAttrFuture, imageFuture,flashSaleFuture).get();
 
         return skuItemVo;
 

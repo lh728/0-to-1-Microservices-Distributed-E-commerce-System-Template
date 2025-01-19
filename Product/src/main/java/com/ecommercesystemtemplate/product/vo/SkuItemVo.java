@@ -5,7 +5,6 @@ import com.ecommercesystemtemplate.product.entity.SkuInfoEntity;
 import com.ecommercesystemtemplate.product.entity.SpuInfoDescEntity;
 import lombok.Data;
 
-import java.sql.Statement;
 import java.util.List;
 
 @Data
@@ -27,6 +26,9 @@ public class SkuItemVo {
 
     // 5. get spu spec attr info
     List<SpuItemAttrGroupVo> groupAttrs;
+
+    // 6. get curr sku flashsale info
+    FlashSaleInfoVo flashSaleInfo;
 
 
 

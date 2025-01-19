@@ -84,6 +84,33 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 
     }
 
+    @Override
+    public FlashSaleSkuRedisTo getFlashSaleSkuInfo(Long skuId) {
+        // find all product key that needs to be participated in flash sale
+        BoundHashOperations<String,String,String> ops = redisTemplate.boundHashOps(SKU_FLASHSALE_CACHE_PREFIX);
+        Set<String> keys = ops.keys();
+        if (keys != null && !keys.isEmpty()) {
+            String regx = "\\d" + skuId;
+            for (String key : keys) {
+                if (key.matches(regx)) {
+                    String json = ops.get(key);
+                    FlashSaleSkuRedisTo redisTo = JSON.parseObject(json, FlashSaleSkuRedisTo.class);
+                    // random code
+                    long current =  new Date().getTime();
+                    if (current >= redisTo.getStartTime() && current <= redisTo.getEndTime()) {
+
+                    }else{
+                        redisTo.setRandomCode(null);
+                    }
+                    return redisTo;
+                }
+            }
+        }
+        return null;
+
+
+    }
+
     private void saveSessionInfos(List<FlashSaleSessionsWithSku> sessions){
         sessions.stream().forEach(session -> {
             Long startTime = session.getStartTime().getTime();

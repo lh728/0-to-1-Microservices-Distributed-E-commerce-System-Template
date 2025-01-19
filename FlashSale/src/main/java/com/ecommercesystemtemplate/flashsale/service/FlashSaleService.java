@@ -8,4 +8,6 @@ public interface FlashSaleService {
     void uploadFlashSaleSkuLatest30Days();
 
     List<FlashSaleSkuRedisTo> getCurrentFlashSaleSkus();
+
+    FlashSaleSkuRedisTo getFlashSaleSkuInfo(Long skuId);
 }
