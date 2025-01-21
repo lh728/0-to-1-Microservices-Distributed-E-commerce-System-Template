@@ -509,8 +509,13 @@
 									<span>€</span>
 									<span th:text="${#numbers.formatDecimal(item.info.price,3,2)}">0.00</span>
 								</li>
-								<li>
-									预约享资格
+								<li style="color: red" th:if="${item.secKillInfo!=null}">
+									<span th:if="${#dates.createNow().getTime() < item.secKillInfo.stratTime}">
+										Product will start on [[${#dates.format(new java.util.Date(item.secKillInfo.startTime),'yyyy-MM-dd HH:mm:ss')}]]
+									</span>
+									<span th:if="${#dates.createNow().getTime() >= item.secKillInfo.stratTime && #dates.createNow().getTime() <= item.secKillInfo.endTime}">
+										Product flashSale Price: [[${#numbers.formatDecimal(item.secKillInfo.secSkillPrice,1,2)}]]
+									</span>
 								</li>
 								<li>
 									<a href="/static/item/">

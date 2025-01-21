@@ -587,10 +587,14 @@
         window.location.href = "http://search.thellumall.com/list.html?keyword=" + keyword;
     }
 
+    function to_href(skuId) {
+        location.href  = "http://item.thellumall.com/" + skuId + ".html";
+    }
+
     $.get("http://flashsale.thellumall.com/getCurrentFlashSaleSkus", function (resp) {
         if (resp.data.length > 0) {
             resp.data.forEach(function (item) {
-                $("<li><li>").append($("<img style='width: 130px;height: 130px' src='" + item.skuInfo.skuDefaultImg +"'/>"))
+                $("<li onclick='to_href(" + item.skuId + ")'><li>").append($("<img style='width: 130px;height: 130px' src='" + item.skuInfo.skuDefaultImg +"'/>"))
                     .append($("<p>" + item.skuInfo.skuTitle + "</p>"))
                     .append($("<span>" + item.secKillPrice + "</span>"))
                     .append($("<s>" + item.skuInfo.price + "</s>"))
