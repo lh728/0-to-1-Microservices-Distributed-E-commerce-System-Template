@@ -637,7 +637,12 @@
 
 								</div>
 							</div>
-							<div class="box-btns-two">
+							<div class="box-btns-two" th:if="${#dates.createNow().getTime() >= item.secKillInfo.stratTime && #dates.createNow().getTime() <= item.secKillInfo.endTime}">
+								<a href="#" id="flashBuy" th:attr="skuId=${item.info.skuId},sessionId=${item.secKillInfo.promotionSessionId},code=${item.secKillInfo.randomCode}">
+									Purchase Now
+								</a>
+							</div>
+							<div class="box-btns-two" th:if="${#dates.createNow().getTime() < item.secKillInfo.stratTime || #dates.createNow().getTime() > item.secKillInfo.endTime}">
 								<a href="#" id="addToCartA" th:attr="skuId=${item.info.skuId}">
 									Add to Cart
 								</a>
@@ -1315,6 +1320,15 @@
 			var num = $("#numInput").val();
 			var skuId = $(this).attr("skuId");
 			location.href = "http://cart.thellumall.com/addToCart?skuId=" + skuId +"&num=" + num;
+			return false;
+		});
+
+		$("#flashBuy").click(function (){
+			var isLogin = [[${session.loginUser == null}]];
+			var flashSaleId = $(this).attr("sessionId") + "_" + $(this).attr("skuId");
+			var key = $(this).attr("code");
+			var num = $("#numInput").val();
+			location.href = "http://flashSale.thellumall.com/falshSale?flashSaleId=" + flashSaleId + "&key=" + key + "&num=" + num;
 			return false;
 		});
 
