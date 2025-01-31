@@ -1325,10 +1325,15 @@
 
 		$("#flashBuy").click(function (){
 			var isLogin = [[${session.loginUser == null}]];
-			var flashSaleId = $(this).attr("sessionId") + "_" + $(this).attr("skuId");
-			var key = $(this).attr("code");
-			var num = $("#numInput").val();
-			location.href = "http://flashSale.thellumall.com/falshSale?flashSaleId=" + flashSaleId + "&key=" + key + "&num=" + num;
+			if(isLogin){
+				var flashSaleId = $(this).attr("sessionId") + "_" + $(this).attr("skuId");
+				var key = $(this).attr("code");
+				var num = $("#numInput").val();
+				location.href = "http://flashSale.thellumall.com/flashSale?flashSaleId=" + flashSaleId + "&key=" + key + "&num=" + num;
+			} else{
+				alert("Please login first");
+			}
+
 			return false;
 		});
 

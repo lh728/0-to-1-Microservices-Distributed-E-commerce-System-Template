@@ -5,6 +5,7 @@ import com.ecommercesystemtemplate.flashsale.service.FlashSaleService;
 import com.ecommercesystemtemplate.flashsale.to.FlashSaleSkuRedisTo;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -34,6 +35,17 @@ public class FlashSaleController {
     public R getFlashSaleSkuInfo(@PathVariable("skuId") Long skuId) {
         FlashSaleSkuRedisTo data = flashSaleService.getFlashSaleSkuInfo(skuId);
         return R.ok().setData(data);
+    }
+
+    @GetMapping("/flashSale")
+    public R flashSale(@RequestParam("flashSaleId") String flashSaleId,
+                       @RequestParam("key") String key,
+                       @RequestParam("num") Integer num) {
+        // 1. check login
+
+
+
+        return R.ok();
     }
 
 
