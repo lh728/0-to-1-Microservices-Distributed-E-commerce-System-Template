@@ -30,7 +30,7 @@ public class FlashSaleSkuRedisTo {
     /**
      * flash limit
      */
-    private BigDecimal seckillLimit;
+    private Integer seckillLimit;
     /**
      * flash sort
      */

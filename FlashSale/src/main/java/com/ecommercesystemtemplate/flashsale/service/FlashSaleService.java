@@ -10,4 +10,6 @@ public interface FlashSaleService {
     List<FlashSaleSkuRedisTo> getCurrentFlashSaleSkus();
 
     FlashSaleSkuRedisTo getFlashSaleSkuInfo(Long skuId);
+
+    String flashSale(String flashSaleId, String key, Integer num);
 }

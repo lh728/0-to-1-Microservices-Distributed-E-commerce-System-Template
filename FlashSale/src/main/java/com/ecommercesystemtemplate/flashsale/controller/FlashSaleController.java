@@ -41,8 +41,7 @@ public class FlashSaleController {
     public R flashSale(@RequestParam("flashSaleId") String flashSaleId,
                        @RequestParam("key") String key,
                        @RequestParam("num") Integer num) {
-        // 1. check login
-
+        String orderSn = flashSaleService.flashSale(flashSaleId, key, num);
 
 
         return R.ok();

@@ -9,6 +9,7 @@ import com.ecommercesystemtemplate.flashsale.service.FlashSaleService;
 import com.ecommercesystemtemplate.flashsale.to.FlashSaleSkuRedisTo;
 import com.ecommercesystemtemplate.flashsale.vo.FlashSaleSessionsWithSku;
 import com.ecommercesystemtemplate.flashsale.vo.SkuInfoVo;
+import org.apache.commons.lang.StringUtils;
 import org.redisson.api.RSemaphore;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
@@ -109,6 +110,39 @@ public class FlashSaleServiceImpl implements FlashSaleService {
         return null;
 
 
+    }
+
+    @Override
+    public String flashSale(String flashSaleId, String key, Integer num) {
+        // 1. get all info about current flash sale
+        BoundHashOperations<String,String,String> ops = redisTemplate.boundHashOps(SKU_FLASHSALE_CACHE_PREFIX);
+        String json = ops.get(flashSaleId);
+        if (StringUtils.isEmpty(json)) {
+            return null;
+        }else{
+            FlashSaleSkuRedisTo redisTo = JSON.parseObject(json, FlashSaleSkuRedisTo.class);
+            // check time
+            Long startTime = redisTo.getStartTime();
+            Long endTime = redisTo.getEndTime();
+            Long current = new Date().getTime();
+            if(current >= startTime && current <= endTime){
+                // check random code and id
+                String randomCode = redisTo.getRandomCode();
+                String skuId = redisTo.getPromotionSessionId() + "-" + redisTo.getSkuId();
+                if (randomCode.equals(key) && skuId.equals(flashSaleId)) {
+                    // check stock
+                    if(num <= redisTo.getSeckillLimit()){
+                        // check if has bought
+                    }
+                }else{
+                    return null;
+                }
+            }else{
+                return null;
+            }
+        }
+
+        return null;
     }
 
     private void saveSessionInfos(List<FlashSaleSessionsWithSku> sessions){
