@@ -2,9 +2,12 @@ package com.ecommercesystemtemplate.flashsale.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.ecommercesystemtemplate.common.utils.R;
+import com.ecommercesystemtemplate.common.vo.MemberResponseVo;
 import com.ecommercesystemtemplate.flashsale.feign.CouponFeignService;
 import com.ecommercesystemtemplate.flashsale.feign.ProductFeignService;
+import com.ecommercesystemtemplate.flashsale.interceptor.LoginUserInterceptor;
 import com.ecommercesystemtemplate.flashsale.service.FlashSaleService;
 import com.ecommercesystemtemplate.flashsale.to.FlashSaleSkuRedisTo;
 import com.ecommercesystemtemplate.flashsale.vo.FlashSaleSessionsWithSku;
@@ -17,7 +20,11 @@ import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class FlashSaleServiceImpl implements FlashSaleService {
@@ -114,6 +121,8 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 
     @Override
     public String flashSale(String flashSaleId, String key, Integer num) {
+        MemberResponseVo memberResponseVo = LoginUserInterceptor.loginUser.get();
+
         // 1. get all info about current flash sale
         BoundHashOperations<String,String,String> ops = redisTemplate.boundHashOps(SKU_FLASHSALE_CACHE_PREFIX);
         String json = ops.get(flashSaleId);
@@ -125,6 +134,7 @@ public class FlashSaleServiceImpl implements FlashSaleService {
             Long startTime = redisTo.getStartTime();
             Long endTime = redisTo.getEndTime();
             Long current = new Date().getTime();
+            Long ttl = endTime - current;
             if(current >= startTime && current <= endTime){
                 // check random code and id
                 String randomCode = redisTo.getRandomCode();
@@ -133,12 +143,22 @@ public class FlashSaleServiceImpl implements FlashSaleService {
                     // check stock
                     if(num <= redisTo.getSeckillLimit()){
                         // check if has bought
+                        String redisKey = memberResponseVo.getId() + "_" + skuId;
+                        Boolean b = redisTemplate.opsForValue().setIfAbsent(redisKey, num.toString(), ttl, TimeUnit.MILLISECONDS);
+                        if (b) {
+                            // means this person never buy this sku
+                            RSemaphore semaphore = redissonClient.getSemaphore(SKU_STOCK_SEMAPHORE + randomCode);
+                            try {
+                                boolean tryAcquire = semaphore.tryAcquire(num, 100, TimeUnit.MILLISECONDS);
+                                // success and send message
+                                String timeId = IdWorker.getTimeId();
+                                return timeId;
+                            } catch (InterruptedException e) {
+                                return null;
+                            }
+                        }
                     }
-                }else{
-                    return null;
                 }
-            }else{
-                return null;
             }
         }
 

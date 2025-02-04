@@ -44,7 +44,7 @@ public class FlashSaleController {
         String orderSn = flashSaleService.flashSale(flashSaleId, key, num);
 
 
-        return R.ok();
+        return R.ok().setData(orderSn);
     }
 
 
