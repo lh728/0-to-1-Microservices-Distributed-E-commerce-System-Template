@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ecommercesystemtemplate.common.exception.NoStockException;
 import com.ecommercesystemtemplate.common.to.mq.OrderTo;
+import com.ecommercesystemtemplate.common.to.mq.QuickFlashSaleOrderTo;
 import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.common.utils.Query;
 import com.ecommercesystemtemplate.common.utils.R;
@@ -276,6 +277,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             this.baseMapper.updateOrderStatus(outTradeNo, OrderStatusEnum.PAID.getCode());
         }
         return "success";
+    }
+
+    @Override
+    public void createFlashSaleOrder(QuickFlashSaleOrderTo orderEntity) {
+
     }
 
     private void saveOrder(OrderCreateTo order) {

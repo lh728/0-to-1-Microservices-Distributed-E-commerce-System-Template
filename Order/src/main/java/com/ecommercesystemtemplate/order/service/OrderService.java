@@ -1,6 +1,7 @@
 package com.ecommercesystemtemplate.order.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.ecommercesystemtemplate.common.to.mq.QuickFlashSaleOrderTo;
 import com.ecommercesystemtemplate.common.utils.PageUtils;
 import com.ecommercesystemtemplate.order.entity.OrderEntity;
 import com.ecommercesystemtemplate.order.vo.*;
@@ -36,5 +37,7 @@ public interface OrderService extends IService<OrderEntity> {
     PageUtils queryPageWithItems(Map<String, Object> params);
 
     String handlePayResult(PayAsyncVo payAsyncVo);
+
+    void createFlashSaleOrder(QuickFlashSaleOrderTo orderEntity);
 }
 

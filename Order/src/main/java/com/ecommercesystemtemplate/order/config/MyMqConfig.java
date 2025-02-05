@@ -53,4 +53,15 @@ public class MyMqConfig {
                 "order-event-exchange", "order.release.other.#", null);
     }
 
+    @Bean
+    public Queue orderFlashSaleQueue() {
+        return new Queue("order.flashSale.order.queue", true, false, false);
+    }
+
+    @Bean
+    public Binding orderFlashSaleBinding() {
+        return new Binding("order.flashSale.order.queue", Binding.DestinationType.QUEUE,
+                "order-event-exchange", "order.flashSale.order", null);
+    }
+
 }

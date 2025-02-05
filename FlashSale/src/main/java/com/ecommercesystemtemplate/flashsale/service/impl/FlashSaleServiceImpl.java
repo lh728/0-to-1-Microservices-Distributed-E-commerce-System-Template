@@ -3,6 +3,7 @@ package com.ecommercesystemtemplate.flashsale.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import com.ecommercesystemtemplate.common.to.mq.QuickFlashSaleOrderTo;
 import com.ecommercesystemtemplate.common.utils.R;
 import com.ecommercesystemtemplate.common.vo.MemberResponseVo;
 import com.ecommercesystemtemplate.flashsale.feign.CouponFeignService;
@@ -15,6 +16,7 @@ import com.ecommercesystemtemplate.flashsale.vo.SkuInfoVo;
 import org.apache.commons.lang.StringUtils;
 import org.redisson.api.RSemaphore;
 import org.redisson.api.RedissonClient;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -32,16 +34,18 @@ public class FlashSaleServiceImpl implements FlashSaleService {
     CouponFeignService couponFeignService;
     final RedisTemplate redisTemplate;
     final ProductFeignService productFeignService;
+    final RabbitTemplate rabbitTemplate;
 
     final RedissonClient redissonClient;
     private final String SESSIONS_CACHE_PREFIX = "flashsale:sessions:";
     private final String SKU_FLASHSALE_CACHE_PREFIX = "flashsale:skus:";
     private final String SKU_STOCK_SEMAPHORE = "flashsale:stock:"; // + random code
 
-    public FlashSaleServiceImpl(CouponFeignService couponFeignService, RedisTemplate redisTemplate, ProductFeignService productFeignService, RedissonClient redissonClient) {
+    public FlashSaleServiceImpl(CouponFeignService couponFeignService, RedisTemplate redisTemplate, ProductFeignService productFeignService, RabbitTemplate rabbitTemplate, RedissonClient redissonClient) {
         this.couponFeignService = couponFeignService;
         this.redisTemplate = redisTemplate;
         this.productFeignService = productFeignService;
+        this.rabbitTemplate = rabbitTemplate;
         this.redissonClient = redissonClient;
     }
 
@@ -152,6 +156,14 @@ public class FlashSaleServiceImpl implements FlashSaleService {
                                 boolean tryAcquire = semaphore.tryAcquire(num, 100, TimeUnit.MILLISECONDS);
                                 // success and send message
                                 String timeId = IdWorker.getTimeId();
+                                QuickFlashSaleOrderTo orderTo = new QuickFlashSaleOrderTo();
+                                orderTo.setOrderSn(timeId);
+                                orderTo.setMemberId(memberResponseVo.getId());
+                                orderTo.setPromotionSessionId(redisTo.getPromotionSessionId());
+                                orderTo.setSkuId(redisTo.getSkuId());
+                                orderTo.setNum(num);
+                                orderTo.setSeckillPrice(redisTo.getSeckillPrice());
+                                rabbitTemplate.convertAndSend("order-event-exchange", "order.flashSale.order", orderTo);
                                 return timeId;
                             } catch (InterruptedException e) {
                                 return null;

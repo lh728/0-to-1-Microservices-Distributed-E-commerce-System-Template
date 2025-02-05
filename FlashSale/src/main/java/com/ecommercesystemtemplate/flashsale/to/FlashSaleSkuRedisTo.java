@@ -36,10 +36,6 @@ public class FlashSaleSkuRedisTo {
      */
     private Integer seckillSort;
     /**
-     * sku detail
-     */
-    private SkuInfoVo skuInfoVo;
-    /**
      * start time
      */
     private Long startTime;
@@ -51,5 +47,9 @@ public class FlashSaleSkuRedisTo {
      * randomCode
      */
     private String randomCode;
+    /**
+     * sku detail
+     */
+    private SkuInfoVo skuInfoVo;
 
 }
