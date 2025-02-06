@@ -99,7 +99,7 @@ public class FlashSaleServiceImpl implements FlashSaleService {
     @Override
     public FlashSaleSkuRedisTo getFlashSaleSkuInfo(Long skuId) {
         // find all product key that needs to be participated in flash sale
-        BoundHashOperations<String,String,String> ops = redisTemplate.boundHashOps(SKU_FLASHSALE_CACHE_PREFIX);
+        BoundHashOperations<String, String, String> ops = redisTemplate.boundHashOps(SKU_FLASHSALE_CACHE_PREFIX);
         Set<String> keys = ops.keys();
         if (keys != null && !keys.isEmpty()) {
             String regx = "\\d" + skuId;
@@ -108,10 +108,10 @@ public class FlashSaleServiceImpl implements FlashSaleService {
                     String json = ops.get(key);
                     FlashSaleSkuRedisTo redisTo = JSON.parseObject(json, FlashSaleSkuRedisTo.class);
                     // random code
-                    long current =  new Date().getTime();
+                    long current = new Date().getTime();
                     if (current >= redisTo.getStartTime() && current <= redisTo.getEndTime()) {
 
-                    }else{
+                    } else {
                         redisTo.setRandomCode(null);
                     }
                     return redisTo;
@@ -128,32 +128,33 @@ public class FlashSaleServiceImpl implements FlashSaleService {
         MemberResponseVo memberResponseVo = LoginUserInterceptor.loginUser.get();
 
         // 1. get all info about current flash sale
-        BoundHashOperations<String,String,String> ops = redisTemplate.boundHashOps(SKU_FLASHSALE_CACHE_PREFIX);
+        BoundHashOperations<String, String, String> ops = redisTemplate.boundHashOps(SKU_FLASHSALE_CACHE_PREFIX);
         String json = ops.get(flashSaleId);
         if (StringUtils.isEmpty(json)) {
             return null;
-        }else{
+        } else {
             FlashSaleSkuRedisTo redisTo = JSON.parseObject(json, FlashSaleSkuRedisTo.class);
             // check time
             Long startTime = redisTo.getStartTime();
             Long endTime = redisTo.getEndTime();
             Long current = new Date().getTime();
             Long ttl = endTime - current;
-            if(current >= startTime && current <= endTime){
+            if (current >= startTime && current <= endTime) {
                 // check random code and id
                 String randomCode = redisTo.getRandomCode();
                 String skuId = redisTo.getPromotionSessionId() + "-" + redisTo.getSkuId();
                 if (randomCode.equals(key) && skuId.equals(flashSaleId)) {
                     // check stock
-                    if(num <= redisTo.getSeckillLimit()){
+                    if (num <= redisTo.getSeckillLimit()) {
                         // check if has bought
                         String redisKey = memberResponseVo.getId() + "_" + skuId;
                         Boolean b = redisTemplate.opsForValue().setIfAbsent(redisKey, num.toString(), ttl, TimeUnit.MILLISECONDS);
                         if (b) {
                             // means this person never buy this sku
                             RSemaphore semaphore = redissonClient.getSemaphore(SKU_STOCK_SEMAPHORE + randomCode);
-                            try {
-                                boolean tryAcquire = semaphore.tryAcquire(num, 100, TimeUnit.MILLISECONDS);
+
+                            boolean tryAcquire = semaphore.tryAcquire(num);
+                            if (tryAcquire) {
                                 // success and send message
                                 String timeId = IdWorker.getTimeId();
                                 QuickFlashSaleOrderTo orderTo = new QuickFlashSaleOrderTo();
@@ -165,8 +166,6 @@ public class FlashSaleServiceImpl implements FlashSaleService {
                                 orderTo.setSeckillPrice(redisTo.getSeckillPrice());
                                 rabbitTemplate.convertAndSend("order-event-exchange", "order.flashSale.order", orderTo);
                                 return timeId;
-                            } catch (InterruptedException e) {
-                                return null;
                             }
                         }
                     }
@@ -177,7 +176,7 @@ public class FlashSaleServiceImpl implements FlashSaleService {
         return null;
     }
 
-    private void saveSessionInfos(List<FlashSaleSessionsWithSku> sessions){
+    private void saveSessionInfos(List<FlashSaleSessionsWithSku> sessions) {
         sessions.stream().forEach(session -> {
             Long startTime = session.getStartTime().getTime();
             Long endTime = session.getEndTime().getTime();
@@ -192,13 +191,13 @@ public class FlashSaleServiceImpl implements FlashSaleService {
         });
     }
 
-    private void saveSessionSkuInfos(List<FlashSaleSessionsWithSku> sessions){
+    private void saveSessionSkuInfos(List<FlashSaleSessionsWithSku> sessions) {
         sessions.stream().forEach(session -> {
             BoundHashOperations<String, Object, Object> ops = redisTemplate.boundHashOps(SKU_FLASHSALE_CACHE_PREFIX);
             session.getFlashSaleSkuVos().stream().forEach(item -> {
                 // set product random code
                 String token = UUID.randomUUID().toString().replace("-", "");
-                if (Boolean.FALSE.equals(ops.hasKey(item.getPromotionSessionId().toString() + "-" + item.getSkuId().toString()))){
+                if (Boolean.FALSE.equals(ops.hasKey(item.getPromotionSessionId().toString() + "-" + item.getSkuId().toString()))) {
                     FlashSaleSkuRedisTo flashSaleSkuRedisTo = new FlashSaleSkuRedisTo();
                     // 1. basic info
                     R skuInfo = productFeignService.getSkuInfo(item.getSkuId());

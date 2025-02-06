@@ -281,6 +281,20 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     @Override
     public void createFlashSaleOrder(QuickFlashSaleOrderTo orderEntity) {
+        // 1. save order info
+        OrderEntity entity = new OrderEntity();
+        entity.setOrderSn(orderEntity.getOrderSn());
+        entity.setMemberId(orderEntity.getMemberId());
+        entity.setStatus(OrderStatusEnum.CREATE_NEW.getCode());
+        BigDecimal multiply = orderEntity.getSeckillPrice().multiply(new BigDecimal("" + orderEntity.getNum()));
+        entity.setPayAmount(multiply);
+        this.save(entity);
+        // 2. save order item
+        OrderItemEntity itemEntity = new OrderItemEntity();
+        itemEntity.setOrderSn(orderEntity.getOrderSn());
+        itemEntity.setRealAmount(multiply);
+        itemEntity.setSkuQuantity(orderEntity.getNum());
+        orderItemService.save(itemEntity);
 
     }
 
