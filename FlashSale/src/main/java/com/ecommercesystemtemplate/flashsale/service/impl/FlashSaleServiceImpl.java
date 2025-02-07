@@ -123,6 +123,7 @@ public class FlashSaleServiceImpl implements FlashSaleService {
 
     }
 
+    // TODO Listed products should have an expiration date
     @Override
     public String flashSale(String flashSaleId, String key, Integer num) {
         MemberResponseVo memberResponseVo = LoginUserInterceptor.loginUser.get();

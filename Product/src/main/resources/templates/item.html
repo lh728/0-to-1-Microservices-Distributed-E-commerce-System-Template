@@ -637,12 +637,12 @@
 
 								</div>
 							</div>
-							<div class="box-btns-two" th:if="${#dates.createNow().getTime() >= item.secKillInfo.stratTime && #dates.createNow().getTime() <= item.secKillInfo.endTime}">
+							<div class="box-btns-two" th:if="${item.secKillInfo != null && (#dates.createNow().getTime() >= item.secKillInfo.stratTime && #dates.createNow().getTime() <= item.secKillInfo.endTime})">
 								<a href="#" id="flashBuy" th:attr="skuId=${item.info.skuId},sessionId=${item.secKillInfo.promotionSessionId},code=${item.secKillInfo.randomCode}">
 									Purchase Now
 								</a>
 							</div>
-							<div class="box-btns-two" th:if="${#dates.createNow().getTime() < item.secKillInfo.stratTime || #dates.createNow().getTime() > item.secKillInfo.endTime}">
+							<div class="box-btns-two" th:if="${item.secKillInfo == null || (#dates.createNow().getTime() < item.secKillInfo.stratTime || #dates.createNow().getTime() > item.secKillInfo.endTime})">
 								<a href="#" id="addToCartA" th:attr="skuId=${item.info.skuId}">
 									Add to Cart
 								</a>
