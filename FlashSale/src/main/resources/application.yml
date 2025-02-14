@@ -1,26 +1,30 @@
-#spring:
-#  application:
-#    name: flashSale
-#  cloud:
-#    nacos:
-#      discovery:
-#        server-addr: 127.0.0.1:8848
-#    sentinel:
-#      transport:
-#        dashboard: localhost:8333
-#        port: 8719
-#  redis:
-#    host: 192.168.56.10
-#  task:
-#    execution:
-#      pool:
-#        core-size: 5
-#        max-size: 50
-#  session:
-#    store-type: redis
-#  rabbitmq:
-#    virtual-host: /
-#    host: 192.168.56.10
-#server:
-#  port: 25000
-#
+spring:
+  application:
+    name: flashSale
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+    sentinel:
+      transport:
+        dashboard: localhost:8333
+        port: 8719
+  redis:
+    host: 192.168.56.10
+  task:
+    execution:
+      pool:
+        core-size: 5
+        max-size: 50
+  session:
+    store-type: redis
+  rabbitmq:
+    virtual-host: /
+    host: 192.168.56.10
+server:
+  port: 25000
+management:
+  endpoints:
+    web:
+      exposure:
+        include: *
