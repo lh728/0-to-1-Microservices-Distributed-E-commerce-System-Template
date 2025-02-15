@@ -17,9 +17,15 @@
 #        appcode: your-appcode
 #        smsSignId: your-smsSignId
 #        templateId: your-templateId
-#
+#    sentinel:
+#      transport:
+#        dashboard: localhost:8333
 #  application:
 #    name: thirdParty
 #server:
 #  port: 30000
-#
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: *

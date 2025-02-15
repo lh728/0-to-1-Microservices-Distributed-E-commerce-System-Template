@@ -3,6 +3,9 @@ spring:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
+    sentinel:
+      transport:
+        dashboard: localhost:8333
   redis:
     host: 192.168.56.10
   session:
@@ -11,3 +14,8 @@ spring:
     name: search
 server:
   port: 12000
+management:
+  endpoints:
+    web:
+      exposure:
+        include: *

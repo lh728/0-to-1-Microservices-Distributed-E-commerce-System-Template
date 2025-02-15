@@ -12,6 +12,9 @@
 #        server-addr: 127.0.0.1:8848
 #        namespace: 4260c59d-4610-4f28-a07f-c2889f2120d0
 #        group: dev
+#    sentinel:
+#      transport:
+#        dashboard: localhost:8333
 #  config:
 #    import:
 #      - nacos:nacos-config-example.properties?refresh=true
@@ -61,6 +64,10 @@
 #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 #server:
 #  port: 10000
-#
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: *
 #
 #

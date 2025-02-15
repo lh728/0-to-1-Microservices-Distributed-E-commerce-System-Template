@@ -16,8 +16,6 @@ public class MyRabbitConfig {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-
-
     @PostConstruct
     public void init(){
         // confirm  callback

@@ -12,6 +12,9 @@
 #        server-addr: 127.0.0.1:8848
 #        namespace: d07fc334-107c-4d4f-a427-8bc96d29610a
 #        group: dev
+#    sentinel:
+#      transport:
+#        dashboard: localhost:8333
 #  config:
 #    import:
 #      - nacos:nacos-config-example.properties?refresh=true
@@ -23,6 +26,7 @@
 #    store-type: redis
 #  redis:
 #    host: 192.168.56.10
+#
 #alibaba:
 #  cloud:
 #    access-key: <your access key>
@@ -45,4 +49,8 @@
 #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 #server:
 #  port: 8000
-#
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: *
