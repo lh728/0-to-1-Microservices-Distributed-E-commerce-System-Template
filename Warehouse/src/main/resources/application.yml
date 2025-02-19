@@ -55,3 +55,6 @@
 #    web:
 #      exposure:
 #        include: *
+#feign:
+#  sentinel:
+#    enabled: true
