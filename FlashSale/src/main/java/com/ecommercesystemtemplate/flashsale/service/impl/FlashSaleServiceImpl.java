@@ -1,5 +1,9 @@
 package com.ecommercesystemtemplate.flashsale.service.impl;
 
+import com.alibaba.csp.sentinel.Entry;
+import com.alibaba.csp.sentinel.SphU;
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
+import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
@@ -13,6 +17,7 @@ import com.ecommercesystemtemplate.flashsale.service.FlashSaleService;
 import com.ecommercesystemtemplate.flashsale.to.FlashSaleSkuRedisTo;
 import com.ecommercesystemtemplate.flashsale.vo.FlashSaleSessionsWithSku;
 import com.ecommercesystemtemplate.flashsale.vo.SkuInfoVo;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.redisson.api.RSemaphore;
 import org.redisson.api.RedissonClient;
@@ -29,6 +34,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@Slf4j
 public class FlashSaleServiceImpl implements FlashSaleService {
     final
     CouponFeignService couponFeignService;
@@ -66,32 +72,42 @@ public class FlashSaleServiceImpl implements FlashSaleService {
     }
 
     @Override
+    @SentinelResource(value = "getCurrentFlashSaleSkus", blockHandler = "blockHandler")
     public List<FlashSaleSkuRedisTo> getCurrentFlashSaleSkus() {
         // 1. get current time
         Long currentTime = new Date().getTime();
-        Set<String> keys = redisTemplate.keys(SESSIONS_CACHE_PREFIX + "*");
-        for (String key : keys) {
-            String replace = key.replace(SESSIONS_CACHE_PREFIX, "");
-            String[] split = replace.split("-");
-            Long startTime = Long.parseLong(split[0]);
-            Long endTime = Long.parseLong(split[1]);
-            if (currentTime >= startTime && currentTime <= endTime) {
-                // 2. get sku list from redis
-                List<String> list = redisTemplate.opsForList().range(key, -100, 100);
-                BoundHashOperations<String, String, String> ops = redisTemplate.boundHashOps(SKU_FLASHSALE_CACHE_PREFIX);
-                List<String> objects = ops.multiGet(list);
-                if (objects != null && !objects.isEmpty()) {
-                    List<FlashSaleSkuRedisTo> collect = objects.stream().map(item -> {
-                        FlashSaleSkuRedisTo redisTo = JSON.parseObject((String) item, FlashSaleSkuRedisTo.class);
+        try(Entry entry = SphU.entry("flashsaleSkus")) {
+            Set<String> keys = redisTemplate.keys(SESSIONS_CACHE_PREFIX + "*");
+            for (String key : keys) {
+                String replace = key.replace(SESSIONS_CACHE_PREFIX, "");
+                String[] split = replace.split("-");
+                Long startTime = Long.parseLong(split[0]);
+                Long endTime = Long.parseLong(split[1]);
+                if (currentTime >= startTime && currentTime <= endTime) {
+                    // 2. get sku list from redis
+                    List<String> list = redisTemplate.opsForList().range(key, -100, 100);
+                    BoundHashOperations<String, String, String> ops = redisTemplate.boundHashOps(SKU_FLASHSALE_CACHE_PREFIX);
+                    List<String> objects = ops.multiGet(list);
+                    if (objects != null && !objects.isEmpty()) {
+                        List<FlashSaleSkuRedisTo> collect = objects.stream().map(item -> {
+                            FlashSaleSkuRedisTo redisTo = JSON.parseObject((String) item, FlashSaleSkuRedisTo.class);
 //                        redisTo.setRandomCode();
-                        return redisTo;
-                    }).toList();
-                    return collect;
+                            return redisTo;
+                        }).toList();
+                        return collect;
+                    }
+                    break;
                 }
-                break;
             }
+        } catch (BlockException e) {
+            log.error("get flash sale sku error: {}", e);
         }
+        return null;
 
+    }
+
+    public List<FlashSaleSkuRedisTo> blockHandler(BlockException e) {
+        log.error("getCurrentFlashSaleSkus is limited");
         return null;
 
     }
