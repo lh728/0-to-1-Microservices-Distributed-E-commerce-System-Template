@@ -85,6 +85,9 @@
 #    sentinel:
 #      transport:
 #        dashboard: localhost:8333
+#      scg:
+#        fallback:
+#          response-status: 400
 #  application:
 #    name: gateway
 #
