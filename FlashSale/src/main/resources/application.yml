@@ -31,3 +31,10 @@
 #feign:
 #  sentinel:
 #    enabled: true
+#logging:
+#  level:
+#    org:
+#      springframework:
+#        cloud:
+#          openfeign: debug
+#          sleuth: debug
