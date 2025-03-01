@@ -90,7 +90,14 @@
 #          response-status: 400
 #  application:
 #    name: gateway
-#
+#  zipkin:
+#    base-url: http://192.168.56.10:9411
+#    discovery-client-enabled: false
+#    sender:
+#      type: web
+#  sleuth:
+#    sampler:
+#      probability: 1
 #server:
 #  port: 88
 #management:
